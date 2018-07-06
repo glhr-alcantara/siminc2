@@ -92,7 +92,7 @@ if ($_REQUEST['carregarLimitesUnidade']) {
     die();
 }
 if ($_REQUEST['carregarIniciativaPPA']) {
-    carregarIniciativaPPA((int)$_REQUEST['oppid'], null);
+    carregarIniciativaPPA((int)$_REQUEST['oppid'], null, $_REQUEST['suoid']);
     die();
 }
 if ($_REQUEST['carregarComboSubacaoFederais']) {

@@ -80,7 +80,7 @@
                 delegacao = $('#delegacao').val();
             }
             carregarMetasPPA($(this).val(), null, $('#ungcod').val(), delegacao, null);
-            carregarIniciativaPPA($(this).val());
+            carregarIniciativaPPA($(this).val(), $('#ungcod').val());
         });
         
         $('#delegacao').change(function(){    

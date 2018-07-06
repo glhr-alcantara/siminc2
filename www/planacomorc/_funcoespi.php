@@ -316,22 +316,31 @@ function carregarMetasPPA($oppid, $mppid, $suocod = null) {
 /**
  * Monta a combo de iniciativas PPA
  */
-function carregarIniciativaPPA($oppid, $ippid) {
+function carregarIniciativaPPA($oppid, $ippid, $listaSubunidades=null) {
     global $db;
-
-    $sql = "
-        SELECT
-            ippid AS codigo,
-            ippcod || ' - ' || ippnome AS descricao
-        FROM public.iniciativappa
-        WHERE
-            ippstatus = 'A'
-            AND prsano = '{$_SESSION['exercicio']}'
-            AND oppid = ". (int)$oppid. "
-        ORDER BY
-            ippcod
-    ";
-
+    $filtroSubUnidades = $listaSubunidades!=null?" and si.suoid =  $listaSubunidades":'';
+    $sql = "select i.ippid as codigo,
+                   i.ippcod || ' - ' || i.ippnome AS descricao,
+                   ippcod
+              from public.iniciativappa i
+             inner join spo.subunidadeiniciativappa si
+                on i.ippid = si.ippid
+               $filtroSubUnidades
+             where prsano = '{$_SESSION['exercicio']}'
+               and i.oppid = ". (int)$oppid. " 
+               and ippstatus = 'A'
+             union
+            select i.ippid as codigo,
+                   i.ippcod || ' - ' || i.ippnome AS descricao,
+                   ippcod
+              from public.iniciativappa i
+              left join spo.subunidadeiniciativappa si
+                on i.ippid = si.ippid
+             where si.ippid is null 
+               and i.oppid = ". (int)$oppid. " 
+               and ippstatus = 'A'
+             ORDER BY ippcod";
+//ver($sql,d);
     $db->monta_combo('ippid', $sql, 'S', 'Selecione', null, null, null, null, 'N', 'ippid', null, (isset($ippid)? $ippid: null), null, 'class="form-control chosen-select" style="width=100%;"');
 }
 
