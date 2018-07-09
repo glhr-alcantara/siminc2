@@ -52,8 +52,10 @@
         # DADOS FINANCEIROS DO BENFICIÁRIO
         'Vl. Beneficiário Custeio',
         'Vl. Beneficiário Capital',
-        'Vl. Priorizado',
-        'Vl. Contingenciado',
+        'Vl. Priorizado Custeio',
+        'Vl. Priorizado Capital',
+        'Vl. Contingenciado Custeio',
+        'Vl. Contingenciado Capital',
         # DADOS SICONV
         'Número Programa - SICONV',
         'Título Programa - SICONV',
