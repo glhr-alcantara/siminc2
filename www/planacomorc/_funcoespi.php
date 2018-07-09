@@ -318,15 +318,17 @@ function carregarMetasPPA($oppid, $mppid, $suocod = null) {
  */
 function carregarIniciativaPPA($oppid, $ippid, $listaSubunidades=null) {
     global $db;
-    $filtroSubUnidades = $listaSubunidades!=null?" and si.suoid =  $listaSubunidades":'';
+    $filtroSubUnidades = $listaSubunidades!=null?" and su.suocod =  '$listaSubunidades'":'';
     $sql = "select i.ippid as codigo,
                    i.ippcod || ' - ' || i.ippnome AS descricao,
                    ippcod
               from public.iniciativappa i
-             inner join spo.subunidadeiniciativappa si
+              left join spo.subunidadeiniciativappa si
                 on i.ippid = si.ippid
+              left join public.vw_subunidadeorcamentaria su
+                on si.suoid = su.suoid
                $filtroSubUnidades
-             where prsano = '{$_SESSION['exercicio']}'
+             where i.prsano = '{$_SESSION['exercicio']}'
                and i.oppid = ". (int)$oppid. " 
                and ippstatus = 'A'
              union
