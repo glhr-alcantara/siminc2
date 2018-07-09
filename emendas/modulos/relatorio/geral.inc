@@ -50,7 +50,8 @@
         'Motivo',
         'Justivicativa',
         # DADOS FINANCEIROS DO BENFICIÁRIO
-        'Vl. Beneficiário',
+        'Vl. Beneficiário Custeio',
+        'Vl. Beneficiário Capital',
         'Vl. Priorizado',
         'Vl. Contingenciado',
         # DADOS SICONV
