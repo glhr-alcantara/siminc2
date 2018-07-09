@@ -360,18 +360,30 @@ class Emendas_Model_Emenda extends Modelo
 			    on bed.emdid = eme.emdid
 			 where bed.benid = ben.benid
 			   AND bed.bedstatus = 'A'),0) as bedvalorcapital,                           
-		coalesce((select sum(coalesce(bed.bedvalorpriorizado,0))
+                (select sum(coalesce(case when eme.gndcod<=3 then bed.bedvalorpriorizado else 0 end,0))
 			  from emendas.beneficiariodetalhe bed
 			  left join emendas.emendadetalhe eme
 			    on bed.emdid = eme.emdid
 			 where bed.benid = ben.benid
-			   AND bed.bedstatus = 'A'),0) as bedvalorpriorizado,	
-		coalesce((select sum(coalesce(bed.bedvalor,0) - coalesce(bed.bedvalorpriorizado,0))
+			   AND bed.bedstatus = 'A') as bedvalorpriorizadocusteio,
+                (select sum(coalesce(case when eme.gndcod>3 then bed.bedvalorpriorizado else 0 end,0))
 			  from emendas.beneficiariodetalhe bed
 			  left join emendas.emendadetalhe eme
 			    on bed.emdid = eme.emdid
 			 where bed.benid = ben.benid
-			   AND bed.bedstatus = 'A'),0) as contigenciado,        
+			   AND bed.bedstatus = 'A') as bedvalorpriorizadocapital,	
+		coalesce((select sum(case when eme.gndcod<=3 then coalesce(bed.bedvalor,0) - coalesce(bed.bedvalorpriorizado,0) else 0 end)
+			  from emendas.beneficiariodetalhe bed
+			  left join emendas.emendadetalhe eme
+			    on bed.emdid = eme.emdid
+			 where bed.benid = ben.benid
+			   AND bed.bedstatus = 'A'),0) as contigenciadocusteio,        	
+		coalesce((select sum(case when eme.gndcod>3 then coalesce(bed.bedvalor,0) - coalesce(bed.bedvalorpriorizado,0) else 0 end)
+			  from emendas.beneficiariodetalhe bed
+			  left join emendas.emendadetalhe eme
+			    on bed.emdid = eme.emdid
+			 where bed.benid = ben.benid
+			   AND bed.bedstatus = 'A'),0) as contigenciadocapital,
 		/*bed.bedvalor,
 		bed.bedvalorpriorizado,
                 bed.bedvalor - bed.bedvalorpriorizado AS contigenciado,*/
