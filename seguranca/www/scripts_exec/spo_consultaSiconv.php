@@ -68,6 +68,7 @@ include_once APPRAIZ. 'emendas/classes/model/SiconvSituacao.inc';
 include_once APPRAIZ. 'emendas/classes/model/SiconvBeneficiario.inc';
 include_once APPRAIZ. 'siconv/classes/model/PropostaWs.inc';
 include_once APPRAIZ. 'emendas/classes/service/WSIntegracaoSiconv.class.inc';
+include_once APPRAIZ. 'emendas/classes/model/UsuarioSiconv.inc';
 
 $exercicio = date('Y');
 
