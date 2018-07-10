@@ -870,7 +870,6 @@ class Emendas_Model_Emenda extends Modelo
 
     public function atualizarSiconv($benid = NULL)
     {
-        global $configSiconv;
 
         $sql = "
             SELECT
@@ -895,13 +894,14 @@ class Emendas_Model_Emenda extends Modelo
             }
         }
 
-        $usuario = $configSiconv->user;
-        $senha = $configSiconv->pwd;
-
+        $mUsuarioSiconv = (new Emendas_Model_UsuarioSiconv())->RetornaConfiguracaoSiconv();
+        $usuario = $mUsuarioSiconv['usucpf'];
+        $senha = md5(base64_decode($mUsuarioSiconv['ususenhasiconv']));
+        
         $arrParam = array(
             'usuario' => $usuario,
-            'senha' 	=> $senha,
-            'url' 	=> WEB_SERVICE_SICONV_URL,
+            'senha'   => $senha,
+            'url'     => WEB_SERVICE_SICONV_URL,
         );
         $obWS = new WSIntegracaoSiconv($arrParam);
 
@@ -928,13 +928,13 @@ class Emendas_Model_Emenda extends Modelo
 
     public function atualizarPrograma()
     {
-        global $configSiconv;
-
+     
         $mPrograma = new Emendas_Model_Programa();
         $programas = $mPrograma->recuperarTodos();
 
-        $usuario = $configSiconv->user;
-        $senha = $configSiconv->pwd;
+        $mUsuarioSiconv = (new Emendas_Model_UsuarioSiconv())->RetornaConfiguracaoSiconv();
+        $usuario = $mUsuarioSiconv['usucpf'];
+        $senha = md5(base64_decode($mUsuarioSiconv['ususenhasiconv']));
 
         $arrParam = array(
             'usuario' => $usuario,
