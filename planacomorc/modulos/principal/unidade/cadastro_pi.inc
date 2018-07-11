@@ -207,9 +207,9 @@ include APPRAIZ . "includes/cabecalho.inc";
 <script language="JavaScript" src="../includes/funcoesspo.js?v=1"></script>
 <link rel="stylesheet" href="/library/bootstrap-switch/stylesheets/bootstrap-switch.css">
 <script src="/library/bootstrap-switch/js/bootstrap-switch.min.js"></script>
-<script src="js/cadastro_pi_funcoes.js?v=5"></script>
-<script src="js/cadastro_pi_validacoes.js?v=5"></script>
-<script src="js/cadastro_pi_init.js?v=5"></script>
+<script src="js/cadastro_pi_funcoes.js?v=8"></script>
+<script src="js/cadastro_pi_validacoes.js?v=8"></script>
+<script src="js/cadastro_pi_init.js?v=8"></script>
 <style>
     autorizadocapital {
         display: none;
@@ -226,7 +226,7 @@ include APPRAIZ . "includes/cabecalho.inc";
             Cadastro de PI
             <?php if(!empty($dadosPI['plicod'])){ ?>
                 <span style="color: red; padding: 5px;" id="span-plicod"><?= $dadosPI['plicod'] ?></span>
-                <input minlength="11" maxlength="11" type="text" id="plicod" value="<?= $dadosPI['plicod'] ?>" style="display:none;" />
+                <input class="upper-text" minlength="15" maxlength="15" type="text" id="plicod" value="<?= $dadosPI['plicod'] ?>" style="display:none;" />
                 <a style="margin-left: 10px;" class="fa fa-history" id="modal-historico-pi" title="Histórico de alterações"></a>
             <?php } ?>
         </h2>
