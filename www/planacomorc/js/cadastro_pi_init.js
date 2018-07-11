@@ -415,7 +415,7 @@
         // Evento ao alterar o valor do código do PI
         $('#plicod').change(function(){
             var plicod = $(this).val();
-            if (plicod.trim().length == 11){
+            if(plicod.trim().length == 15){
                 $('#span-plicod').load(urlPagina+ '&alterarCodigoPi=ok&pliid='+$('#pliid').val() + '&plicod=' + $('#plicod').val());
             }
         });
