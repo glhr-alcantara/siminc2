@@ -6,7 +6,6 @@
         echo $simec->input('mppcod', 'Código', $mMetappa->mppcod, ['required', 'maxlength' => 4, 'class'=> 'upper-text']);
         echo $simec->textarea('mppnome', 'Meta', $mMetappa->mppnome, ['required', 'maxlength' => 400]);
         echo $simec->textarea('mppdsc', 'Descrição', $mMetappa->mppdsc, ['required', 'maxlength' => 1000]);
-        echo $simec->input('prsano', 'Ano', $mMetappa->prsano, ['class' => 'inteiro', 'required', 'maxlength' => 4]);
         echo $simec->radioBoolean('mppquantificavel', 'Possui medida quantificável', $mMetappa->mppquantificavel);
         $mostra=$mMetappa->mppquantificavel=='t'?true:false;
         echo '<div id="div_mppquantidade">';

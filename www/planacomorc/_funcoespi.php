@@ -298,7 +298,7 @@ function carregarMetasPPA($oppid, $mppid, $suocod = null) {
     $sql = "
         SELECT DISTINCT
             m.mppid AS codigo,
-            m.mppcod || ' - ' || m.mppdsc AS descricao
+            m.mppcod || ' - ' || m.mppnome AS descricao
         FROM public.metappa m
 		JOIN public.objetivometappa om ON m.mppid = om.mppid
         $join
@@ -2144,7 +2144,7 @@ function carregarPiComDetalhes(stdclass $filtros) {
             pli.eqdid,
             eqd.eqddsc,
             opp.oppcod || ' - ' || opp.oppnome AS objetivo,
-            m.mppcod || ' - ' || m.mppdsc AS meta,
+            m.mppcod || ' - ' || m.mppnome AS meta,
             i.ippcod || ' - ' || i.ippnome AS iniciativa,
             mpn.mpncod || ' - ' || mpn.mpnnome AS meta_pnc,
             ipn.ipncod || ' - ' || ipn.ipndsc AS iniciativa_pnc,

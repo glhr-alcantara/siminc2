@@ -4,7 +4,6 @@
         <th width="10%">Ações</th>
         <th>Código</th>
         <th>Meta</th>
-        <th>Ano</th>
         <th>Quantificavel</th>
         <th>Quantidade</th>
     </tr>
@@ -17,7 +16,6 @@
             </td>
             <td><?php echo $dados['mppcod']; ?></td>
             <td><?php echo $dados['mppnome']; ?></td>
-            <td><?php echo $dados['prsano']; ?></td>
             <td><?php echo $dados['mppquantificavel'] == 't'? 'Sim': 'Não'; ?></td>
             <td><?php echo $dados['mppquantidade']; ?></td>
         </tr>

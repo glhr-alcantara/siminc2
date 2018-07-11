@@ -99,7 +99,7 @@ class Public_Model_IndicadorPnc extends Modelo
     {
         $exercicio = $exercicio ? $exercicio : $_SESSION['exercicio'];
 
-        $sql = "select  opm.oppid, opp.oppdsc, opp.oppcod, mpp.mppid, mpp.mppcod, mpp.mppdsc, mpp.mppquantificavel, mpp.mppquantidade, 
+        $sql = "select  opm.oppid, opp.oppdsc, opp.oppcod, mpp.mppid, mpp.mppcod, mpp.mppnome, mpp.mppdsc, mpp.mppquantificavel, mpp.mppquantidade, 
                         -- Cálculo para verificar quantidade anualizada: (valor previsto dividido por 4 e vezes o ano do monitoramento)
                         mpp.mppquantidade / 4 * ((to_char(now(), 'YYYY')::int % 4)+1) mppquantidadeanualizada
                 from public.objetivometappa opm
