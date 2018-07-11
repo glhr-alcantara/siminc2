@@ -18,6 +18,10 @@
     }
     if(isset($_REQUEST['btn-aplicar'])){
         $mPlanoInterno->tramitarLote($_REQUEST['aedid'], $_REQUEST['aDocid'], $_REQUEST['cmddsc']);
+        $filtro = $_REQUEST;
+        $filtro['exercicio'] = $_SESSION['exercicio'];
+        $filtro['suoid'] = $_REQUEST['suoid'];
+        $dadosListagem = $mPlanoInterno->recuperarPis($filtro);        
     }
     include APPRAIZ . "includes/cabecalho.inc";
 ?>

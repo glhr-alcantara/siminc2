@@ -5,7 +5,12 @@
      * @returns VOID
      */
     function initCadastroPi(){
-        
+
+        $('#modal-historico-pi').click(function(){
+            $('#historico-pi .modal-body').load(urlPagina+'&req=historico-pi&pliid='+ $('#pliid').val());
+            $('#historico-pi').modal();
+        });
+
         $('#btnApagar').click(function(){
             window.location.href = urlPagina+ '&confirmar-apagar=1&pliid='+ $('#pliid').val();
         });
@@ -39,7 +44,7 @@
 
 
         toggleDelegacao();
-        $('#delegacao').change(function(){
+        $('#radioDelegacao').change(function(){
             toggleDelegacao();
         });
 
@@ -75,10 +80,27 @@
 
         // Evento ao mudar opção de Objetivos PPA
         $('#oppid').change(function(){
-            carregarMetasPPA($(this).val(), null, $('#ungcod').val());
+            var delegacao = null;
+            if($('#radioDelegacao').is(':checked')){
+                delegacao = $('#delegacao').val();
+            }
+            carregarMetasPPA($(this).val(), null, $('#ungcod').val(), delegacao, null);
             carregarIniciativaPPA($(this).val());
         });
+        
+        $('#delegacao').change(function(){    
+            var mppid = $('#mppid').val();
+            carregarMetasPPA($('#oppid').val(), null, $('#ungcod').val(), $(this).val(), mppid);
+        });
 
+        $('#ungcod').change(function(){
+            var mppid = $('#mppid').val();
+            var delegacao = null;
+            if($('#radioDelegacao').is(':checked')){
+                delegacao = $('#delegacao').val();
+            }        
+            carregarMetasPPA($('#oppid').val(), null, $(this).val(), delegacao, mppid);
+        });
         // Evento ao mudar opção de Metas PNC
         $('div.div_mpnid').on('change', '#mpnid', function(){
             carregarIndicadorPNC($(this).val());
@@ -392,7 +414,10 @@
 
         // Evento ao alterar o valor do código do PI
         $('#plicod').change(function(){
-            $('#span-plicod').load(urlPagina+ '&alterarCodigoPi=ok&pliid='+$('#pliid').val() + '&plicod=' + $('#plicod').val());
+            var plicod = $(this).val();
+            if (plicod.trim().length == 11){
+                $('#span-plicod').load(urlPagina+ '&alterarCodigoPi=ok&pliid='+$('#pliid').val() + '&plicod=' + $('#plicod').val());
+            }
         });
 
         // Evento ao mudar sair do campo de código do PI

@@ -13,6 +13,9 @@ switch ($_REQUEST['req']) {
     case 'carregar-funcional':
         echo $simec->select('ptrid', 'Funcional', null, (new Monitora_Model_Ptres())->recuperarSqlPorSubunidadeEEnquadramento($_REQUEST['suoid'], $_REQUEST['eqdid']), ['required']);
         die;
+    case 'carregar-funcional-filtros':
+        echo $simec->select('ptrid', 'Funcional', null, (new Proposta_Model_Proposta())->recuperarSqlFuncional($_REQUEST['suoid'], $_REQUEST['eqdid']));
+        die;        
     case 'formulario-detalhe':
         $cProposta->montarFormularioDetalhes($_REQUEST['proid'], $_REQUEST['prdid']);
         die;
@@ -37,7 +40,19 @@ switch ($_REQUEST['req']) {
                   </div>';
         die;
     case 'recuperar-dados-ptres':
-        echo json_encode((new Monitora_Model_Ptres($_REQUEST['ptrid']))->recuperarProdutosPorPtres());
+        # Busca dados de produto e unidade de medida da funcional
+        $modelPtres = new Monitora_Model_Ptres($_REQUEST['ptrid']);
+        $modelPtres->ptrano = (int)$_SESSION['exercicio'];
+        $funcional = $modelPtres->recuperarProdutosPorPtres();
+        
+        # Corrigindo campos de textos pra retornar no formato UTF8
+        $funcional['produto_acao'] = utf8_encode($funcional['produto_acao']);
+        $funcional['produto_po'] = utf8_encode($funcional['produto_po']);
+        $funcional['unidade_po'] = utf8_encode($funcional['unidade_po']);
+        $funcional['unidade_acao'] = utf8_encode($funcional['unidade_acao']);
+
+        # Resposta da requisição ajax
+        echo json_encode($funcional);
         die;
     case 'recuperar-valores-ptres':
         echo json_encode((new Proposta_Model_PrePlanoInterno())->recuperarValoresPorSubnidadeEPtres($_REQUEST['suoid'], $_REQUEST['ptrid']));
@@ -115,7 +130,7 @@ include APPRAIZ . "includes/cabecalho.inc";
                             <div style="clear:both"></div>
                         </div>
                         <div class="form-group ">
-                            <label for="" class="col-sm-3 col-md-3 col-lg-3 control-label">Quantidades</label>
+                            <label for="" class="col-sm-3 col-md-3 col-lg-3 control-label">Quantidades: <span class="campo-obrigatorio" title="Campo obrigatório">*</span></label>
                             <div class="col-sm-9 col-md-9 col-lg-9 ">
                                 <div class="table-responsive">
                                     <table class="table table-bordered table-hover" >
@@ -123,26 +138,28 @@ include APPRAIZ . "includes/cabecalho.inc";
                                         <tr class="text-center">
                                             <th width="20%">Nível</th>
                                             <th width="20%">Quantidade</th>
-                                            <th width="20%">Unidade</th>
                                             <th>Produto</th>
+                                            <th width="20%">Unidade</th>
+
                                         </tr>
                                         </thead>
                                         <tbody>
                                         <tr>
                                             <td>Localizador</td>
                                             <td>
-                                                <input name="locquantidadeproposta" id="locquantidadeproposta" type="text" class="form-control valor " required="required">
+                                                <input name="locquantidadeproposta" id="locquantidadeproposta" type="text" value="" class="form-control inteiro " required="required">
                                             </td>
-                                            <td id="unidade_acao"></td>
                                             <td id="produto_acao"></td>
+                                            <td id="unidade_acao"></td>
+                                            
                                         </tr>
                                         <tr>
                                             <td>PO</td>
                                             <td>
-                                                <input name="proquantidade" id="proquantidade" type="text" value="<?php echo number_format($mProposta->proquantidade, 2, ',', '.'); ?>" class="form-control valor " required="required">
+                                                <input name="proquantidade" id="proquantidade" type="text" value="<?php echo number_format($mProposta->proquantidade, 0, ',', '.'); ?>" class="form-control inteiro " required="required">
                                             </td>
-                                            <td id="unidade_po"></td>
                                             <td id="produto_po"></td>
+                                            <td id="unidade_po"></td>
                                         </tr>
                                         </tbody>
                                     </table>
@@ -162,7 +179,7 @@ include APPRAIZ . "includes/cabecalho.inc";
                     </div>
                     <div class="ibox-content">
                         <?php
-                            echo $simec->valor('proquantidadeexpansao', 'Quantidade Expansão PO', $mProposta->proquantidadeexpansao);
+                            echo $simec->input('proquantidadeexpansao', 'Quantidade Expansão PO', $mProposta->proquantidadeexpansao, ['class'=>'inteiro']);
                             echo $simec->textarea('projustificativaexpansao', 'Justificativa Expansão', $mProposta->projustificativaexpansao, ['cols'=>60, 'rows'=>6]);
                         ?>
                     </div>
@@ -189,7 +206,7 @@ include APPRAIZ . "includes/cabecalho.inc";
                         <?php
                             if($mProposta->proid){
                                 $cProposta->montarFormularioDetalhes($mProposta->proid);
-                        }
+                            }
                         ?>
                     </div>
                     <div id="div_listagem_detalhe">

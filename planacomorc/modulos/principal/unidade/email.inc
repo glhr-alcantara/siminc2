@@ -195,7 +195,7 @@ $textoEmail = "
         <tbody>
             <tr>
                 <td>
-                    <table width='850' border='0' cellspacing='0' cellpadding='0' align='center' bgcolor='#ffffff' style='width: 850px;font-family:helvetica, sans-serif;' class='MainContainer'>
+                    <table border='0' cellspacing='0' cellpadding='0' align='center' bgcolor='#ffffff' style='width: 100%;font-family:helvetica, sans-serif;' class='MainContainer'>
 
                         <tbody>
                             <tr>
@@ -203,7 +203,6 @@ $textoEmail = "
                                     <table width='100%' border='0' cellspacing='0' cellpadding='0'>
                                         <tbody>
                                             <tr>
-                                                <td valign='top' width='20'>&nbsp;</td>
                                                 <td>
                                                     <table width='100%' border='0' cellspacing='0' cellpadding='0'>
                                                         <tbody>
@@ -274,7 +273,7 @@ $textoEmail = "
                                                                                                     <td class='specbundle'>
                                                                                                         <div class='contentEditableContainer contentTextEditable'>
                                                                                                             <div class='contentEditable' style='text-align: left; line-height: 22px;'>
-                                                                                                                <div style='background-color: white;padding-top: 0px;position: relative;width: 108%; border-top: 3px solid #54b3a3;'>
+                                                                                                                <div style='background-color: white;padding-top: 0px;position: relative;width: 100%; border-top: 3px solid #54b3a3;'>
                                                                                                                     <br>
 
                                                                                                                     <div class='left'>
@@ -329,7 +328,7 @@ $textoEmail = "
                                                                                                             </div>
                                                                                                         </div>
                                                                                                     </td>
-                                                                                                    <td valign='top' width='75' class='specbundle'>&nbsp;</td>
+                                                                                                    <td valign='top' class='specbundle' style='width: 16px;'>&nbsp;</td>
                                                                                                     <td class='specbundle'>
                                                                                                         <div class='contentEditableContainer contentTextEditable'>
                                                                                                             <div class='contentEditable' style='text-align: left;'>
@@ -357,7 +356,6 @@ $textoEmail = "
                                                         </tbody>
                                                     </table>
                                                 </td>
-                                                <td valign='top' width='20'>&nbsp;</td>
                                             </tr>
                                         </tbody>
                                     </table>

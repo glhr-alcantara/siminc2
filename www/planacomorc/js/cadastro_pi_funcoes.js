@@ -937,23 +937,6 @@
             }
         }
     }
-    
-   /**
-    * Transforma o valor de texto pra flutuante pra efetuar operações matematicas.
-    *
-    * @param string text
-    * @return float numero
-    */
-    function textToFloat(text){
-        var numero = 0;
-        text = replaceAll(text, '.', '');
-        text = replaceAll(text, ',', '.');
-        if(!isNaN(parseFloat(text))){
-            numero = parseFloat(text);
-        }
-
-        return numero;
-    }
 
     /**
      * Controla as opções do formulario conforme a opção de tipo de localização selecionada.
@@ -1220,10 +1203,17 @@
     /**
      * Carrega novo conteúdo para o select de Metas PPA via requisição ajax.
      */
-    function carregarMetasPPA(oppid, mppid, suocod) {
-        $.post(urlPagina+ '&carregarMetasPPA=ok&oppid=' + oppid + '&suocod=' + suocod, function(response) {
+    function carregarMetasPPA(oppid, mppid, suocod, delegacao, mppid) {
+        if (delegacao!==null){
+            delegacao.push(suocod);
+        }else{
+            delegacao = suocod;
+        }
+        $.post(urlPagina+ '&carregarMetasPPA=ok&oppid=' + oppid + '&suocod=' + delegacao, 
+        function(response) {
             $('#mppid').remove();
             $('.div_mppid').html(response);
+            $('#mppid').val(mppid);            
             $(".chosen-select").chosen();
         });
     }
@@ -1547,10 +1537,11 @@
     }
 
     function toggleDelegacao(){
-        if($('#delegacao').is(':checked')){
+        if($('#radioDelegacao').is(':checked')){
             $('#div_unidades_delegadas').show('slow');
         } else {
             $('#div_unidades_delegadas').hide('slow');
+            $("#delegacao").val('').trigger('chosen:updated');
         }
     }
 

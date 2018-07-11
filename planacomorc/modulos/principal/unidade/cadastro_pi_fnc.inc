@@ -240,7 +240,7 @@ include APPRAIZ . "includes/cabecalho.inc";
             Cadastro de PI do FNC
             <?php if(!empty($dadosPI['plicod'])){
                 echo '<span style="color: red; padding: 5px;" id="span-plicod">(' . $dadosPI['plicod'] . ')</span>';
-                echo '<input type="text" id="plicod" value="' . $dadosPI['plicod'] . '" style="display:none;" />';
+                echo '<input minlength="11" maxlength="11" type="text" id="plicod" value="' . $dadosPI['plicod'] . '" style="display:none;" />';
             } ?>
         </h2>
         <?php echo $dadosPI['pliid'] ? "<span>Id: {$dadosPI['pliid']}</span>" : ''; ?>
@@ -428,7 +428,7 @@ include APPRAIZ . "includes/cabecalho.inc";
                                 <label class="control-label" for="picted">Delegação:</label>
                             </div>
                             <div class="col-md-1">
-                                <input type="checkbox" name="delegacao" id="delegacao" value="t" class="js-switch" <?php echo count($listaSubUnidadesDelegadas) ? 'checked="checked"' : ''; ?> />
+                                <input type="checkbox" name="radioDelegacao" id="radioDelegacao" value="t" class="js-switch" <?php echo count($listaSubUnidadesDelegadas) ? 'checked="checked"' : ''; ?> />
                             </div>
                             <div class="col-md-7" id="div_unidades_delegadas" style="margin-left: 15px;">
                                 <?php
@@ -1329,12 +1329,15 @@ DML;
                 </div>
             </div>
         </div>
-        <div class="form-group">
-            <div class="text-center">
-                <button class="btn btn-primary" type="button" name="btg" onclick="submeter('<?php echo $plicod; ?>//');" <?php echo $disabled; ?>><i class="fa fa-check"></i>&nbsp;Salvar</button>
-                <a href="planacomorc.php?modulo=principal/unidade/listapimanter_fnc&acao=A" class="btn btn-warning" id="btnVoltar" type="button"><i class="fa fa-arrow-left"></i>&nbsp;Voltar</a>
+
+        <?php if (!(in_array(PFL_CONSULTA, $perfis))) {?>
+            <div class="form-group">
+                <div class="text-center">
+                    <button class="btn btn-primary" type="button" name="btg" onclick="submeter('<?php echo $plicod; ?>//');" <?php echo $disabled; ?>><i class="fa fa-check"></i>&nbsp;Salvar</button>
+                    <a href="planacomorc.php?modulo=principal/unidade/listapimanter_fnc&acao=A" class="btn btn-warning" id="btnVoltar" type="button"><i class="fa fa-arrow-left"></i>&nbsp;Voltar</a>
+                </div>
             </div>
-        </div>
+        <?php } ?>
     </form>
 </div>
 

@@ -3008,11 +3008,14 @@ function naoSomenteNumeros(formName, fieldName, labelCampo){
 }
 
 function abrirRegras(mnuid){
-	window.open(
-		'../geral/regra_tela.php?mnuid='+mnuid,
-		'usuariosonline',
-		'height=500,width=800,scrollbars=yes,top=50,left=200'
-	);
+        $('#popup_anexo_documentos_modulo').modal();
+//        $('#popup_anexo_documentos_modulo').modal();
+//        $('#modal_upload .chosen-container').css('width', '100%');    
+//	window.open(
+//		'../geral/regra_tela.php?mnuid='+mnuid,
+//		'usuariosonline',
+//		'height=500,width=800,scrollbars=yes,top=50,left=200'
+//	);
 }
 
 function abrirPopUpPublicarArquivo(usucpf, sisid){
@@ -3213,4 +3216,21 @@ function abrirArquivo(arqid) {
     window.location.href = uri;
 }
 
+/**
+ * Transforma o valor de texto pra flutuante pra efetuar operações matematicas.
+ *
+ * @param string text
+ * @return float numero
+ */
+ function textToFloat(text){
+     var numero = 0;
+     text = replaceAll(text, '.', '');
+     text = replaceAll(text, ',', '.');
+     if(!isNaN(parseFloat(text))){
+         numero = parseFloat(text);
+     }
 
+     return numero;
+ }
+ 
+ 

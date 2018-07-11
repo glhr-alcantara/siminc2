@@ -4,17 +4,18 @@ class Public_Controller_AreaCultural
 {
     public function salvar($dados)
     {
-        $url = '?modulo=apoio/area_cultural&acao=A';
+        $url = '?modulo=apoio/area_cultural_form&acao=A';
 
         try {
             $mdareaCultural = new Monitora_Model_PiModalidadeEnsino($dados['mdeid']);
             $mdareaCultural->popularDadosObjeto($dados);
+            $mdareaCultural->mdecod = strtoupper($mdareaCultural->mdecod);
             $mdareaCultural->mdeano = $mdareaCultural->mdeano ? $mdareaCultural->mdeano : $_SESSION['exercicio'];
 //            ver($mdareaCultural,d);
 
             $mdareaCultural->salvar(null,null, ['mdedsc', 'mdestatus', 'mdeano', 'mdecod']);
             $mdareaCultural->commit();
-            simec_redirecionar($url, 'success');
+            simec_redirecionar($url . '&mdeid=' . $mdareaCultural->mdeid, 'success');
         } catch (Exception $e){
             $mdareaCultural->rollback();
             simec_redirecionar($url, 'error');

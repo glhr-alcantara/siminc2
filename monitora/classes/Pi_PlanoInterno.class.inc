@@ -397,34 +397,76 @@ class Pi_PlanoInterno extends Modelo
     public function recuperarDadosFncPorAcao($exercicio)
     {
 
-        $sql = "SELECT  distinct 'CUSTEIO' tipo, suo.unoid, suo.unocod, suo.unosigla, suo.unonome, lmu.lmuvlr, lmu.lmuid, psu.ptrid, vptr.funcional, vptr.acatitulo, vptr.irpcod, vptr.plodsc,
-                        ptr.ptrdotacaocusteio dotacao
-                from public.vw_subunidadeorcamentaria suo
-                    inner join spo.ptressubunidade psu on psu.suoid = suo.suoid
-                    -- ESSE JOIN DE PTRES COM A VW_PTRES É NECESSÁRIO PARA RECUPERAR O VALOR DE DOTAÇÃO E CUSTEIO CORRETO EM CASO DO PNC
-                    inner join monitora.vw_ptres vptr on vptr.ptrid = psu.ptrid AND vptr.ptrano = suo.prsano
-                    inner join monitora.ptres ptr on ptr.ptrid = vptr.ptrid
-
-                    left join planacomorc.unidadegestora_limite lmu on lmu.unoid = suo.unoid AND lmu.lmustatus = 'A' AND lmu.prsano = suo.prsano
-                where suo.suostatus = 'A'
-                and suo.unofundo = 't'
-                and suo.suocod not in ('203003', '420017')
-                and suo.prsano = '$exercicio'
-                union
-                SELECT  distinct 'CAPITAL' tipo, suo.unoid, suo.unocod, suo.unosigla, suo.unonome, lmu.lmuvlr, lmu.lmuid, psu.ptrid, vptr.funcional, vptr.acatitulo, vptr.irpcod, vptr.plodsc,
-                        ptr.ptrdotacaocapital dotacao
-                from public.vw_subunidadeorcamentaria suo
-                    inner join spo.ptressubunidade psu on psu.suoid = suo.suoid
-                    -- ESSE JOIN DE PTRES COM A VW_PTRES É NECESSÁRIO PARA RECUPERAR O VALOR DE DOTAÇÃO E CUSTEIO CORRETO EM CASO DO PNC
-                    inner join monitora.vw_ptres vptr on vptr.ptrid = psu.ptrid AND vptr.ptrano = suo.prsano
-                    inner join monitora.ptres ptr on ptr.ptrid = vptr.ptrid
-
-                    left join planacomorc.unidadegestora_limite lmu on lmu.unoid = suo.unoid AND lmu.lmustatus = 'A' AND lmu.prsano = suo.prsano
-                where suo.suostatus = 'A'
-                and suo.unofundo = 't'
-                and suo.suocod not in ('203003', '420017')
-                and suo.prsano = '$exercicio'
-                ORDER BY funcional, tipo desc";
+        $sql = "SELECT DISTINCT 'CUSTEIO'
+                        tipo,
+                    suo.unoid,
+                    suo.unocod,
+                    suo.unosigla,
+                    suo.unonome,
+                    lmu.lmuvlr,
+                    lmu.lmuid,
+                    psu.ptrid,
+                    vptr.funcional,
+                    vptr.acatitulo,
+                    vptr.irpcod,
+                    vptr.plodsc,
+                    ptr.ptrdotacaocusteio dotacao
+                FROM
+                    public.vw_subunidadeorcamentaria suo
+                    JOIN spo.ptressubunidade psu ON psu.suoid = suo.suoid /* ESSE JOIN DE PTRES COM A VW_PTRES É NECESSÁRIO PARA RECUPERAR O VALOR DE DOTAÇÃO E CUSTEIO CORRETO EM CASO DO PNC */
+                    JOIN monitora.vw_ptres vptr ON(
+                    vptr.ptrid = psu.ptrid
+                    AND vptr.ptrano = suo.prsano
+                    )
+                    JOIN monitora.ptres ptr ON ptr.ptrid = vptr.ptrid
+                    LEFT JOIN planacomorc.unidadegestora_limite lmu ON(
+                    lmu.unoid = suo.unoid
+                        AND lmu.lmustatus = 'A'
+                        AND lmu.prsano = suo.prsano
+                    )
+                WHERE
+                    suo.suostatus = 'A'
+                    AND vptr.irpcod <> '6'
+                    AND suo.unofundo = 't'
+                    AND suo.suocod NOT IN ('203003', '420017')
+                    AND suo.prsano = '2018'
+                UNION
+                SELECT
+                    DISTINCT 'CAPITAL' tipo,
+                    suo.unoid,
+                    suo.unocod,
+                    suo.unosigla,
+                    suo.unonome,
+                    lmu.lmuvlr,
+                    lmu.lmuid,
+                    psu.ptrid,
+                    vptr.funcional,
+                    vptr.acatitulo,
+                    vptr.irpcod,
+                    vptr.plodsc,
+                    ptr.ptrdotacaocapital dotacao
+                FROM
+                    public.vw_subunidadeorcamentaria suo
+                    JOIN spo.ptressubunidade psu ON psu.suoid = suo.suoid /* ESSE JOIN DE PTRES COM A VW_PTRES É NECESSÁRIO PARA RECUPERAR O VALOR DE DOTAÇÃO E CUSTEIO CORRETO EM CASO DO PNC */
+                    JOIN monitora.vw_ptres vptr ON(
+                    vptr.ptrid = psu.ptrid
+                        AND vptr.ptrano = suo.prsano
+                    )
+                    JOIN monitora.ptres ptr ON ptr.ptrid = vptr.ptrid
+                    LEFT JOIN planacomorc.unidadegestora_limite lmu ON(
+                    lmu.unoid = suo.unoid
+                        AND lmu.lmustatus = 'A'
+                        AND lmu.prsano = suo.prsano
+                    )
+                WHERE
+                    suo.suostatus = 'A'
+                    AND vptr.irpcod <> '6'
+                    AND suo.unofundo = 't'
+                    AND suo.suocod NOT IN ('203003', '420017')
+                    AND suo.prsano = '2018'
+                ORDER BY
+                    funcional,
+                    tipo DESC";
 
         $dados = $this->carregar($sql);
         return $dados ? $dados : [];
@@ -1094,13 +1136,40 @@ class Pi_PlanoInterno extends Modelo
 
     public function alterarCodigoPi($plicod)
     {
-        $this->plicod = $plicod;
-        $this->salvar();
-        $this->commit();
+        global $db;
 
-        echo $this->plicod;
+        $sql = "SELECT
+                    plicod
+                FROM monitora.pi_planointerno
+                WHERE plicod = '" . $plicod . "'
+        ";
+        $resultado = $db->carregar($sql);
+
+        if ($resultado) { ?>
+            <script>
+                swal({
+                    title: "Atenção!",
+                    text: "O código já está sendo usado !",
+                    type: "warning"
+                });
+            </script>
+            <?php
+
+        } else {
+            $codigoAntigo = $this->plicod;
+            $this->plicod = $plicod;
+            $this->salvar();
+            $mHistoricoPi = new Planacomorc_Model_HistoricoPi();
+            $mHistoricoPi->pliid = $this->pliid;
+            $mHistoricoPi->usucpf = $_SESSION['usucpf'];
+//            $mHistoricoPi->hisdata = date('Y-m-d H:i:s'); # Salvo automaticamente pela estrutura de banco.
+            $mHistoricoPi->hpidscantigo = $codigoAntigo;
+            $mHistoricoPi->hpidscnovo = $plicod;
+            $mHistoricoPi->salvar();
+            $this->commit();
+        }
+            echo $this->plicod;
     }
-
     public function verificarPermissaoEditar($estadoAtual, $perfis)
     {
         switch ($estadoAtual['esdid']) {
@@ -1152,7 +1221,7 @@ class Pi_PlanoInterno extends Modelo
     public function getDadosGerais($exercicio, $fundo = null)
     {
 
-        $where = " pli.pliano = '$exercicio' AND pli.plistatus = 'A' ";
+        $where = " pli.pliano = '$exercicio' AND pli.plistatus = 'A' and  rp.rpcod <> 6 ";
 
         if($fundo){
             $where .= " AND suo.unofundo = '{$fundo}' ";
@@ -1424,7 +1493,7 @@ class Pi_PlanoInterno extends Modelo
         include_once APPRAIZ . 'planacomorc/modulos/principal/unidade/detalhe-ptres.inc';
     }
 
-    public function recuperarDetalhesValoresGrafico($graficoSubunidade = TRUE, $tipoValor, $sigla)
+    public function recuperarDetalhesValoresGrafico($graficoSubunidade = TRUE, $tipoValor, $sigla, $percentualPlanejamento=false)
     {
         if($graficoSubunidade){
             $filtro = (object)array('suosigla' => $sigla);
@@ -1444,7 +1513,7 @@ class Pi_PlanoInterno extends Modelo
         $dados = $this->carregar($sql);
         if($dados){
             $grafico = new Grafico(Grafico::K_TIPO_PIZZA, false);
-            $grafico->gerarGrafico($dados);
+            $grafico->gerarGrafico($dados, $percentualPlanejamento);
         } else {
             echo "<script>$('#detalhe-grafico').modal('hide'); swal({title: 'Atenção', text: 'Nenhum dado encontrado.', type: 'warning', html: true});</script>";
         }
@@ -1615,7 +1684,7 @@ class Pi_PlanoInterno extends Modelo
         return $resultado;
     }
 
-    public function recuperarPis($filtro)
+    public function recuperarPis($filtro, $unoFundo='false')
     {
       if(is_array($filtro['eqdid']) && count($filtro['eqdid'])){
       	$where = ' and pli.eqdid in (' . implode(',', $filtro['eqdid']) . ')';
@@ -1633,6 +1702,7 @@ class Pi_PlanoInterno extends Modelo
                         inner join public.vw_subunidadeorcamentaria suo on suo.suocod = pli.ungcod and suo.unocod = pli.unicod and suo.prsano = pli.pliano
                 where pli.pliano = '{$filtro['exercicio']}'
                 and pli.plistatus = 'A'
+                and suo.unofundo = ".$unoFundo."
                 and doc.esdid = '{$filtro['esdid']}'
                 $where
                 ";

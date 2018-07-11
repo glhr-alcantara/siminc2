@@ -1838,9 +1838,10 @@ function buscarUmPTRES(stdClass $objFiltros) {
     global $db;
 //ver($objFiltros,d);
     /* Filtros */
-    $where .= $objFiltros->pliid ? " AND pip.pliid = $objFiltros->pliid " : "";
+    $where .= $objFiltros->pliid ? " AND ptrpli.pliid = ". (int)$objFiltros->pliid: NULL;
+    $where .= $objFiltros->ptrid ? " AND ptr.ptrid = ". (int)$objFiltros->ptrid: NULL;
 
-    $sql = <<<SQL
+    $sql = "
         SELECT
             ptr.ptrid,
             ptr.ptres,
@@ -1854,36 +1855,18 @@ function buscarUmPTRES(stdClass $objFiltros) {
             aca.loccod,
 	    loc.locdsc,
             ptr.plocod,
-	    po.plotitulo,
-            COALESCE(ptr.ptrdotacao, 0.00) AS dotacaoatual,
-            COALESCE(SUM(dts.valor), 0.00) AS det_subacao,
-            (COALESCE(SUM(ptr.ptrdotacao), 0.00) - COALESCE(SUM(dts.valor), 0.00)) AS nao_det_subacao,
-            COALESCE(SUM(dtp.valor), 0.00) AS det_pi,
-            (COALESCE(ptr.ptrdotacao, 0.00) - COALESCE(SUM(dtp.valor), 0.00)) AS nao_det_pi,
-            COALESCE((pemp.total), 0.00) AS empenhado,
-            COALESCE(SUM(ptr.ptrdotacao), 0.00) - COALESCE(pemp.total, 0.00) AS nao_empenhado,
-            (SELECT pipvalor FROM monitora.pi_planointernoptres JOIN monitora.pi_planointerno USING(pliid) WHERE ptrid = ptr.ptrid AND pliid = {$objFiltros->pliid} ) as pipvalor
+	    po.plotitulo
         FROM monitora.ptres ptr
             JOIN monitora.acao aca on ptr.acaid = aca.acaid
             JOIN public.unidade uni on aca.unicod = uni.unicod
-            LEFT JOIN public.localizador loc ON aca.loccod = loc.loccod -- SELECT * FROM monitora.planoorcamentario   
+            LEFT JOIN public.localizador loc ON aca.loccod = loc.loccod
             LEFT JOIN monitora.programa prog ON aca.prgcod = prog.prgcod
-            LEFT JOIN monitora.planoorcamentario po ON(aca.acacod = po.acacod AND aca.prgcod = po.prgcod AND aca.unicod = po.unicod AND ptr.plocod = po.plocodigo)
-            LEFT JOIN monitora.pi_planointernoptres pip on ptr.ptrid = pip.ptrid
-            LEFT JOIN (
-                SELECT ptrid, SUM(sadvalor) AS valor
-                FROM monitora.pi_subacaodotacao
-                GROUP BY ptrid) dts ON dts.ptrid = ptr.ptrid
-            LEFT JOIN (
-                SELECT
-                    pip.ptrid,
-                    SUM(pipvalor) AS valor
-                FROM monitora.pi_planointernoptres pip
-                    JOIN monitora.pi_planointerno pli using (pliid)
-                WHERE
-                    plistatus  = 'A'
-                GROUP BY ptrid) dtp ON dtp.ptrid = ptr.ptrid
-            LEFT JOIN siafi.uo_ptrempenho pemp ON (pemp.ptres = ptr.ptres AND pemp.exercicio = ptr.ptrano AND pemp.unicod = ptr.unicod)
+            LEFT JOIN monitora.planoorcamentario po ON(
+                aca.acacod = po.acacod
+                AND aca.prgcod = po.prgcod
+                AND aca.unicod = po.unicod
+                AND ptr.plocod = po.plocodigo)
+            LEFT JOIN monitora.pi_planointernoptres ptrpli ON ptr.ptrid = ptrpli.ptrid
         WHERE
             ptr.ptrstatus = 'A'
             AND aca.prgano = '$objFiltros->exercicio'
@@ -1900,10 +1883,8 @@ function buscarUmPTRES(stdClass $objFiltros) {
             uni.unidsc,
             loc.locdsc,
             prog.prgdsc,
-            po.plotitulo,
-            ptr.ptrdotacao,
-            pemp.total
-SQL;
+            po.plotitulo
+    ";
 //ver($sql, d);
     $result = $db->pegaLinha($sql);
 
@@ -1937,7 +1918,9 @@ function enviarEmailAprovacao($pliid){
     
     $listaUsuariosResponsaveisDoPi = (new Pi_Responsavel())->recuperarPorPlanoInterno($pliid);
     
-    $listaDestinatario = array_merge($listaUsuariosPlanejamento, $listaUsuariosResponsaveisDoPi);
+    $listaDestinatario = array_merge(
+        $listaUsuariosPlanejamento? $listaUsuariosPlanejamento: array(),
+        $listaUsuariosResponsaveisDoPi);
 
 //ver(
 //array(
@@ -1999,7 +1982,9 @@ function enviarEmailCorrecao($pliid){
 
     $listaUsuariosResponsaveisDoPi = (new Pi_Responsavel())->recuperarPorPlanoInterno($pliid);
     
-    $listaDestinatario = array_merge($listaUsuariosUnidadeDoPi, $listaUsuariosResponsaveisDoPi);
+    $listaDestinatario = array_merge(
+        $listaUsuariosUnidadeDoPi? $listaUsuariosUnidadeDoPi: array(),
+        $listaUsuariosResponsaveisDoPi);
 
 //ver(
 //array(
@@ -2063,7 +2048,9 @@ function enviarEmailAprovado($pliid){
 
     $listaUsuariosResponsaveisDoPi = (new Pi_Responsavel())->recuperarPorPlanoInterno($pliid);
     
-    $listaDestinatarioUsuariosTecnicos = array_merge($listaUsuariosPlanejamento, $listaUsuariosUnidadeDoPi);
+    $listaDestinatarioUsuariosTecnicos = array_merge(
+        $listaUsuariosPlanejamento? $listaUsuariosPlanejamento: array(),
+        $listaUsuariosUnidadeDoPi? $listaUsuariosUnidadeDoPi: array());
     
     $listaDestinatario = array_merge($listaDestinatarioUsuariosTecnicos, $listaUsuariosResponsaveisDoPi);
 
@@ -3363,7 +3350,7 @@ function exibirLinkEspelho($pliid){
  * 
  * @param string $colors
  */
-function carregarGraficoUnidade($colors){
+function carregarGraficoUnidade($colors, $percentualPlanejamento=false){
     $oPlanoInterno = new Pi_PlanoInterno();
     echo '<div class="panel-body">';
     $estatistica = $oPlanoInterno->recuperarEstatisticaPagamento((object) array(
@@ -3375,7 +3362,7 @@ function carregarGraficoUnidade($colors){
         ->setFormatoTooltip(Grafico::K_TOOLTIP_DECIMAL_0)
         ->setColors($colors)
         ->setEvent(array('click' => "exibirModalDetalheGrafico(0, event.point.series.name, event.point.category);"))
-        ->gerarGrafico($estatistica);
+        ->gerarGrafico($estatistica, $percentualPlanejamento);
     echo '</div>';
 }
 
@@ -3384,7 +3371,7 @@ function carregarGraficoUnidade($colors){
  * 
  * @param string $colors
  */
-function carregarGraficoDireta($colors){
+function carregarGraficoDireta($colors, $percentualPlanejamento=false){
     $oPlanoInterno = new Pi_PlanoInterno();
     echo '<div class="panel-body">';
     $estatistica = $oPlanoInterno->recuperarEstatisticaPagamentoDetalhe((object) array(
@@ -3398,7 +3385,7 @@ function carregarGraficoDireta($colors){
         ->setColors($colors)
         ->setFormatoTooltip(Grafico::K_TOOLTIP_DECIMAL_0)
         ->setEvent(array('click' => "exibirModalDetalheGrafico(1, event.point.series.name, event.point.category);"))
-        ->gerarGrafico($estatistica);
+        ->gerarGrafico($estatistica, $percentualPlanejamento);
     echo '</div>';
 }
 
@@ -3407,7 +3394,7 @@ function carregarGraficoDireta($colors){
  * 
  * @param string $colors
  */
-function carregarGraficoCgconCogep($colors){
+function carregarGraficoCgconCogep($colors, $percentualPlanejamento=false){
     $oPlanoInterno = new Pi_PlanoInterno();
     echo '<div class="panel-body">';
     $estatistica = $oPlanoInterno->recuperarEstatisticaPagamentoDetalhe((object) array(
@@ -3421,7 +3408,7 @@ function carregarGraficoCgconCogep($colors){
         ->setColors($colors)
         ->setFormatoTooltip(Grafico::K_TOOLTIP_DECIMAL_0)
         ->setEvent(array('click' => "exibirModalDetalheGrafico(1, event.point.series.name, event.point.category);"))
-        ->gerarGrafico($estatistica);
+        ->gerarGrafico($estatistica, $percentualPlanejamento);
     echo '</div>';
 }
 
