@@ -51,10 +51,10 @@
         'Justivicativa',
         # DADOS FINANCEIROS DO BENFICIÁRIO
         'Vl. Beneficiário Custeio',
-        'Vl. Priorizado Custeio',
-        'Vl. Contingenciado Custeio',
         'Vl. Beneficiário Capital',
+        'Vl. Priorizado Custeio',
         'Vl. Priorizado Capital',
+        'Vl. Contingenciado Custeio',
         'Vl. Contingenciado Capital',
         # DADOS SICONV
         'Número Programa - SICONV',
