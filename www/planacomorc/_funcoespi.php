@@ -327,8 +327,8 @@ function carregarIniciativaPPA($oppid, $ippid, $listaSubunidades=null) {
                 on i.ippid = si.ippid
               left join public.vw_subunidadeorcamentaria su
                 on si.suoid = su.suoid
-               $filtroSubUnidades
              where i.prsano = '{$_SESSION['exercicio']}'
+               $filtroSubUnidades
                and i.oppid = ". (int)$oppid. " 
                and ippstatus = 'A'
              union
