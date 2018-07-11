@@ -1,13 +1,14 @@
 <?php
 
 $cUsuarioSiconv = new Emendas_Controller_UsuarioSiconv();
+$mUsuarioSiconv = new Emendas_Model_UsuarioSiconv();
 switch ($_REQUEST['req']) {
     case 'salvar':
         $cUsuarioSiconv->salvar($_REQUEST);
         die;
 }
 
-$mUsuarioSiconv = new Emendas_Model_UsuarioSiconv();
+
 $aUsuarioSiconv = $mUsuarioSiconv->RetornaConfiguracaoSiconv();
 include APPRAIZ . "includes/cabecalho.inc";
 ?>
@@ -31,13 +32,13 @@ include APPRAIZ . "includes/cabecalho.inc";
                         <input name="ussid" id="ussid" type="hidden" value="<?php echo $aUsuarioSiconv['ussid']; ?>">
                         
                         <?php                         
-                            echo $simec->input('usucpf', 'CPF', $aUsuarioSiconv['usucpf'], ['maxlength' => 200]);                        
+                            echo $simec->input('usucpf', 'CPF', $aUsuarioSiconv['usucpf'], ['maxlength' => 11, 'class'=>'inteiro']);                        
                             echo $simec->input('ususenhasiconv', 'Senha SICONV', base64_decode($aUsuarioSiconv['ususenhasiconv']), ['type'=>'password']);
                         ?>
                         
                         <div class="form-group">
                             <div class="text-center">
-                                <button class="btn btn-primary" type="submit" id="btn-salvar"><i class="fa fa-check"></i>&nbsp;Salvar</button>
+                                <button class="btn btn-primary" type="button" id="btn-salvar"><i class="fa fa-check"></i>&nbsp;Salvar</button>
                                 <a href="?modulo=configuracao/usuario_siconv_form&acao=A" class="btn btn-warning" id="btn-voltar" type="submit"><i class="fa fa-arrow-left"></i>&nbsp;Voltar</a>      
                             </div>
                         </div>                        
@@ -47,3 +48,15 @@ include APPRAIZ . "includes/cabecalho.inc";
         </div>
     </div>
 </div>
+<script>
+    $(document).ready(function(){
+        $("#btn-salvar").click(function(){
+            usucpf = $("#usucpf").val().trim();
+            if (!validar_cpf(usucpf)){
+                swal('Atenção!', 'O número do CPF está incorreto!', 'warning');
+                return;
+            }
+            $("#formulario").submit();
+        });
+    });
+</script>
