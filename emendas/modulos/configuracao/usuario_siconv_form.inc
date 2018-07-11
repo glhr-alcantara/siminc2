@@ -1,13 +1,14 @@
 <?php
 
 $cUsuarioSiconv = new Emendas_Controller_UsuarioSiconv();
+$mUsuarioSiconv = new Emendas_Model_UsuarioSiconv();
 switch ($_REQUEST['req']) {
     case 'salvar':
         $cUsuarioSiconv->salvar($_REQUEST);
         die;
 }
 
-$mUsuarioSiconv = new Emendas_Model_UsuarioSiconv();
+
 $aUsuarioSiconv = $mUsuarioSiconv->RetornaConfiguracaoSiconv();
 include APPRAIZ . "includes/cabecalho.inc";
 ?>
@@ -51,8 +52,8 @@ include APPRAIZ . "includes/cabecalho.inc";
     $(document).ready(function(){
         $("#btn-salvar").click(function(){
             usucpf = $("#usucpf").val().trim();
-            if (usucpf.length<11){
-                swal('', 'O número do CPF tem que ter 11 dígitos!', 'warning');
+            if (!validar_cpf(usucpf)){
+                swal('Atenção!', 'O número do CPF está incorreto!', 'warning');
                 return;
             }
             $("#formulario").submit();
