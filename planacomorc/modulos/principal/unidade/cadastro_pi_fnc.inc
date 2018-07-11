@@ -221,9 +221,9 @@ include APPRAIZ . "includes/cabecalho.inc";
 <script language="JavaScript" src="../includes/funcoesspo.js?v=1"></script>
 <link rel="stylesheet" href="/library/bootstrap-switch/stylesheets/bootstrap-switch.css">
 <script src="/library/bootstrap-switch/js/bootstrap-switch.min.js"></script>
-<script src="js/cadastro_pi_funcoes.js?v=7"></script>
-<script src="js/cadastro_pi_validacoes.js?v=7"></script>
-<script src="js/cadastro_pi_init.js?v=7"></script>
+<script src="js/cadastro_pi_funcoes.js?v=8"></script>
+<script src="js/cadastro_pi_validacoes.js?v=8"></script>
+<script src="js/cadastro_pi_init.js?v=8"></script>
 <style>
     autorizadocapital {
         display: none;
@@ -240,7 +240,7 @@ include APPRAIZ . "includes/cabecalho.inc";
             Cadastro de PI do FNC
             <?php if(!empty($dadosPI['plicod'])){
                 echo '<span style="color: red; padding: 5px;" id="span-plicod">(' . $dadosPI['plicod'] . ')</span>';
-                echo '<input minlength="15" maxlength="15" type="text" id="plicod" value="' . $dadosPI['plicod'] . '" style="display:none;" />';
+                echo '<input class="upper-text" minlength="15" maxlength="15" type="text" id="plicod" value="' . $dadosPI['plicod'] . '" style="display:none;" />';
             } ?>
         </h2>
         <?php echo $dadosPI['pliid'] ? "<span>Id: {$dadosPI['pliid']}</span>" : ''; ?>
