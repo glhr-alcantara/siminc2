@@ -143,14 +143,14 @@
                             $urlAcompanhamento = $meta['acoid'] ? "?modulo=principal/monitorar-ppa&acao=A&acoid={$meta['acoid']}" : "?modulo=principal/monitorar-ppa&acao=A&mppid={$meta['mppid']}&suoid={$suoid}";
                             ?>
                             <a class="selecionar-meta" href="<?php echo $urlAcompanhamento; ?>">
-                                <div class="col-sm-4 col-md-3" title="<?php echo $meta['mppid'] . ' - ' . $meta['mppdsc']; ?>">
+                                <div class="col-sm-4 col-md-3" title="<?php echo $meta['mppid'] . ' - ' . $meta['mppnome']; ?>">
                                     <div data-cor="<?php echo $cor ?>" class="widget div-meta <?php echo $cor ?>">
                                         <div class="row">
                                             <div class="col-xs-4">
                                                 <h2><?php echo $meta['mppcod']; ?></h2>
                                             </div>
                                             <div class="col-xs-8">
-                                                <span><?php echo substr($meta['mppdsc'], 0, 50); ?>...</span>
+                                                <span><?php echo substr($meta['mppnome'], 0, 50); ?>...</span>
                                             </div>
                                         </div>
                                     </div>
@@ -173,7 +173,7 @@
 
                                 echo $simec->input('Referência', 'Referência', "{$mJanela->jandsc} ({$janinicio} - {$janfim})");
                                 echo $simec->input('Objetivo', 'Objetivo', "{$infoMeta['oppcod']} - {$infoMeta['oppdsc']}");
-                                echo $simec->input('Meta', 'Meta', "{$infoMeta['mppcod']} - {$infoMeta['mppdsc']} {$compartilhada}");
+                                echo $simec->input('Meta', 'Meta', "{$infoMeta['mppcod']} - {$infoMeta['mppnome']} {$compartilhada}");
                                 echo $simec->input('Previsto', 'Previsto PPA', number_format($infoMeta['mppquantidade'], 2, ',', '.'));
                                 if($infoMeta['mppanualizavel'] == 't'){
                                     echo $simec->input('Previstoa', 'Previsto Anualizado', number_format($infoMeta['mppquantidadeanualizada'], 2, ',', '.'));

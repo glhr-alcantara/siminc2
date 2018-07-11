@@ -72,7 +72,7 @@ include APPRAIZ . "includes/cabecalho.inc";
                                     if ($mObjetivoppa->oppid!=''){
                                         $aVinculos = (new Public_Model_ObjetivoMetaPpa())->recuperarPorExercicio($_SESSION['exercicio'], $mObjetivoppa->oppid);
                                     }                        
-                                    $aMetaPpa = simec_preparar_array((new Public_Model_MetaPpa())->recuperarTodos("mppid as codigo, mppcod || ' - ' || mppdsc as descricao", ["prsano = '{$_SESSION['exercicio']}'"]));
+                                    $aMetaPpa = simec_preparar_array((new Public_Model_MetaPpa())->recuperarTodos("mppid as codigo, mppcod || ' - ' || mppnome as descricao", ["prsano = '{$_SESSION['exercicio']}'"]));
                                     echo $simec->select("mppid[]", null, $aVinculos, $aMetaPpa, null, ['input-size'=>12]);?>
                                 </div>                            
                                 <div class="col-md-3" style="text-align: right;">
