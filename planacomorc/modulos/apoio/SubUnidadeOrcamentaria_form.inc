@@ -1,11 +1,12 @@
 <form id="formulario" name="formulario" method="post" class="form-horizontal">
     <input type="hidden" name="req" id="req" value="salvar-medida" />
     <input name="suoid" id="suoid" type="hidden" value="<?php echo $mSubUnidade->suoid;?>">
-    <input name="$unoid" id="$unoid" type="hidden" value="<?php echo $mSubUnidade->unoid; ?>">
+    <input name="unoid" id="unoid" type="hidden" value="<?php echo $mSubUnidade->unoid; ?>">
 
     <?php
     echo $simec->input('suocod', 'Código', $mSubUnidade->suocod, ['required', 'class'=>"inteiro", 'maxlength' => 6]);
     echo $simec->input('suonome', 'Nome', $mSubUnidade->suonome, ['required', 'maxlength' => 200]);
+    echo $simec->input('suosigla', 'Sigla', $mSubUnidade->suosigla, ['required', 'maxlength' => 20]);
     echo $simec->radio('suoflaglimiteliberado', 'Limite Liberado', $mSubUnidade->suoflaglimiteliberado, ['t'=>'Sim', 'f'=>'Não']);
     echo $simec->input('suocodigopi', 'Código PI', $mSubUnidade->suocodigopi, ['required', 'maxlength' => 2]);
     ?>
