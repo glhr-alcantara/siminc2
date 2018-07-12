@@ -1136,20 +1136,19 @@ class Pi_PlanoInterno extends Modelo
 
     public function alterarCodigoPi($plicod)
     {
-        global $db;
-
+        $plicod = strtoupper($plicod);
         $sql = "SELECT
                     plicod
                 FROM monitora.pi_planointerno
                 WHERE plicod = '" . $plicod . "'
         ";
-        $resultado = $db->carregar($sql);
+        $resultado = $this->carregar($sql);
 
         if ($resultado) { ?>
             <script>
                 swal({
                     title: "Atenção!",
-                    text: "O código já está sendo usado !",
+                    text: "O código de PI já está sendo usado!",
                     type: "warning"
                 });
             </script>
@@ -1162,13 +1161,12 @@ class Pi_PlanoInterno extends Modelo
             $mHistoricoPi = new Planacomorc_Model_HistoricoPi();
             $mHistoricoPi->pliid = $this->pliid;
             $mHistoricoPi->usucpf = $_SESSION['usucpf'];
-//            $mHistoricoPi->hisdata = date('Y-m-d H:i:s'); # Salvo automaticamente pela estrutura de banco.
             $mHistoricoPi->hpidscantigo = $codigoAntigo;
             $mHistoricoPi->hpidscnovo = $plicod;
             $mHistoricoPi->salvar();
             $this->commit();
         }
-            echo $this->plicod;
+        echo $this->plicod;
     }
     public function verificarPermissaoEditar($estadoAtual, $perfis)
     {

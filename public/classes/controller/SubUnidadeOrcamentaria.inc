@@ -4,7 +4,7 @@ class Public_Controller_SubUnidadeOrcamentaria
 {
     public function salvar($dados)
     {
-
+        $url = '?modulo=apoio/unidadeOrcamentaria_form&acao=A&unoid=' . $dados['unoid'];
         try {
             $mUnidadeOrcamentaria = new Public_Model_SubUnidadeOrcamentaria($dados['suoid']);
             $mUnidadeOrcamentaria->popularDadosObjeto($dados);
