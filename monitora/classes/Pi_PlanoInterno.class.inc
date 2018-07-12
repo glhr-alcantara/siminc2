@@ -1155,7 +1155,6 @@ class Pi_PlanoInterno extends Modelo
                     OR (plistatus = 'I'
                     AND esdid = '" . ESD_PI_CANCELADO . "'))
         ";
-        echo $this->plicod;
         return $this->carregar($sql);
 
     }

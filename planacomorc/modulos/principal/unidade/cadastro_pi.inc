@@ -114,21 +114,32 @@ if ($_REQUEST['verificarPactuacaoConvenio']) {
 if ($_REQUEST['alterarCodigoPi']) {
     $mPlanoInterno = new Pi_PlanoInterno($_REQUEST['pliid']);
     $resultado = $mPlanoInterno->consultaCodigoPi($_REQUEST['plicod']);
-    if ($resultado) { ?>
-        <script>
-            swal({
-                title: 'Atenção!',
-                text: 'O código de PI já está sendo usado!',
-                type: 'warning'
-            });
-        </script>
-    <?php
+    if ($resultado) {
+        $resposta = "
+            <script>
+                swal({
+                    title: 'Atenção!',
+                    text: 'O código de PI ". strtoupper($_REQUEST['plicod']). " já está sendo usado!',
+                    type: 'warning'
+                });
+            </script>
+        ";
     } else {
         $dadosPI = $mPlanoInterno->alterarCodigoPi($_REQUEST['plicod']);
+        $resposta = "
+            <script>
+                swal({
+                    title: '',
+                    text: 'O código de PI foi alterado com sucesso!',
+                    type: 'success'
+                });
+            </script>
+        ";
     }
+    echo $resposta;
     die();
 }
-//ver($_REQUEST,d);
+
 if($_REQUEST['req'] == 'historico-pi') {
     include_once APPRAIZ. "planacomorc/modulos/principal/unidade/historico_pi_modal.inc";
     die();
