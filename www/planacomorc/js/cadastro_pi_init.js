@@ -416,7 +416,7 @@
         $('#plicod').change(function(){
             var plicod = $(this).val();
             var plicodantigo = $('#span-plicod').html();
-            $('#span-plicod').load(urlPagina+ '&alterarCodigoPi=ok&pliid='+$('#pliid').val() + '&plicod=' + $('#plicod').val()+'&plicodantigo='+plicodantigo);
+            $('#span-plicod').load(urlPagina+ '&alterarCodigoPi=ok&pliid='+$('#pliid').val() + '&plicod='+$('#plicod').val()+'&plicodantigo='+plicodantigo);
         });
 
         // Evento ao mudar sair do campo de código do PI

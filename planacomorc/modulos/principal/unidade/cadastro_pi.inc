@@ -124,6 +124,7 @@ if ($_REQUEST['alterarCodigoPi']) {
                 });
             </script>
         ";
+        echo strtoupper($_REQUEST['plicodantigo']);
     } else {
         $dadosPI = $mPlanoInterno->alterarCodigoPi($_REQUEST['plicod']);
         $resposta = "
@@ -135,6 +136,7 @@ if ($_REQUEST['alterarCodigoPi']) {
                 });
             </script>
         ";
+        echo strtoupper($_REQUEST['plicod']);
     }
     echo $resposta;
     die();
@@ -249,7 +251,7 @@ include APPRAIZ . "includes/cabecalho.inc";
         <h2>
             Cadastro de PI
             <?php if(!empty($dadosPI['plicod'])){ ?>
-                <span style="color: red; padding: 5px;" id="span-plicod"><?= $dadosPI['plicod'] ?></span>
+                <span style="color: red; padding: 5px;" id="span-plicod"><?= strtoupper($dadosPI['plicod']) ?></span>
                 <input class="upper-text" minlength="15" maxlength="15" type="text" id="plicod" value="<?= $dadosPI['plicod'] ?>" style="display:none;">
                 <a style="margin-left: 10px;" class="fa fa-history" id="modal-historico-pi" title="Histórico de alterações"></a>
             <?php } ?>
