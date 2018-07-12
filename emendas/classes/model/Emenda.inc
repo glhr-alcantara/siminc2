@@ -945,17 +945,25 @@ class Emendas_Model_Emenda extends Modelo
 
         $sql = "delete from siconv.propostaws";
         $this->executar($sql);
-
+                                                                                                                                                                                                                                                                                                            
         if($emenda){
-            $this->recuperarPropostaWs($obWS, $emenda);
-
+            try{
+                $teste = $this->recuperarPropostaWs($obWS, $emenda);
+            }catch(Exception $e){
+                switch (trim($e->getMessage())) {
+                    case ERR_USUARIO_INCORRETO:
+                        $mensagem = "O usuário ou senha estão incorretos para conexão com o WebService do SICONV!";
+                        break;
+                    case ERR_QUANTIDADE_VEZES_EXCEDIDA:
+                        $mensagem = "O sistema recebeu mais de uma solicitação de atualização em menos de 5 segundos. Tente novamente daqui alguns instantes!";
+                        break;
+                    default:
+                        $mensagem = "Erro ao conectar ao WebService do SICONV.";
+                        break;
+                }
+                simec_redirecionar('?modulo=principal/beneficiario_form&acao=A&benid=7966&benid='. $benid, 'error', $mensagem);
+            }
             $mSiconv = new Emendas_Model_Siconv();
-
-//            $filtro = [
-//                "coalesce(situacaopropostaws, '') != ''",
-//                "coalesce(parecerproposta, '') != ''",
-//            ];
-
             $mSiconv->atualizar();
         }
 
