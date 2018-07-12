@@ -84,6 +84,10 @@ class Acompanhamento_Controller_Acompanhamentopnc
         include APPRAIZ. 'acompanhamento/modulos/principal/listar-indicadores-pnc.inc';
     }
     
+    public function buscarAcompanhamento($janid = NULL, $suoid = NULL, $mpnid = NULL){
+        
+    }
+    
     public function excluir($acpid)
     {
         $url = '?modulo=principal/monitorar-ppa&acao=A';
