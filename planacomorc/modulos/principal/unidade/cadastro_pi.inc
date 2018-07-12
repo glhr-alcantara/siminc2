@@ -250,7 +250,7 @@ include APPRAIZ . "includes/cabecalho.inc";
             Cadastro de PI
             <?php if(!empty($dadosPI['plicod'])){ ?>
                 <span style="color: red; padding: 5px;" id="span-plicod"><?= $dadosPI['plicod'] ?></span>
-                <input class="upper-text" minlength="15" maxlength="15" type="text" id="plicod" value="<?= $dadosPI['plicod'] ?>" style="display:none;" />
+                <input class="upper-text" minlength="15" maxlength="15" type="text" id="plicod" value="<?= $dadosPI['plicod'] ?>" style="display:none;">
                 <a style="margin-left: 10px;" class="fa fa-history" id="modal-historico-pi" title="Histórico de alterações"></a>
             <?php } ?>
         </h2>
@@ -266,7 +266,7 @@ include APPRAIZ . "includes/cabecalho.inc";
 </div>
 
 <?php bootstrapPopup("Histórico de Alterações", 'historico-pi', APPRAIZ. "planacomorc/modulos/principal/unidade/historico_pi_modal.inc", array('fechar'), array('tamanho' => 'lg')); ?>
-<!--/var/www/html/siminc2/planacomorc/modulos/principal/unidade/historico_pi_modal.inc-->
+
 <div class="wrapper wrapper-content animated fadeInRight">
     <div class="row">
 
