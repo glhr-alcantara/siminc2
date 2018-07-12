@@ -61,4 +61,54 @@ class Acompanhamento_Model_Indicadorpnc extends Modelo
         'idpstatus' => null,
     );
 
+    /**
+     * Monta consulta pra buscar acompanhamento de Indicador por Indicador Meta, UO, Subnidade, Indicador e Ano.
+     * 
+     * @param stdClass $filtro
+     * @return string
+     */
+    public function montarSqlbuscarPorAcompanhamentoPncUnidadeIndicadorAno(){
+        $sql = "
+            SELECT DISTINCT
+                idp.idpid,
+                idp.acpid,
+                acp.suoid,
+                acp.janid,
+                acp.mpnid,
+                idp.unocod,
+                idp.suocod,
+                idp.ipncod,
+                idp.prsano,
+                idp.idpquantidade
+            FROM acompanhamento.indicador_pnc idp
+                JOIN acompanhamento.acompanhamento_pnc acp ON(idp.acpid = acp.acpid)
+            WHERE
+                idp.idpstatus = 'A'
+                AND acp.acpstatus = 'A'
+                AND idp.acpid = ". (int)$this->acpid. "
+                AND idp.unocod = '". (int)$this->unocod. "'
+                AND idp.suocod = '". (int)$this->suocod. "'
+                AND idp.ipncod = '". $this->ipncod. "'
+                AND idp.prsano = '". (int)$this->prsano. "'
+        ";
+//ver($sql, d);
+        return $sql;
+    }
+
+    /**
+     * Buscar acompanhamento de Indicador por Indicador Meta, UO, Subnidade, Indicador e Ano.
+     * 
+     * @param stdClass $filtro
+     * @return stdClass
+     */
+    public function buscarPorAcompanhamentoPncUnidadeIndicadorAno() {
+        $sql = $this->montarSqlbuscarPorAcompanhamentoPncUnidadeIndicadorAno();
+        $resultado = $this->pegaLinha($sql);
+        if($resultado){
+            $this->popularDadosObjeto($resultado);
+        }
+        
+        return $this;
+    }
+    
 }

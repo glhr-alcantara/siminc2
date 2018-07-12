@@ -10,12 +10,12 @@ class Acompanhamento_Controller_Acompanhamentopnc
             $mAcompanhamento = new Acompanhamento_Model_Acompanhamentopnc($dados['acpid']);
             $mAcompanhamento->popularDadosObjeto($dados);
 
-            $mAcompanhamento->acoquantidade = $mAcompanhamento->acoquantidade ? desformata_valor($mAcompanhamento->acoquantidade) : null;
-            $mAcompanhamento->acodata = $mAcompanhamento->acodata ? formata_data_sql($mAcompanhamento->acodata) : null;
+            $mAcompanhamento->acoquantidade = $mAcompanhamento->acoquantidade ? desformata_valor($mAcompanhamento->acoquantidade) : NULL;
+            $mAcompanhamento->acodata = $mAcompanhamento->acodata ? formata_data_sql($mAcompanhamento->acodata) : NULL;
 
             $mAcompanhamento->prsano = $mAcompanhamento->prsano ? $mAcompanhamento->prsano : $_SESSION['exercicio'];
 
-            $mAcompanhamento->salvar(null, null, [
+            $mAcompanhamento->salvar(NULL, NULL, [
                 'acoanalise',
                 'acoprovidencias',
                 'acojustificativa',
@@ -37,37 +37,38 @@ class Acompanhamento_Controller_Acompanhamentopnc
         }
     } //end salvar()
     
-    public function salvarIndicadorPnc($dados)
+    public static function salvarIndicadorPnc($dados)
     {
 //ver($dados, d);
         try {
-            $mAcompanhamento = new Acompanhamento_Model_Acompanhamentopnc($dados['acpid']);
-            $mAcompanhamento->popularDadosObjeto($dados);
+            if($dados['idpid']){
+                $acompanhamentoIndicadorPnc = new Acompanhamento_Model_Indicadorpnc($dados['idpid']);
+            } else {
+                $acompanhamentoIndicadorPnc = new Acompanhamento_Model_Indicadorpnc();
+            }
+            $acompanhamentoIndicadorPnc->popularDadosObjeto($dados);
 
-            $mAcompanhamento->acoquantidade = $mAcompanhamento->acoquantidade? desformata_valor($mAcompanhamento->acoquantidade) : null;
-            $mAcompanhamento->acodata = $mAcompanhamento->acodata?formata_data_sql($mAcompanhamento->acodata): null;
+            $acompanhamentoIndicadorPnc->idpquantidade = $acompanhamentoIndicadorPnc->idpquantidade? desformata_valor($acompanhamentoIndicadorPnc->idpquantidade): NULL;
+            $acompanhamentoIndicadorPnc->idpdata = $acompanhamentoIndicadorPnc->idpdata? formata_data_sql($acompanhamentoIndicadorPnc->idpdata): NULL;
 
 //            $mAcompanhamento->prsano = $mAcompanhamento->prsano? $mAcompanhamento->prsano: $_SESSION['exercicio'];
 
-            $mAcompanhamento->salvar(null, null, [
-                'acoanalise',
-                'acoprovidencias',
-                'acojustificativa',
-                'claid',
-                'suoid'
-            ]);
+            $acompanhamentoIndicadorPnc->salvar(NULL, NULL, ['idpjustificativa']);
 
 //            $this->_gravarHistorico($mAcompanhamento->acpid);
 
-            $mAcompanhamento->commit();
+            $acompanhamentoIndicadorPnc->commit();
 //ver($mAcompanhamento->acpid, d);
             return array(
                 'success' => utf8_encode('Operação realizada com sucesso!'),
-                'acpid' => $mAcompanhamento->acpid
+                'acpid' => $dados['acpid']
             );
         } catch (Exception $e){
-            $mAcompanhamento->rollback();
-            return array('error' => utf8_encode('Ocorreu um erro ao executar operação!'));
+            $acompanhamentoIndicadorPnc->rollback();
+            return array(
+                'error' => utf8_encode('Ocorreu um erro ao executar operação!'),
+                'acpid' => $dados['acpid']
+            );
         }
     }
 
@@ -79,17 +80,16 @@ class Acompanhamento_Controller_Acompanhamentopnc
      * @param int $mpnid
      * @param int $exercicio
      */
-    public function listarIndicadoresPNC($janid = NULL, $suoid = NULL, $mpnid = NULL, $exercicio = NULL){
-        
+    public function listarIndicadoresPNC($acpid = NULL){
         include APPRAIZ. 'acompanhamento/modulos/principal/listar-indicadores-pnc.inc';
     }
     
-    public function buscarAcompanhamentoJanelaSubunidadeMeta($janid = NULL, $suoid = NULL, $mpnid = NULL){
+    public static function buscarAcompanhamentoJanelaSubunidadeMeta($suoid = NULL, $janid = NULL, $mpnid = NULL){
         $modelAcompanhamento = new Acompanhamento_Model_Acompanhamentopnc();
-        $modelAcompanhamento->janid = $janid;
         $modelAcompanhamento->suoid = $suoid;
+        $modelAcompanhamento->janid = $janid;
         $modelAcompanhamento->mpnid = $mpnid;
-        $acompanhamento = $modelAcompanhamento->buscarAcompanhamentoJanelaSubunidadeMeta();
+        $acompanhamento = $modelAcompanhamento->buscarPorJanelaSubunidadeMeta();
         return $acompanhamento;
     }
     
@@ -158,7 +158,7 @@ class Acompanhamento_Controller_Acompanhamentopnc
         include_once APPRAIZ . 'acompanhamento/modulos/principal/historico.inc';
     }
 
-    public function listarMetasPnc($suoid, $janid = null)
+    public function listarMetasPnc($suoid, $janid = NULL)
     {
         $mAcompanhamentopnc = new Acompanhamento_Model_Acompanhamentopnc();
 

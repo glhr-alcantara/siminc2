@@ -20,12 +20,7 @@
             echo json_encode($resultado);
         die;
         case 'listar-indicadores-pnc':
-            $resultado = $cAcompanhamentopnc->listarIndicadoresPNC(
-                $_REQUEST['janid'],
-                $_REQUEST['suoid'],
-                $_REQUEST['mpnid'],
-                $_SESSION['exercicio']
-            );
+            $resultado = $cAcompanhamentopnc->listarIndicadoresPNC($_REQUEST['acpid']);
         die;
         case 'excluir':
             $cAcompanhamentopnc->excluir($_REQUEST['acpid']);
@@ -72,8 +67,27 @@
     // Recuperando SubUnidade
     $suoid = $acompanhamentopnc->suoid? $acompanhamentopnc->suoid: $_REQUEST['suoid'];
     
-    $listaDeAnexos = (new Acompanhamento_Model_AcompanhamentoArquivo())->buscarPorAcompanhamento($acompanhamentopnc->acpid);
+//    $listaDeAnexos = (new Acompanhamento_Model_AcompanhamentoArquivo())->buscarPorAcompanhamento($acompanhamentopnc->acpid);
 
+    if($mpnid){
+        # Busca acompanhamento Ativo de acordo com a Subunidade, Janela e Meta.
+        $stdAcompanhamento = Acompanhamento_Controller_Acompanhamentopnc::buscarAcompanhamentoJanelaSubunidadeMeta($suoid, $janid, $mpnid);
+        
+        # Verifica se existe acompanhamento da meta selecionada
+        if($stdAcompanhamento->acpid){
+            # Carrega dados do acompanhamento da Meta
+            $acompanhamentopnc = new Acompanhamento_Model_Acompanhamentopnc($stdAcompanhamento->acpid);
+        } else {
+            # Cria um novo registro do acompanhamento da Meta
+            $acompanhamentopnc = new Acompanhamento_Model_Acompanhamentopnc();
+            $acompanhamentopnc->suoid = $suoid;
+            $acompanhamentopnc->janid = $janid;
+            $acompanhamentopnc->mpnid = $mpnid;
+            $acompanhamentopnc->salvar();
+            $acompanhamentopnc->commit();
+        }
+    }
+    
     include APPRAIZ . "includes/cabecalho.inc";
 ?>
 
@@ -264,17 +278,10 @@
                                 <h1 id="form-h-0" tabindex="-1" class="title current">Account</h1>
                                 <fieldset id="form-p-0" role="tabpanel" aria-labelledby="form-h-0" class="body current" aria-hidden="false">
                                     <div class="row">
-                                        <div class="col-lg-8" id="div_lista_indicador_pnc">
-                                            <?php
-                                                $cAcompanhamentopnc->listarIndicadoresPNC(
-                                                    $janid,
-                                                    $suoid,
-                                                    $meta->mpnid,
-                                                    (int)$_SESSION['exercicio']
-                                                );
-                                            ?>
+                                        <div class="col-lg-10" id="div_lista_indicador_pnc">
+                                            <?php $cAcompanhamentopnc->listarIndicadoresPNC($acompanhamentopnc->acpid); ?>
                                         </div>
-                                        <div class="col-lg-4">
+                                        <div class="col-lg-2">
                                             <div class="text-center">
                                                 <div style="margin-top: 20px">
                                                     <i class="fa fa-sign-in" style="font-size: 180px;color: #e5e5e5 "></i>
@@ -507,7 +514,7 @@
         
         $('#div_lista_indicador_pnc').on('click', '.editar_indicador', function(){
             var idpid = $(this).attr('data-idpid');
-            var janid = $(this).attr('data-janid');
+            var acpid = $(this).attr('data-acpid');
             var unocod = $(this).attr('data-unocod');
             var suocod = $(this).attr('data-suocod');
             var ipncod = $(this).attr('data-ipncod');
@@ -515,7 +522,7 @@
             var url = '?modulo=principal/monitorar-pnc&acao=A'+
                 '&req=acompanhamento-indicador-pnc-form'+
                 '&idpid='+ idpid+
-                '&janid='+ janid+
+                '&acpid='+ acpid+
                 '&unocod='+ unocod+
                 '&suocod='+ suocod+
                 '&ipncod='+ ipncod+
@@ -652,6 +659,17 @@
         $('.modal_dialog_grafico').show();
         $('#modal_grafico').modal();
         $('#modal_grafico .chosen-container').css('width', '100%');
+    }
+
+    /**
+     * Carrega a lista de indicadores PNC via AJAX.
+     * 
+     * @param {type} acpid
+     * @returns {undefined}
+     */
+    function carregarListaIndicadorPnc(acpid){
+        var url = '?modulo=principal/monitorar-pnc&acao=A&req=listar-indicadores-pnc'+ '&acpid='+ acpid;
+        $('#div_lista_indicador_pnc').load(url);
     }
 
     function inserirNovoAnexo(json){
