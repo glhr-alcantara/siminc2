@@ -84,8 +84,13 @@ class Acompanhamento_Controller_Acompanhamentopnc
         include APPRAIZ. 'acompanhamento/modulos/principal/listar-indicadores-pnc.inc';
     }
     
-    public function buscarAcompanhamento($janid = NULL, $suoid = NULL, $mpnid = NULL){
-        
+    public function buscarAcompanhamentoJanelaSubunidadeMeta($janid = NULL, $suoid = NULL, $mpnid = NULL){
+        $modelAcompanhamento = new Acompanhamento_Model_Acompanhamentopnc();
+        $modelAcompanhamento->janid = $janid;
+        $modelAcompanhamento->suoid = $suoid;
+        $modelAcompanhamento->mpnid = $mpnid;
+        $acompanhamento = $modelAcompanhamento->buscarAcompanhamentoJanelaSubunidadeMeta();
+        return $acompanhamento;
     }
     
     public function excluir($acpid)

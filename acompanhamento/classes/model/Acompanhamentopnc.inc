@@ -262,5 +262,38 @@ class Acompanhamento_Model_Acompanhamentopnc extends Modelo
         
         return $acompanhamento? (object)$acompanhamento: new stdClass();
     }
+    
+    /**
+     * Monta consulta pra buscar acompanhamento por Janela, Subunidade e Meta.
+     * 
+     * @return string
+     */
+    public function montarSqlbuscarAcompanhamentoJanelaSubunidadeMeta(){
+        $sql = "
+            SELECT
+                acp.acpid,
+                acp.suoid,
+                acp.janid,
+                acp.mpnid,
+                acp.acpenviado,
+                acp.docid,
+                acp.acpdata
+            FROM acompanhamento.acompanhamento_pnc acp
+            WHERE
+                acp.acpstatus = 'A'
+                AND acp.suoid = ". (int)$this->suoid. "
+                AND acp.janid = ". (int)$this->janid. "
+                AND acp.mpnid = ". (int)$this->mpnid;
+
+        return $sql;
+    }
+    
+    public function buscarAcompanhamentoJanelaSubunidadeMeta() {
+        $sql = $this->montarSqlbuscarAcompanhamentoJanelaSubunidadeMeta();
+        $resultado = $this->pegaLinha($sql);
+        $acompanhamento = $resultado? (object)$resultado: (object)$this->arAtributos;
+        
+        return $acompanhamento;
+    }    
 
 }
