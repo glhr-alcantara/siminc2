@@ -112,7 +112,20 @@ if ($_REQUEST['verificarPactuacaoConvenio']) {
     die();
 }
 if ($_REQUEST['alterarCodigoPi']) {
-    $dadosPI = (new Pi_PlanoInterno($_REQUEST['pliid']))->alterarCodigoPi($_REQUEST['plicod']);
+    $mPlanoInterno = new Pi_PlanoInterno($_REQUEST['pliid']);
+    $resultado = $mPlanoInterno->consultaCodigoPi($_REQUEST['plicod']);
+    if ($resultado) { ?>
+        <script>
+            swal({
+                title: 'Atenção!',
+                text: 'O código de PI já está sendo usado!',
+                type: 'warning'
+            });
+        </script>
+    <?php
+    } else {
+        $dadosPI = $mPlanoInterno->alterarCodigoPi($_REQUEST['plicod']);
+    }
     die();
 }
 //ver($_REQUEST,d);
