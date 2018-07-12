@@ -4,6 +4,7 @@
             <thead>
             <tr class="text-center">
                 <th width="10%">Ações</th>
+                <th width="10%">Código</th>
                 <th>Indicadores</th>
             </tr>
             </thead>
@@ -16,6 +17,7 @@
                             <a title="excluir" name="req" value="excluir-medida" id="excluir-medida" href="?modulo=apoio/metapnc_form&acao=A&req=excluir-medida&mpnid=<?=$dados['mpnid'];?>&ipnid=<?=$dados['ipnid'];?>" style="margin-left: 5px;"><i class="fa fa-close"></i></a>
                         <?php endif; ?>
                     </td>
+                    <td class="text-center"><?php echo $dados['ipncod']; ?></td>
                     <td><?php echo $dados['ipndsc']; ?></td>
                 </tr>
             <?php } ?>
