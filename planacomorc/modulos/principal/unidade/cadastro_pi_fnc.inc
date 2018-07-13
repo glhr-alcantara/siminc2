@@ -110,7 +110,13 @@ if ($_REQUEST['verificarPactuacaoConvenio']) {
     die();
 }
 if ($_REQUEST['alterarCodigoPi']) {
-    $dadosPI = (new Pi_PlanoInterno($_REQUEST['pliid']))->alterarCodigoPi($_REQUEST['plicod']);
+    $resposta = simec_json_encode(alterarCodigoPi($_REQUEST));
+    echo $resposta;
+    die();
+}
+
+if($_REQUEST['req'] == 'historico-pi') {
+    include_once APPRAIZ. "planacomorc/modulos/principal/unidade/historico_pi_modal.inc";
     die();
 }
 
@@ -221,9 +227,9 @@ include APPRAIZ . "includes/cabecalho.inc";
 <script language="JavaScript" src="../includes/funcoesspo.js?v=1"></script>
 <link rel="stylesheet" href="/library/bootstrap-switch/stylesheets/bootstrap-switch.css">
 <script src="/library/bootstrap-switch/js/bootstrap-switch.min.js"></script>
-<script src="js/cadastro_pi_funcoes.js?v=5"></script>
-<script src="js/cadastro_pi_validacoes.js?v=3"></script>
-<script src="js/cadastro_pi_init.js?v=3"></script>
+<script src="js/cadastro_pi_funcoes.js?v=9"></script>
+<script src="js/cadastro_pi_validacoes.js?v=9"></script>
+<script src="js/cadastro_pi_init.js?v=9"></script>
 <style>
     autorizadocapital {
         display: none;
@@ -238,10 +244,11 @@ include APPRAIZ . "includes/cabecalho.inc";
     <div class="col-lg-10">
         <h2>
             Cadastro de PI do FNC
-            <?php if(!empty($dadosPI['plicod'])){
-                echo '<span style="color: red; padding: 5px;" id="span-plicod">(' . $dadosPI['plicod'] . ')</span>';
-                echo '<input minlength="11" maxlength="11" type="text" id="plicod" value="' . $dadosPI['plicod'] . '" style="display:none;" />';
-            } ?>
+            <?php if(!empty($dadosPI['plicod'])){ ?>
+                <span style="color: red; padding: 5px;" id="span-plicod"><?= strtoupper($dadosPI['plicod']) ?></span>
+                <input class="upper-text" maxlength="11" type="text" id="plicod" value="<?= $dadosPI['plicod'] ?> " style="display:none;">
+                <a style="margin-left: 10px;" class="fa fa-history" id="modal-historico-pi" title="Histórico de alterações"></a>
+            <?php } ?>
         </h2>
         <?php echo $dadosPI['pliid'] ? "<span>Id: {$dadosPI['pliid']}</span>" : ''; ?>
         <?php echo $dadosPI['emenumero'] ? "<br /><span>Emenda: {$dadosPI['emenumero']}</span>": ''; ?>
@@ -255,6 +262,8 @@ include APPRAIZ . "includes/cabecalho.inc";
         <?php endif; ?>
     </div>
 </div>
+
+<?php bootstrapPopup("Histórico de Alterações", 'historico-pi', APPRAIZ. "planacomorc/modulos/principal/unidade/historico_pi_modal.inc", array('fechar'), array('tamanho' => 'lg')); ?>
 
 <div class="wrapper wrapper-content animated fadeInRight">
 

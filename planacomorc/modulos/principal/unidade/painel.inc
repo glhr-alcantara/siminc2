@@ -12,7 +12,8 @@
 
     # Verifica se o usuário tem vinculo de Sub-Unidades no seu Perfil
     $listaSubUnidadeUsuario = buscarSubUnidadeUsuario((object) array('usucpf' => $_SESSION['usucpf']));
-
+    
+    $prsano = $_REQUEST['exercicio']?$_REQUEST['exercicio']:$_SESSION['exercicio'];
     $oPlanoInterno = new Pi_PlanoInterno();
 
     switch ($_REQUEST['req']) {
@@ -43,13 +44,14 @@
     }
 
     $filtros = array(
-        "suo.prsano = '". $_SESSION['exercicio']. "'",
+        "suo.prsano = '". $prsano. "'",
         'suo.unofundo = FALSE',
     );
     # Filtro por Subunidades do perfil do usuário logado.
     if($listaSubUnidadeUsuario){
         $filtros[] = "suo.suocod IN('". join("','", $listaSubUnidadeUsuario). "')";
     }
+    
     $aPropostas = $oPlanoInterno->recuperarExecucaoOrcamentaria($filtros);
 
     /**
