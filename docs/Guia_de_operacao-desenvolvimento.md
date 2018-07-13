@@ -15,6 +15,9 @@ Cada desenvolvedor criará uma branch a partir da master.
                      \
                       o------------------- hotfix-007-planejamento-documentos --
                     
+<b>Obs:</b>Ao criar a branch, adicione o nome da branch no card(Issue) e suas respectivas observações, caso haja,
+facilitando aos membros que forem versionar a demanda, e evitando erros em ambiente de produção.<br>
+<b>Eg:</b> '- [ ] Publicar menu em produção.', ' - [ ] Enviar Script para produção.'
 
 ## Faça commits na sua branch e envie para a branch remota no Github (origin)
     
