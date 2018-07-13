@@ -23,8 +23,8 @@ $listaHistorico = (new Planacomorc_Model_HistoricoPi())->recuperarListagem($_REQ
                             <tr>
                                 <td><?= $dados['hisdata'] ?></td>
                                 <td><?= $dados['usunome'] ?></td>
-                                <td><?= $dados['hpidscantigo'] ?></td>
-                                <td><?= $dados['hpidscnovo'] ?></td>
+                                <td><?= strtoupper($dados['hpidscantigo']) ?></td>
+                                <td><?= strtoupper($dados['hpidscnovo']) ?></td>
                             </tr>
                         <?php } ?>
                         </tbody>
