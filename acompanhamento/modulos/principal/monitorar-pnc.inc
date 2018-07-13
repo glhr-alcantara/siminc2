@@ -57,7 +57,7 @@
 //    $listaDeAnexos = (new Acompanhamento_Model_AcompanhamentoArquivo())->buscarPorAcompanhamento($acompanhamentopnc->acpid);
 
     if($mpnid){
-        # Busca acompanhamento Ativo de acordo com a Subunidade, Janela e Meta.
+        # Busca acompanhamento Ativo de acordo com a Unidade, Janela e Meta.
         $stdAcompanhamento = Acompanhamento_Controller_Acompanhamentopnc::buscarAcompanhamentoJanelaSubunidadeMeta($suoid, $janid, $mpnid);
         
         # Verifica se existe acompanhamento da meta selecionada
@@ -103,7 +103,7 @@
             	<div class="ibox-title">
                     <div class="row">
                         <div class="col-sm-2">
-                            <h5>Indicadores</h5>
+                            <h5>Metas</h5>
                         </div>
                         <div class="col-sm-10">
                             <div style="float: right;">
@@ -129,7 +129,7 @@
                         <div class="col-sm-6">
                             <?php
                                 $listaUnidades = (new Public_Model_SubUnidadeOrcamentaria())->recuperarPorUsuario();
-                                echo $simec->select('suoid', 'Subunidade', $suoid, $listaUnidades, null, ['label-size'=>2]);
+                                echo $simec->select('suoid', 'Unidade', $suoid, $listaUnidades, null, ['label-size'=>1]);
                             ?>
                         </div>
 
@@ -162,12 +162,11 @@
 
                         <div class="clearfix"></div>
 
-                        <?php
-                            if($mpnid){
+                        <?php if($mpnid): ?>
+                            <?php
                                 $simec->setPodeEditar(0);
-                                
                                 $valoresOrcamentarios = (new Pi_PlanoInterno())->recuperarValoresPiMetaPncESubunidade($mpnid, $suoid);
-                        ?>
+                            ?>
                             <input type="hidden" id="mpnid" value="<?php echo $mpnid; ?>" />
                             <hr />
                             
@@ -216,7 +215,7 @@
                                     <?php endif; ?>
                                 </table>
                             </div>
-                        <?php } ?>
+                        <?php endif; ?>
 
                     </div>
             	</div>
@@ -224,10 +223,8 @@
             
         </div>
 
-        <?php
-            if($mpnid){
-                $meta = new Public_Model_MetaPnc($mpnid);
-        ?>
+        <?php if($mpnid): ?>
+            <?php $meta = new Public_Model_MetaPnc($mpnid); ?>
             <div class="col-md-12">
                 <div class="ibox float-e-margins">
                     <div class="ibox-title">
@@ -241,117 +238,37 @@
                         </div>
                     </div>
                     <div class="ibox-content">
-                        <form id="form" action="#" class="wizard-big wizard clearfix" role="application" novalidate="novalidate">
-                            <div class="steps clearfix">
-                                <ul role="tablist">
-                                    <li role="tab" class="first current" aria-disabled="false" aria-selected="true">
-                                        <a id="form-t-0" href="#form-h-0" aria-controls="form-p-0">
-                                            <span class="current-info audible">current step: </span>
-                                            <span class="number">1.</span> INDICADORES
-                                        </a>
-                                    </li>
-                                    <li role="tab" class="disabled" aria-disabled="true">
-                                        <a id="form-t-1" href="#form-h-1" aria-controls="form-p-1">
-                                            <span class="number">2.</span> ATIVIDADES
-                                        </a>
-                                    </li>
-                                    <li role="tab" class="disabled last" aria-disabled="true">
-                                        <a id="form-t-2" href="#form-h-3" aria-controls="form-p-3">
-                                            <span class="number">3.</span> ANEXOS
-                                        </a>
-                                    </li>
-                                </ul>
+
+                        <!-- STEPS INICIO -->
+                        <div id="wizard">
+                            <h1>INDICADORES</h1>
+                            <div data-mode="async" data-url="?modulo=principal/monitorar-pnc&acao=A&req=listar-indicadores-pnc&acpid=<?php echo $acompanhamentopnc->acpid; ?>">
+                                Carregando ...
                             </div>
-                            <div class="content clearfix">
-                                <h1 id="form-h-0" tabindex="-1" class="title current">Account</h1>
-                                <fieldset id="form-p-0" role="tabpanel" aria-labelledby="form-h-0" class="body current" aria-hidden="false">
-                                    <div class="row">
-                                        <div class="col-lg-10" id="div_lista_indicador_pnc">
-                                            <?php $cAcompanhamentopnc->listarIndicadoresPNC($acompanhamentopnc->acpid); ?>
-                                        </div>
-                                        <div class="col-lg-2">
-                                            <div class="text-center">
-                                                <div style="margin-top: 20px">
-                                                    <i class="fa fa-sign-in" style="font-size: 180px;color: #e5e5e5 "></i>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
 
-                                </fieldset>
-                                <h1 id="form-h-1" tabindex="-1" class="title">Profile</h1>
-                                <fieldset id="form-p-1" role="tabpanel" aria-labelledby="form-h-1" class="body" style="display: none;" aria-hidden="true">
-                                    <h2>Profile Information</h2>
-                                    <div class="row">
-                                        <div class="col-lg-6">
-                                            <div class="form-group">
-                                                <label>First name *</label>
-                                                <input id="name" name="name" class="form-control required" aria-required="true" type="text">
-                                            </div>
-                                            <div class="form-group">
-                                                <label>Last name *</label>
-                                                <input id="surname" name="surname" class="form-control required" aria-required="true" type="text">
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-6">
-                                            <div class="form-group">
-                                                <label>Email *</label>
-                                                <input id="email" name="email" class="form-control required email" aria-required="true" type="text">
-                                            </div>
-                                            <div class="form-group">
-                                                <label>Address *</label>
-                                                <input id="address" name="address" class="form-control" type="text">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </fieldset>
-
-<!--                            <div class="form-group">
-                                <div class="text-center">
-                                    <?php if(!in_array(PFL_CONSULTA, $listaPerfis)): ?>
-                                        <input type="button" id="btn_inserir_anexos" title="Inserir Anexos" value="Inserir Anexos" class="btn btn-info"/>
-                                    <?php endif; ?>
-                                </div>
-                            </div>-->
-
-                                <h1 id="form-h-2" tabindex="-1" class="title">Warning</h1>
-                                <fieldset id="form-p-2" role="tabpanel" aria-labelledby="form-h-2" class="body" style="display: none;" aria-hidden="true">
-                                    <div class="text-center" style="margin-top: 120px">
-                                        <h2>You did it Man :-)</h2>
-                                    </div>
-                                </fieldset>
-
-                                <h1 id="form-h-3" tabindex="-1" class="title">Finish</h1>
-                                <fieldset id="form-p-3" role="tabpanel" aria-labelledby="form-h-3" class="body" style="display: none;" aria-hidden="true">
-                                    <h2>Terms and Conditions</h2>
-                                    <input id="acceptTerms" name="acceptTerms" class="required" aria-required="true" type="checkbox"> <label for="acceptTerms">I agree with the Terms and Conditions.</label>
-                                </fieldset>
+                            <h1>ATIVIDADES</h1>
+                            <div>
+                                Carregando ...
                             </div>
-                            <div class="actions clearfix">
-                                <ul role="menu" aria-label="Pagination">
-                                    <li class="disabled" aria-disabled="true">
-                                        <a href="#previous" role="menuitem">Voltar</a>
-                                    </li>
-                                    <li aria-hidden="false" aria-disabled="false">
-                                        <a href="#next" role="menuitem">Próximo</a>
-                                    </li>
-                                    <li style="display: none;" aria-hidden="true">
-                                        <a href="#finish" role="menuitem">Concluir</a>
-                                    </li>
-                                </ul>
+
+                            <h1>ANEXOS</h1>
+                            <div>
+                                Carregando ...
                             </div>
-                        </form>
+                        </div>
+                        <!-- STEPS FIM -->
+
                     </div>
                 </div>
             </div>
+        <?php endif; ?>
 
-        <?php } ?>
     </div>
 </div>
 
 <?php
     bootstrapPopup(
-        "Grafico de execução dos Planos Internos(PIs) da Subunidade vinculados a essa Meta",
+        "Grafico de execução dos Planos Internos(PIs) da Unidade vinculados a essa Meta",
         'modal_grafico',
         '',
         array('fechar'),
@@ -359,7 +276,7 @@
     );
 
     bootstrapPopup(
-        "Planos Internos(PIs) da Subunidade vinculados a essa Meta",
+        "Planos Internos(PIs) da Unidade vinculados a essa Meta",
         'detalhe-pi',
         '',
         array('fechar'),
@@ -378,6 +295,19 @@
 <script>
     $(function(){
         
+        var wizard = $("#wizard").steps({
+            transitionEffect: "slide",
+            labels: {
+                cancel: "Cancelar",
+                current: "Passo atual:",
+                pagination: "Paginação",
+                finish: "Concluir",
+                next: "Próximo",
+                previous: "Anterior",
+                loading: "Carregando ..."
+            }
+        });
+        
         // Evento do componente de exibir Número da meta
         $('.div-indicador').mouseenter(function(){
             var cor = $(this).data('cor');
@@ -392,7 +322,7 @@
 
         $('.selecionar-meta-pnc').click(function(){
             if(!$('#suoid').val()){
-                swal('', 'Por favor, escolha uma Subunidade.', 'warning');
+                swal('', 'Por favor, escolha uma Unidade.', 'warning');
                 return false;
             }
         });
@@ -413,38 +343,10 @@
             return false;
         });
 
-        // Eventos do ícone(ou número) de edição da lista de indicadores PNC
-        $('#div_lista_indicador_pnc').on('click', '.editar_indicador', function(){
-            var idpid = $(this).attr('data-idpid');
-            var acpid = $(this).attr('data-acpid');
-            var unocod = $(this).attr('data-unocod');
-            var suocod = $(this).attr('data-suocod');
-            var ipncod = $(this).attr('data-ipncod');
-            var prsano = $(this).attr('data-prsano');
-            var url = '?modulo=principal/monitorar-pnc&acao=A'+
-                '&req=acompanhamento-indicador-pnc-form'+
-                '&idpid='+ idpid+
-                '&acpid='+ acpid+
-                '&unocod='+ unocod+
-                '&suocod='+ suocod+
-                '&ipncod='+ ipncod+
-                '&prsano='+ prsano;
-
-            $('#div_modal_acompanhamento_indicador').find('div.modal-body').empty();
-            $('#div_modal_acompanhamento_indicador').find('div.modal-body').load(url);
-            $('#div_modal_acompanhamento_indicador').modal();
-            return false;
-        });
-        
-        // Evento do botão salvar da janela modal do Cadastro de Indicadores PNC
-        $('#div_modal_acompanhamento_indicador').find('.btn-salvar').click(function(){
-            $('#formulario-acompanhamento-indicador').find('[type="submit"]').trigger('click');
-        });
-
     });
     
     /**
-     * Exibe a janela modal do grafico de execução orçamentária Da Meta da Subunidade.
+     * Exibe a janela modal do grafico de execução orçamentária Da Meta da Unidade.
      * 
      * @returns {undefined}
      */
