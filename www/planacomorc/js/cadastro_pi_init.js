@@ -415,7 +415,21 @@
         // Evento ao alterar o valor do código do PI
         $('#plicod').change(function(){
             var plicod = $(this).val();
-            $('#span-plicod').load(urlPagina+ '&alterarCodigoPi=ok&pliid='+$('#pliid').val() + '&plicod=' + $('#plicod').val());
+
+            $.ajax({
+                url: urlPagina+ '&alterarCodigoPi=ok&pliid='+ $('#pliid').val()+ '&plicod='+ $('#plicod').val(),
+                dataType: 'json',
+                success: function(response){
+                    swal({
+                        title: response.title,
+                        text: response.text,
+                        type: response.type
+                    });
+                    if(response.plicod){
+                        $('#span-plicod').html(response.plicod);
+                    }
+                }
+            });
         });
 
         // Evento ao mudar sair do campo de código do PI

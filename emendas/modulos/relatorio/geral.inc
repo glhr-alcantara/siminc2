@@ -20,10 +20,11 @@
         'Impositiva',
         'Justificativa',
         # DADOS FINANCEIROS
-        'GND',
+        /*'GND',
         'Mod. Aplicação',
-        'Fonte',
-        'Valor',
+        'Fonte',*/
+        'Valor Custeio',
+        'Valor Capital',
         # BENEFICIARIOS
         'Id Beneficiario',
         'Código Subunidade',
@@ -49,9 +50,12 @@
         'Motivo',
         'Justivicativa',
         # DADOS FINANCEIROS DO BENFICIÁRIO
-        'Vl. Beneficiário',
-        'Vl. Priorizado',
-        'Vl. Contingenciado',
+        'Vl. Beneficiário Custeio',
+        'Vl. Beneficiário Capital',
+        'Vl. Priorizado Custeio',
+        'Vl. Priorizado Capital',
+        'Vl. Contingenciado Custeio',
+        'Vl. Contingenciado Capital',
         # DADOS SICONV
         'Número Programa - SICONV',
         'Título Programa - SICONV',

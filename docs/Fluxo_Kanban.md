@@ -31,9 +31,12 @@ Contém todas as demandas que o demandante solicitará ao Time de Desenvolvimento.
 
 ### A Fazer
 
-Contém todas as demandas que o Time de Desenvolvimento atenderá.<br>
+Contém todas as demandas que o Time de Desenvolvimento atenderá!<br>
 <b>Obs:</b> Quando algum membro do Time de Desenvolvimento for realizar a demanda,
-o mesmo deverá mover o card(Issue) para a prateleira de <b>Fazendo</b>
+o mesmo deverá mover o card(Issue) para a prateleira de <b>Fazendo</b>!<br> Vale ressaltar que
+quando houverem <b>observações a serem feitas na hora da publicação</b>, o responsável pela demanda deverá
+deixar um comentário abaixo do nome da branch especificando as observações que o publicador deverá
+atender ou tomar precaução na hora da publicação.
 
 
 ### Fazendo

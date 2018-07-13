@@ -2867,3 +2867,32 @@ function verificarPiFnc($pliid){
 //ver($unofundo, d);
     return $unofundo == 't'? TRUE: FALSE;
 }
+
+/**
+ * Altera código do PI
+ *
+ * @param array $request
+ * @return array
+ */
+function alterarCodigoPi($request){
+
+    $resposta = array();
+    # Mudando o Código de PI novo para maiuscula
+    $request['plicod'] = trim(strtoupper($request['plicod']));
+    $mPlanoInterno = new Pi_PlanoInterno($request['pliid']);
+    $pliid = $mPlanoInterno->consultaCodigoPi($request['plicod']);
+    if($pliid) {
+        $resposta['title'] = 'Atenção';
+        $resposta['text'] = 'O código de PI '. $request['plicod'] .' já está sendo usado!';
+        $resposta['type'] = 'warning';
+        $resposta['plicod'] = NULL;
+    } else {
+        $mPlanoInterno->alterarCodigoPi($request['plicod']);
+        $resposta['title'] = NULL;
+        $resposta['text'] = 'O código de PI foi alterado com sucesso!';
+        $resposta['type'] = 'success';
+        $resposta['plicod'] = $mPlanoInterno->plicod;
+    }
+
+    return $resposta;
+}
