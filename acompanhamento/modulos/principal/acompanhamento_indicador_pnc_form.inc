@@ -1,22 +1,22 @@
 <?php
 
     $acompanhamentoIndicadorPnc = new Acompanhamento_Model_Indicadorpnc((int)$_REQUEST['idpid']);
-    if(!$acompanhamentoIndicadorPnc->idpid){
-        $acompanhamentoPnc = new Acompanhamento_Model_Acompanhamentopnc();
-        $acompanhamentoPnc->janid           = $_REQUEST['janid'];
+    if($acompanhamentoIndicadorPnc->idpid){
+        $acompanhamentoPnc = new Acompanhamento_Model_Acompanhamentopnc($acompanhamentoIndicadorPnc->acpid);
+    } else {
+        $acompanhamentoPnc = new Acompanhamento_Model_Acompanhamentopnc($_REQUEST['acpid']);
         $acompanhamentoIndicadorPnc->unocod = $_REQUEST['unocod'];
         $acompanhamentoIndicadorPnc->suocod = $_REQUEST['suocod'];
         $acompanhamentoIndicadorPnc->ipncod = $_REQUEST['ipncod'];
         $acompanhamentoIndicadorPnc->prsano = $_REQUEST['prsano'];
-    } else {
-        $acompanhamentoPnc = new Acompanhamento_Model_Acompanhamentopnc($acompanhamentoIndicadorPnc->acpid);
     }
-    $modelIndicadorPnc = new Public_Model_IndicadorPnc();
     
+    # Buscando dados do Indicador PNC.
+    $modelIndicadorPnc = new Public_Model_IndicadorPnc();
     $indicadorPnc = $modelIndicadorPnc->buscarPorCodigo((object)array(
         'ipncod' => $acompanhamentoIndicadorPnc->ipncod,
         'prsano' => $acompanhamentoIndicadorPnc->prsano));
-    
+    # Caso não exista indicador PNC cadastrado na tabela de apoio o sistema busca a descrição do Indicador do exercicio atual.
     if(!$indicadorPnc->ipnid){
         $indicadorPnc = $modelIndicadorPnc->buscarPorCodigo((object)array(
             'ipncod' => $acompanhamentoIndicadorPnc->ipncod,
@@ -29,7 +29,7 @@
     <input name="req" id="req" type="hidden" value="salvar-acompanhamento-indicador-pnc" />
     <button type="submit" class="hide"></button>
     <input name="idpid" type="hidden" value="<?= $acompanhamentoIndicadorPnc->idpid; ?>">
-    <input name="janid" type="hidden" value="<?= $acompanhamentoPnc->janid; ?>">
+    <input name="acpid" type="hidden" value="<?= $acompanhamentoPnc->acpid; ?>">
     <input name="unocod" type="hidden" value="<?= $acompanhamentoIndicadorPnc->unocod; ?>">
     <input name="suocod" type="hidden" value="<?= $acompanhamentoIndicadorPnc->suocod; ?>">
     <input name="ipncod" type="hidden" value="<?= $acompanhamentoIndicadorPnc->ipncod; ?>">
@@ -67,21 +67,10 @@
                 type: "POST",
                 url: $(this).attr('action'),
                 data: $("#formulario-acompanhamento-indicador").serialize(), // serializes the form's elements.
-                success: function(data){
+                dataType: "json",
+                success: function(response){
                     $('#div_modal_acompanhamento_indicador').modal('hide');
-
-                    var janid = $('#lista_janid').val();
-                    var suoid = $('#lista_suoid').val();
-                    var mpnid = $('#lista_mpnid').val();
-                    var exercicio = $('#lista_exercicio').val();
-
-                    var url = '?modulo=principal/monitorar-pnc&acao=A'+
-                        '&req=listar-indicadores-pnc'+
-                        '&janid='+ janid+
-                        '&suoid='+ suoid+
-                        '&mpnid='+ mpnid+
-                        '&exercicio='+ exercicio;
-                    $('#div_lista_indicador_pnc').load(url);
+                    carregarListaIndicadorPnc(response.acpid);
                 }
             });
 

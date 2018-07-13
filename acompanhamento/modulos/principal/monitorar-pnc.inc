@@ -9,9 +9,6 @@
     $mpnid = $_REQUEST['mpnid'];
     
     switch ($_REQUEST['req']) {
-        case 'salvar':
-            $cAcompanhamentopnc->salvar($_REQUEST);
-        die;
         case 'acompanhamento-indicador-pnc-form':
             include_once APPRAIZ. 'acompanhamento/modulos/principal/acompanhamento_indicador_pnc_form.inc';
         die;
@@ -20,47 +17,32 @@
             echo json_encode($resultado);
         die;
         case 'listar-indicadores-pnc':
-            $resultado = $cAcompanhamentopnc->listarIndicadoresPNC(
-                $_REQUEST['janid'],
-                $_REQUEST['suoid'],
-                $_REQUEST['mpnid'],
-                $_SESSION['exercicio']
-            );
-        die;
-        case 'excluir':
-            $cAcompanhamentopnc->excluir($_REQUEST['acpid']);
+            $resultado = $cAcompanhamentopnc->listarIndicadoresPNC($_REQUEST['acpid']);
         die;
         case 'detalhe-pi':
             $cAcompanhamentopnc->recuperarPiPorMetaPncESubunidade($_REQUEST['mpnid'], $_REQUEST['suoid']);
         die;
         case 'exibir-grafico':
-//            $cAcompanhamentopnc->exibirGrafico($_REQUEST['mpnid'], $_REQUEST['suoid']);
+            include_once APPRAIZ. 'acompanhamento/modulos/principal/modal-grafico-pnc.inc';
         die;
         case 'ver-historico':
-            $cAcompanhamentopnc->recuperarHistorico($_REQUEST['acpid']);
-            die;
-        case 'carregarMedida':
-            $mClassificacao = new Acompanhamento_Model_Classificacao($_REQUEST['claid']);
-            $retorno['medida'] = $mClassificacao->clamedida;
-            $retorno['select'] = $simec->select('medidas[]', 'Medidas a serem adotadas', null, (new Acompanhamento_Model_Medida())->recuperarSqlCombo(null, ['claid = ' . (int)$_REQUEST['claid']]));
-
-            echo json_encode($retorno);
-        die;
+//            $cAcompanhamentopnc->recuperarHistorico($_REQUEST['acpid']);
+//            die;
         case 'uploadAnexo':
-            $file = new FilesSimec();
-            if($file->setUpload($_REQUEST['arqdescricao'], '', false)){
-                echo simec_json_encode(array(
-                    'arqid' => $file->getIdArquivo(),
-                    'arqnome' => $_FILES['file']['name'],
-                    'arqdescricao' => $_REQUEST['arqdescricao']
-                ));
-            }else{
-                echo simec_json_encode(array(
-                    'error' => 1,
-                    'errorMensage' => 'Não foi possível enviar o arquivo!'
-                ));
-            }
-        die;
+//            $file = new FilesSimec();
+//            if($file->setUpload($_REQUEST['arqdescricao'], '', false)){
+//                echo simec_json_encode(array(
+//                    'arqid' => $file->getIdArquivo(),
+//                    'arqnome' => $_FILES['file']['name'],
+//                    'arqdescricao' => $_REQUEST['arqdescricao']
+//                ));
+//            }else{
+//                echo simec_json_encode(array(
+//                    'error' => 1,
+//                    'errorMensage' => 'Não foi possível enviar o arquivo!'
+//                ));
+//            }
+//        die;
     }
 
     $acompanhamentopnc = new Acompanhamento_Model_Acompanhamentopnc($_REQUEST['acpid']);
@@ -72,8 +54,27 @@
     // Recuperando SubUnidade
     $suoid = $acompanhamentopnc->suoid? $acompanhamentopnc->suoid: $_REQUEST['suoid'];
     
-    $listaDeAnexos = (new Acompanhamento_Model_AcompanhamentoArquivo())->buscarPorAcompanhamento($acompanhamentopnc->acpid);
+//    $listaDeAnexos = (new Acompanhamento_Model_AcompanhamentoArquivo())->buscarPorAcompanhamento($acompanhamentopnc->acpid);
 
+    if($mpnid){
+        # Busca acompanhamento Ativo de acordo com a Subunidade, Janela e Meta.
+        $stdAcompanhamento = Acompanhamento_Controller_Acompanhamentopnc::buscarAcompanhamentoJanelaSubunidadeMeta($suoid, $janid, $mpnid);
+        
+        # Verifica se existe acompanhamento da meta selecionada
+        if($stdAcompanhamento->acpid){
+            # Carrega dados do acompanhamento da Meta
+            $acompanhamentopnc = new Acompanhamento_Model_Acompanhamentopnc($stdAcompanhamento->acpid);
+        } else {
+            # Cria um novo registro do acompanhamento da Meta
+            $acompanhamentopnc = new Acompanhamento_Model_Acompanhamentopnc();
+            $acompanhamentopnc->suoid = $suoid;
+            $acompanhamentopnc->janid = $janid;
+            $acompanhamentopnc->mpnid = $mpnid;
+            $acompanhamentopnc->salvar();
+            $acompanhamentopnc->commit();
+        }
+    }
+    
     include APPRAIZ . "includes/cabecalho.inc";
 ?>
 
@@ -128,7 +129,7 @@
                         <div class="col-sm-6">
                             <?php
                                 $listaUnidades = (new Public_Model_SubUnidadeOrcamentaria())->recuperarPorUsuario();
-                                echo $simec->select('suoid', 'Unidade', $suoid, $listaUnidades, null, ['label-size'=>2]);
+                                echo $simec->select('suoid', 'Subunidade', $suoid, $listaUnidades, null, ['label-size'=>2]);
                             ?>
                         </div>
 
@@ -146,7 +147,7 @@
                                 $cor = $mpnid == $meta['mpnid']? 'blue-bg': $cor;
                                 $urlAcompanhamento = $meta['acpid']? "?modulo=principal/monitorar-pnc&acao=A&acpid={$meta['acpid']}": "?modulo=principal/monitorar-pnc&acao=A&mpnid={$meta['mpnid']}&suoid={$suoid}";
                             ?>
-                                <a class="selecionar-indicador" href="<?php echo $urlAcompanhamento; ?>">
+                                <a class="selecionar-meta-pnc" href="<?php echo $urlAcompanhamento; ?>">
                                     <div class="col-xs-1" title="<?php echo $meta['mpncod'] . ' - ' . $meta['mpndsc']; ?>">
                                         <div data-cor="<?php echo $cor ?>" class="widget div-indicador <?php echo $cor ?>">
                                             <div class="row">
@@ -167,6 +168,7 @@
                                 
                                 $valoresOrcamentarios = (new Pi_PlanoInterno())->recuperarValoresPiMetaPncESubunidade($mpnid, $suoid);
                         ?>
+                            <input type="hidden" id="mpnid" value="<?php echo $mpnid; ?>" />
                             <hr />
                             
                             <div class="col-sm-12">
@@ -264,17 +266,10 @@
                                 <h1 id="form-h-0" tabindex="-1" class="title current">Account</h1>
                                 <fieldset id="form-p-0" role="tabpanel" aria-labelledby="form-h-0" class="body current" aria-hidden="false">
                                     <div class="row">
-                                        <div class="col-lg-8" id="div_lista_indicador_pnc">
-                                            <?php
-                                                $cAcompanhamentopnc->listarIndicadoresPNC(
-                                                    $janid,
-                                                    $suoid,
-                                                    $meta->mpnid,
-                                                    (int)$_SESSION['exercicio']
-                                                );
-                                            ?>
+                                        <div class="col-lg-10" id="div_lista_indicador_pnc">
+                                            <?php $cAcompanhamentopnc->listarIndicadoresPNC($acompanhamentopnc->acpid); ?>
                                         </div>
-                                        <div class="col-lg-4">
+                                        <div class="col-lg-2">
                                             <div class="text-center">
                                                 <div style="margin-top: 20px">
                                                     <i class="fa fa-sign-in" style="font-size: 180px;color: #e5e5e5 "></i>
@@ -354,160 +349,74 @@
     </div>
 </div>
 
-<!-- Div do Modal de lista de PIs -->
-<div class="modal fade" id="detalhe-pi" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel"></h4>
-            </div>
-            <div class="modal-body">
-
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-dismiss="modal">Fechar</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Div do Modal do formulário de Anexo de Arquivos -->
-<div class="row">
-    <div class="col-md-12">
-        <div id="modal_upload" class="modal fade">
-            <div class="modal_dialog_upload">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button class="close" aria-hidden="true" data-dismiss="modal" type="button">×</button>
-                        <h4 class="modal-title">Anexar arquivos(Documentos)</h4>
-                    </div>
-                    <div class="modal-body">
-                        <form class="dropzone" method="POST" enctype="multipart/form-data" action="acompanhamento.php?modulo=principal/monitorar-pnc&acao=A&acpid=<?php echo 0 //$acompanhamentopnc->acpid; ?>&aba=1&req=uploadAnexo" id="formularioAnexo" name="formularioAnexo">
-                            <div class="form-group">
-                                <label for="arqdescricao" class="col-lg-2 control-label">Descrição:</label>
-                                <div class="col-lg-10">
-                                    <input type="text" value="" class="CampoEstilo normal form-control" placeholder="Insira a descrição do arquivo." title="Descrição" id="arqdescricao" name="arqdescricao" maxlength="255" size="2">
-                                </div>
-                            </div>
-                            <div class="fallback">
-                                <input name="file" type="file" multiple />
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-default" data-dismiss="modal" type="button">Fechar</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Div do Modal do Grafico -->
-<div class="row">
-    <div class="col-md-12">
-        <div id="modal_grafico" class="modal fade">
-            <div class="modal_dialog_grafico">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button class="close" aria-hidden="true" data-dismiss="modal" type="button">×</button>
-                        <h4 class="modal-title">Grafico Planos Internos</h4>
-                    </div>
-                    <div class="modal-body">
-                        <?php if($mpnid): ?>
-                            <div class="col-sm-12">
-                                <div class="col-md-8">
-                                    <h3 class="text-center">PI's Associados à Meta</h3>
-                                    <?php
-                                        $listaPI = (new Pi_PlanoInterno())->recuperarValoresPiMetaPncESubunidade($mpnid, $suoid);
-                                        $metaPnc = new Public_Model_MetaPnc($mpnid);
-                                        $dadosGrafico = [];
-                                        if(count($listaPI)){
-                                            foreach ($listaPI as $key => $valor) {
-                                                if(in_array($key, ['previsto', 'provisionado', 'empenhado', 'liquidado', 'pago'])){
-                                                    $dadosGrafico[$key]['descricao'] = ucfirst($key);
-                                                    $dadosGrafico[$key]['valor'] = $valor;
-                                                    $dadosGrafico[$key]['categoria'] = $metaPnc->mpncod;
-                                                }
-                                            }
-                                        }
-
-                                        $colors = "'#55BF3B', '#eeaaee', '#00BFFF', '#aaeeee', '#7798BF', '#DDDF0D', '#7CCD7C', '#DF5353', '#008000', '#CD0000', '#FF4500', '#ff0066', '#4B0082', '#808000', '#800000', '#2F4F4F', '#006400', '#FFA500'";
-                                        $grafico = new Grafico(Grafico::K_TIPO_COLUNA, false);
-                                        $grafico->setFormatoTooltip(Grafico::K_TOOLTIP_DECIMAL_0)
-                                            ->setColors($colors)
-                                            ->setHeight('250px')
-                                            ->gerarGrafico($dadosGrafico);
-                                    ?>
-                                </div>
-                                <div class="col-sm-2">
-                                    <?php
-                                        $percentual = $valoresOrcamentarios['previsto']? $valoresOrcamentarios['empenhado'] * 100 / $valoresOrcamentarios['previsto'] : 0;
-                                    ?>
-                                    <h3 class="text-center">Percentual de Empenho</h3>
-                                    <meter style="display: none;" max="1000" value="<?php echo $percentual; ?>" id="percentual-empenhado"></meter>
-                                </div>
-                            </div>
-                        <?php endif; ?>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-default" data-dismiss="modal" type="button">Fechar</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal de Cadastro de Indicador -->
-<div class="row">
-    <div class="col-md-6">
-        <div id="div_modal_cadastro_indicador" class="modal fade">
-            <div class="modal_dialog_upload">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button class="close" aria-hidden="true" data-dismiss="modal" type="button">×</button>
-                        <h4 class="modal-title">Cadastro de acompanhamento do Indicador PNC</h4>
-                    </div>
-                    <div id="div_modal_cadastro_indicador_body" class="modal-body">
-                        
-                        <!-- Formulario de indicador -->
-                        
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-default" type="button" id="Salvar-indicador">Salvar</button>
-                        <button class="btn btn-default" data-dismiss="modal" type="button">Fechar</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
 <?php
+    bootstrapPopup(
+        "Grafico de execução dos Planos Internos(PIs) da Subunidade vinculados a essa Meta",
+        'modal_grafico',
+        '',
+        array('fechar'),
+        array('tamanho' => 'xl')
+    );
+
+    bootstrapPopup(
+        "Planos Internos(PIs) da Subunidade vinculados a essa Meta",
+        'detalhe-pi',
+        '',
+        array('fechar'),
+        array('tamanho' => 'lg')
+    );
+    
     bootstrapPopup(
         "Cadastro de acompanhamento do Indicador PNC",
         'div_modal_acompanhamento_indicador',
         '',
-        array(
-            'salvar',
-            'fechar'),
-        array(
-            'tamanho' => 'lg'
-        ));
+        array('salvar', 'fechar'),
+        array('tamanho' => 'lg')
+    );
 ?>
 
 <script>
     $(function(){
         
-        $('#div_modal_acompanhamento_indicador').find('.btn-salvar').click(function(){
-            $('#formulario-acompanhamento-indicador').find('[type="submit"]').trigger('click');
+        // Evento do componente de exibir Número da meta
+        $('.div-indicador').mouseenter(function(){
+            var cor = $(this).data('cor');
+            $(this).removeClass(cor).addClass('blue-bg');
         });
-        
+
+        // Evento do componente de exibir Número da meta
+        $('.div-indicador').mouseleave(function(){
+            var cor = $(this).data('cor');
+            $(this).removeClass('blue-bg').addClass(cor);
+        });
+
+        $('.selecionar-meta-pnc').click(function(){
+            if(!$('#suoid').val()){
+                swal('', 'Por favor, escolha uma Subunidade.', 'warning');
+                return false;
+            }
+        });
+
+        $('#suoid').change(function(){
+            window.location.href = '?modulo=principal/monitorar-pnc&acao=A&suoid=' + $(this).val();
+        });
+
+        $('.detalhe-pi').click(function(){
+            var url = $(this).attr('href');
+            $('#detalhe-pi .modal-body').load(url);
+            $('#detalhe-pi').modal();
+            return false;
+        });
+
+        $('.a_grafico').click(function(){
+            exibirGrafico();
+            return false;
+        });
+
+        // Eventos do ícone(ou número) de edição da lista de indicadores PNC
         $('#div_lista_indicador_pnc').on('click', '.editar_indicador', function(){
             var idpid = $(this).attr('data-idpid');
-            var janid = $(this).attr('data-janid');
+            var acpid = $(this).attr('data-acpid');
             var unocod = $(this).attr('data-unocod');
             var suocod = $(this).attr('data-suocod');
             var ipncod = $(this).attr('data-ipncod');
@@ -515,7 +424,7 @@
             var url = '?modulo=principal/monitorar-pnc&acao=A'+
                 '&req=acompanhamento-indicador-pnc-form'+
                 '&idpid='+ idpid+
-                '&janid='+ janid+
+                '&acpid='+ acpid+
                 '&unocod='+ unocod+
                 '&suocod='+ suocod+
                 '&ipncod='+ ipncod+
@@ -527,144 +436,35 @@
             return false;
         });
         
-        $('#claid').change(function(){
-            $.ajax({
-                url: '?modulo=principal/monitorar-pnc&acao=A&req=carregarMedida&claid=' + $(this).val(),
-                dataType: 'json',
-                success: function(retorno){
-                    $('#span-medida').html(retorno.select);
-                    if(retorno.medida == 't'){
-                        $('#span-medida').show();
-                    } else {
-                        $('#span-medida').hide();
-                    }
-                }
-            });
-        });
-
-        $('.selecionar-indicador').click(function(){
-            if(!$('#suoid').val()){
-                swal('', 'Por favor, escolha uma unidade.', 'warning');
-                return false;
-            }
-        });
-
-        $('#suoid').change(function(){
-            window.location.href = '?modulo=principal/monitorar-pnc&acao=A&suoid=' + $(this).val();
-        });
-
-        $('.div-indicador').mouseenter(function(){
-            var cor = $(this).data('cor');
-            $(this).removeClass(cor).addClass('blue-bg');
-        });
-
-        $('.div-indicador').mouseleave(function(){
-            var cor = $(this).data('cor');
-            $(this).removeClass('blue-bg').addClass(cor);
-        });
-
-        $('.detalhe-pi').click(function(){
-            var url = $(this).attr('href');
-            var title = $(this).attr('title');
-            $('#detalhe-pi .modal-body').load(url);
-            $('#detalhe-pi .modal-title').html(title);
-            $('#detalhe-pi').modal();
-            return false;
-        });
-
-        $('#btn-salvar').click(function(){
-            if($('#span-medida').css('display') != 'none' && !$('#medidas').val()){
-                swal('', "O campo 'Medidas a serem adotadas' é de preenchimento obrigatório", 'warning');
-                return false;
-            }
-
-            $('#formulario').submit();
-        });
-        
-        $('#btn_inserir_anexos').click(function(){
-            abrirModalUpload();
-        });
-
-        // Evento de terminar de carregar arquivos
-        Dropzone.options.formularioAnexo = {
-            init: function() {
-                
-                this.on("success", function(file, response){
-                    var jsonResponse = $.parseJSON(response);
-                    inserirNovoAnexo(jsonResponse);
-                });
-
-                this.on("queuecomplete", function(file){
-
-                    // Armazena o objeto Dropzone para chamar métodos
-                    objFormularioAnexo = this;
-                    // Chama mensagem de sucesso
-                    swal({
-                      title: "",
-                      text: "Arquivos salvos com sucesso!",
-                      timer: 2000,
-                      showConfirmButton: false,
-                      type: "success"
-                    }, function(){
-                        // Fecha o swal alert
-                        swal.close();
-                        // limpa campo de upload
-                        objFormularioAnexo.removeAllFiles();
-                        // fecha modal após a seleção
-                        $('#modal_upload').modal('hide');
-                    });
-                });
-            }
-        };
-        
-        $('#table_anexos').on('click', '.btnRemoverAnexos', function(){
-            var id = $(this).attr('data-anexos');
-            $('.tr_anexos_'+ id).remove();
-        });
-
-        $('#percentual-empenhado').liquidMeter({
-            shape: 'circle',
-            color: '#0088cc',
-            background: '#F9F9F9',
-            fontSize: '24px',
-            fontWeight: '600',
-            stroke: '#F2F2F2',
-            textColor: '#333',
-            liquidOpacity: 0.9,
-            liquidPalette: ['#333'],
-            speed: 3000
-        });
-
-        $('.a_grafico').click(function(){
-            abrirModalGrafico();
-            return false;
+        // Evento do botão salvar da janela modal do Cadastro de Indicadores PNC
+        $('#div_modal_acompanhamento_indicador').find('.btn-salvar').click(function(){
+            $('#formulario-acompanhamento-indicador').find('[type="submit"]').trigger('click');
         });
 
     });
-
-    function abrirModalUpload() {
-        $('.modal_dialog_upload').show();
-        $('#modal_upload').modal();
-        $('#modal_upload .chosen-container').css('width', '100%');
-    }
     
-    function abrirModalGrafico() {
-        $('.modal_dialog_grafico').show();
+    /**
+     * Exibe a janela modal do grafico de execução orçamentária Da Meta da Subunidade.
+     * 
+     * @returns {undefined}
+     */
+    function exibirGrafico(){
+        var suoid = $('#suoid').val();
+        var mpnid = $('#mpnid').val();
+        var url = '?modulo=principal/monitorar-pnc&acao=A&req=exibir-grafico'+ '&suoid='+ suoid+ '&mpnid='+ mpnid;
+        $('#modal_grafico .modal-body').load(url);
         $('#modal_grafico').modal();
-        $('#modal_grafico .chosen-container').css('width', '100%');
     }
 
-    function inserirNovoAnexo(json){
-        var trHtml = '<tr style="height: 30px;" class="tr_anexos_'+ json.arqid +'" >'
-            + '                    <td style="text-align: left;"><a href="#" onclick="javascript:abrirArquivo('+ json.arqid+ '); return false;" >'+ json.arqnome +'</a></td>'
-            + '                    <td style="text-align: left;">'+ json.arqdescricao +'</td>'
-            + '                    <td style="text-align: center;">'
-            + '                         <input type="hidden" value="'+ json.arqid +'" name="listaAnexos[]">'
-            + '                         <span class="glyphicon glyphicon-trash btnRemoverAnexos link" title="Excluir o arquivo '+ json.arqnome+ '" data-anexos="'+ json.arqid +'" >'
-            + '                    </td>'
-            + '                </tr>'
-        ;
-        $('#table_anexos').append(trHtml);
+    /**
+     * Carrega a lista de indicadores PNC via AJAX.
+     * 
+     * @param {type} acpid
+     * @returns {undefined}
+     */
+    function carregarListaIndicadorPnc(acpid){
+        var url = '?modulo=principal/monitorar-pnc&acao=A&req=listar-indicadores-pnc'+ '&acpid='+ acpid;
+        $('#div_lista_indicador_pnc').load(url);
     }
 
 </script>

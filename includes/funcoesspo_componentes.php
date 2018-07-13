@@ -757,6 +757,7 @@ function bootstrapPopup($titulo, $id, $content, array $botoes = array(), array $
         echo <<<CSS
 <style type="text/css">
 .modal-lg{width:70%!important}
+.modal-xl{width:100%!important}
 </style>
 CSS;
     }

@@ -148,119 +148,98 @@ class Acompanhamento_Model_Acompanhamentopnc extends Modelo
         return $listaMetas? $listaMetas: array();
     }
     
-    public function getIndicadoresPnc(stdClass $filtro)
+    public function getIndicadoresPnc()
     {
         $listaIndicadoresPnc = array();
-        if($filtro->suoid){
-            $sql = "
-                SELECT
-                    ipn.*,
-                    acp.acpid,
-                    sic.suoid,
-                    idp.idpquantidade,
-                    mpn.mpncod::int,
-                    mpn.mpndsc
+
+        # Busca dados da Subunidade
+        $subunidade = new Public_Model_SubUnidadeOrcamentaria((int)$this->suoid);
+        # Busca dados da UO para usar o Ano
+        $uo = new Public_Model_UnidadeOrcamentaria((int)$subunidade->unoid);
+
+        $sql = "
+                -- Busca todos os indicadores que são da Subunidade e Meta informada
+                SELECT DISTINCT
+                    ipn.ipnid,
+                    ipn.mpnid,
+                    ipn.ipncod,
+                    ipn.ipndsc,
+                    ipn.prsano
                 FROM public.indicadorpnc ipn
-                    JOIN public.metapnc mpn ON mpn.mpnid = ipn.mpnid
+                    JOIN public.metapnc mpn ON(
+                        mpn.mpnid = ipn.mpnid
+                        AND mpn.mpnstatus = 'A'
+                    )
                     JOIN spo.subunidadeindicadorpnc sic ON sic.ipnid = ipn.ipnid
-                    JOIN public.vw_subunidadeorcamentaria suo ON sic.suoid = suo.suoid
-                    LEFT JOIN acompanhamento.acompanhamento_pnc acp ON(
-			suo.suoid = acp.suoid
-                        AND acp.acpstatus = 'A'
-                    )
-                    LEFT JOIN acompanhamento.indicador_pnc idp ON(
-			acp.acpid = idp.acpid
-			AND ipn.ipncod = idp.ipncod
-			AND ipn.prsano = idp.prsano
-			AND idp.idpstatus = 'A'
+                    JOIN public.vw_subunidadeorcamentaria suo ON(
+                        sic.suoid = suo.suoid
+                        AND ipn.prsano = suo.prsano
                     )
                 WHERE
-                    ipn.prsano = '". (int)$filtro->exercicio. "'
-                    AND ipn.ipnstatus = 'A'
-                    AND sic.suoid = ". (int)$filtro->suoid. "
-                    AND mpn.mpnid = ". (int)$filtro->mpnid. "
-                UNION
-                SELECT
-                    ipn.*,
-                    acp.acpid,
-                    ". (int)$filtro->suoid. ",
-                    idp.idpquantidade,
-                    mpn.mpncod::int,
-                    mpn.mpndsc
+                    ipn.ipnstatus = 'A'
+                    AND sic.suoid = ". (int)$this->suoid. "
+                    AND mpn.mpnid = ". (int)$this->mpnid. "
+            UNION ALL
+                -- Busca todos os indicadores que têm Subunidade vinculada e que seja da Meta informada
+                SELECT DISTINCT
+                    ipn.ipnid,
+                    ipn.mpnid,
+                    ipn.ipncod,
+                    ipn.ipndsc,
+                    ipn.prsano
                 FROM public.indicadorpnc ipn
-                    JOIN public.metapnc mpn ON mpn.mpnid = ipn.mpnid
-                    LEFT JOIN spo.subunidadeindicadorpnc sic ON sic.ipnid = ipn.ipnid
-                    LEFT JOIN public.vw_subunidadeorcamentaria suo ON sic.suoid = suo.suoid
-                    LEFT JOIN acompanhamento.acompanhamento_pnc acp ON(
-			suo.suoid = ". (int)$filtro->suoid. "
-                        AND acp.acpstatus = 'A'
+                    JOIN public.metapnc mpn ON(
+                        mpn.mpnid = ipn.mpnid
+                        AND mpn.mpnstatus = 'A'
                     )
-                    LEFT JOIN acompanhamento.indicador_pnc idp ON(
-			acp.acpid = idp.acpid
-			AND ipn.ipncod = idp.ipncod
-			AND ipn.prsano = idp.prsano
-			AND idp.idpstatus = 'A'
+                    LEFT JOIN spo.subunidadeindicadorpnc sic ON sic.ipnid = ipn.ipnid
+                    LEFT JOIN public.vw_subunidadeorcamentaria suo ON(
+                        sic.suoid = suo.suoid
+                        AND ipn.prsano = suo.prsano
                     )
                 WHERE
-                    ipn.prsano = '". (int)$filtro->exercicio. "'
-                    AND ipn.ipnstatus = 'A'
+                    ipn.ipnstatus = 'A'
                     AND sic.suoid IS NULL
-                    AND ipn.ipncod != '0'
-                    AND mpn.mpnid = ". (int)$filtro->mpnid. "
-                ORDER BY
-                    mpncod,
-                    ipncod,
-                    ipndsc
-            ";
+                    AND mpn.mpnid = ". (int)$this->mpnid. "
+                    AND ipn.prsano = '". (int)$uo->prsano. "'
+        ";
 //ver($sql, d);
-            $listaIndicadoresPnc = $this->carregar($sql);
-        }
+        $listaIndicadoresPnc = $this->carregar($sql);
 
         return $listaIndicadoresPnc;
     }
     
     /**
-     * Monta consulta pra buscar acompanhamento por Janela, UO, Unidade, Indicador e Ano.
+     * Monta consulta pra buscar acompanhamento por Janela, Subunidade e Meta.
      * 
-     * @param stdClass $filtro
      * @return string
      */
-    public function montarSqlBuscarIndicadorPnc(stdClass $filtro){
+    public function montarSqlbuscarPorJanelaSubunidadeMeta(){
         $sql = "
             SELECT
-                idp.idpid,
+                acp.acpid,
+                acp.suoid,
                 acp.janid,
-                idp.unocod,
-                idp.suocod,
-                idp.ipncod,
-                idp.prsano,
-                idp.idpquantidade
-            FROM acompanhamento.indicador_pnc idp
-                JOIN acompanhamento.acompanhamento_pnc acp ON(idp.acpid = acp.acpid)
+                acp.mpnid,
+                acp.acpenviado,
+                acp.docid,
+                acp.acpdata
+            FROM acompanhamento.acompanhamento_pnc acp
             WHERE
-                idp.idpstatus = 'A'
-                AND acp.acpstatus = 'A'
-                AND acp.janid = ". (int)$filtro->janid. "
-                AND idp.unocod = '". (int)$filtro->unocod. "'
-                AND idp.suocod = '". (int)$filtro->suocod. "'
-                AND idp.ipncod = '". $filtro->ipncod. "'
-                AND idp.prsano = '". (int)$filtro->prsano. "'
-        ";
-        
+                acp.acpstatus = 'A'
+                AND acp.suoid = ". (int)$this->suoid. "
+                AND acp.janid = ". (int)$this->janid. "
+                AND acp.mpnid = ". (int)$this->mpnid;
+
         return $sql;
     }
     
-    /**
-     * Buscar acompanhamento por Janela, UO, Unidade, Indicador e Ano.
-     * 
-     * @param stdClass $filtro
-     * @return stdClass
-     */
-    public function buscarIndicadorPnc(stdClass $filtro) {
-        $sql = $this->montarSqlBuscarIndicadorPnc($filtro);
-        $acompanhamento = $this->pegaLinha($sql);
+    public function buscarPorJanelaSubunidadeMeta() {
+        $sql = $this->montarSqlbuscarPorJanelaSubunidadeMeta();
+        $resultado = $this->pegaLinha($sql);
+        $acompanhamento = $resultado? (object)$resultado: (object)$this->arAtributos;
         
-        return $acompanhamento? (object)$acompanhamento: new stdClass();
-    }
+        return $acompanhamento;
+    }    
 
 }
