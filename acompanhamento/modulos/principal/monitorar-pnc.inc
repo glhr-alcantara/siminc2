@@ -9,9 +9,6 @@
     $mpnid = $_REQUEST['mpnid'];
     
     switch ($_REQUEST['req']) {
-        case 'salvar':
-            $cAcompanhamentopnc->salvar($_REQUEST);
-        die;
         case 'acompanhamento-indicador-pnc-form':
             include_once APPRAIZ. 'acompanhamento/modulos/principal/acompanhamento_indicador_pnc_form.inc';
         die;
@@ -22,9 +19,6 @@
         case 'listar-indicadores-pnc':
             $resultado = $cAcompanhamentopnc->listarIndicadoresPNC($_REQUEST['acpid']);
         die;
-        case 'excluir':
-            $cAcompanhamentopnc->excluir($_REQUEST['acpid']);
-        die;
         case 'detalhe-pi':
             $cAcompanhamentopnc->recuperarPiPorMetaPncESubunidade($_REQUEST['mpnid'], $_REQUEST['suoid']);
         die;
@@ -32,30 +26,23 @@
 //            $cAcompanhamentopnc->exibirGrafico($_REQUEST['mpnid'], $_REQUEST['suoid']);
         die;
         case 'ver-historico':
-            $cAcompanhamentopnc->recuperarHistorico($_REQUEST['acpid']);
-            die;
-        case 'carregarMedida':
-            $mClassificacao = new Acompanhamento_Model_Classificacao($_REQUEST['claid']);
-            $retorno['medida'] = $mClassificacao->clamedida;
-            $retorno['select'] = $simec->select('medidas[]', 'Medidas a serem adotadas', null, (new Acompanhamento_Model_Medida())->recuperarSqlCombo(null, ['claid = ' . (int)$_REQUEST['claid']]));
-
-            echo json_encode($retorno);
-        die;
+//            $cAcompanhamentopnc->recuperarHistorico($_REQUEST['acpid']);
+//            die;
         case 'uploadAnexo':
-            $file = new FilesSimec();
-            if($file->setUpload($_REQUEST['arqdescricao'], '', false)){
-                echo simec_json_encode(array(
-                    'arqid' => $file->getIdArquivo(),
-                    'arqnome' => $_FILES['file']['name'],
-                    'arqdescricao' => $_REQUEST['arqdescricao']
-                ));
-            }else{
-                echo simec_json_encode(array(
-                    'error' => 1,
-                    'errorMensage' => 'Não foi possível enviar o arquivo!'
-                ));
-            }
-        die;
+//            $file = new FilesSimec();
+//            if($file->setUpload($_REQUEST['arqdescricao'], '', false)){
+//                echo simec_json_encode(array(
+//                    'arqid' => $file->getIdArquivo(),
+//                    'arqnome' => $_FILES['file']['name'],
+//                    'arqdescricao' => $_REQUEST['arqdescricao']
+//                ));
+//            }else{
+//                echo simec_json_encode(array(
+//                    'error' => 1,
+//                    'errorMensage' => 'Não foi possível enviar o arquivo!'
+//                ));
+//            }
+//        die;
     }
 
     $acompanhamentopnc = new Acompanhamento_Model_Acompanhamentopnc($_REQUEST['acpid']);
@@ -160,7 +147,7 @@
                                 $cor = $mpnid == $meta['mpnid']? 'blue-bg': $cor;
                                 $urlAcompanhamento = $meta['acpid']? "?modulo=principal/monitorar-pnc&acao=A&acpid={$meta['acpid']}": "?modulo=principal/monitorar-pnc&acao=A&mpnid={$meta['mpnid']}&suoid={$suoid}";
                             ?>
-                                <a class="selecionar-indicador" href="<?php echo $urlAcompanhamento; ?>">
+                                <a class="selecionar-meta-pnc" href="<?php echo $urlAcompanhamento; ?>">
                                     <div class="col-xs-1" title="<?php echo $meta['mpncod'] . ' - ' . $meta['mpndsc']; ?>">
                                         <div data-cor="<?php echo $cor ?>" class="widget div-indicador <?php echo $cor ?>">
                                             <div class="row">
@@ -419,6 +406,14 @@
 </div>
 
 <?php
+//    bootstrapPopup(
+//        "Grafico Planos Internos",
+//        'modal_grafico',
+//        '',
+//        array('fechar'),
+//        array('tamanho' => 'xl')
+//    );
+
     bootstrapPopup(
         "Planos Internos(PIs) da Subunidade vinculados a essa Meta",
         'detalhe-pi',
@@ -438,10 +433,6 @@
 
 <script>
     $(function(){
-        
-        $('#div_modal_acompanhamento_indicador').find('.btn-salvar').click(function(){
-            $('#formulario-acompanhamento-indicador').find('[type="submit"]').trigger('click');
-        });
         
         $('#div_lista_indicador_pnc').on('click', '.editar_indicador', function(){
             var idpid = $(this).attr('data-idpid');
@@ -465,24 +456,13 @@
             return false;
         });
         
-        $('#claid').change(function(){
-            $.ajax({
-                url: '?modulo=principal/monitorar-pnc&acao=A&req=carregarMedida&claid=' + $(this).val(),
-                dataType: 'json',
-                success: function(retorno){
-                    $('#span-medida').html(retorno.select);
-                    if(retorno.medida == 't'){
-                        $('#span-medida').show();
-                    } else {
-                        $('#span-medida').hide();
-                    }
-                }
-            });
+        $('#div_modal_acompanhamento_indicador').find('.btn-salvar').click(function(){
+            $('#formulario-acompanhamento-indicador').find('[type="submit"]').trigger('click');
         });
 
-        $('.selecionar-indicador').click(function(){
+        $('.selecionar-meta-pnc').click(function(){
             if(!$('#suoid').val()){
-                swal('', 'Por favor, escolha uma unidade.', 'warning');
+                swal('', 'Por favor, escolha uma Subunidade.', 'warning');
                 return false;
             }
         });
@@ -508,56 +488,6 @@
             return false;
         });
 
-        $('#btn-salvar').click(function(){
-            if($('#span-medida').css('display') != 'none' && !$('#medidas').val()){
-                swal('', "O campo 'Medidas a serem adotadas' é de preenchimento obrigatório", 'warning');
-                return false;
-            }
-
-            $('#formulario').submit();
-        });
-        
-        $('#btn_inserir_anexos').click(function(){
-            abrirModalUpload();
-        });
-
-        // Evento de terminar de carregar arquivos
-        Dropzone.options.formularioAnexo = {
-            init: function() {
-                
-                this.on("success", function(file, response){
-                    var jsonResponse = $.parseJSON(response);
-                    inserirNovoAnexo(jsonResponse);
-                });
-
-                this.on("queuecomplete", function(file){
-
-                    // Armazena o objeto Dropzone para chamar métodos
-                    objFormularioAnexo = this;
-                    // Chama mensagem de sucesso
-                    swal({
-                      title: "",
-                      text: "Arquivos salvos com sucesso!",
-                      timer: 2000,
-                      showConfirmButton: false,
-                      type: "success"
-                    }, function(){
-                        // Fecha o swal alert
-                        swal.close();
-                        // limpa campo de upload
-                        objFormularioAnexo.removeAllFiles();
-                        // fecha modal após a seleção
-                        $('#modal_upload').modal('hide');
-                    });
-                });
-            }
-        };
-        
-        $('#table_anexos').on('click', '.btnRemoverAnexos', function(){
-            var id = $(this).attr('data-anexos');
-            $('.tr_anexos_'+ id).remove();
-        });
-
         $('#percentual-empenhado').liquidMeter({
             shape: 'circle',
             color: '#0088cc',
@@ -577,14 +507,12 @@
         });
 
     });
-
-    function abrirModalUpload() {
-        $('.modal_dialog_upload').show();
-        $('#modal_upload').modal();
-        $('#modal_upload .chosen-container').css('width', '100%');
-    }
     
     function abrirModalGrafico() {
+//        var url = $(this).attr('href');
+//        $('#detalhe-pi .modal-body').load(url);
+//        $('#detalhe-pi').modal();
+//
         $('.modal_dialog_grafico').show();
         $('#modal_grafico').modal();
         $('#modal_grafico .chosen-container').css('width', '100%');
@@ -599,19 +527,6 @@
     function carregarListaIndicadorPnc(acpid){
         var url = '?modulo=principal/monitorar-pnc&acao=A&req=listar-indicadores-pnc'+ '&acpid='+ acpid;
         $('#div_lista_indicador_pnc').load(url);
-    }
-
-    function inserirNovoAnexo(json){
-        var trHtml = '<tr style="height: 30px;" class="tr_anexos_'+ json.arqid +'" >'
-            + '                    <td style="text-align: left;"><a href="#" onclick="javascript:abrirArquivo('+ json.arqid+ '); return false;" >'+ json.arqnome +'</a></td>'
-            + '                    <td style="text-align: left;">'+ json.arqdescricao +'</td>'
-            + '                    <td style="text-align: center;">'
-            + '                         <input type="hidden" value="'+ json.arqid +'" name="listaAnexos[]">'
-            + '                         <span class="glyphicon glyphicon-trash btnRemoverAnexos link" title="Excluir o arquivo '+ json.arqnome+ '" data-anexos="'+ json.arqid +'" >'
-            + '                    </td>'
-            + '                </tr>'
-        ;
-        $('#table_anexos').append(trHtml);
     }
 
 </script>
