@@ -23,7 +23,7 @@
             $cAcompanhamentopnc->recuperarPiPorMetaPncESubunidade($_REQUEST['mpnid'], $_REQUEST['suoid']);
         die;
         case 'exibir-grafico':
-//            $cAcompanhamentopnc->exibirGrafico($_REQUEST['mpnid'], $_REQUEST['suoid']);
+            include_once APPRAIZ. 'acompanhamento/modulos/principal/modal-grafico-pnc.inc';
         die;
         case 'ver-historico':
 //            $cAcompanhamentopnc->recuperarHistorico($_REQUEST['acpid']);
@@ -129,7 +129,7 @@
                         <div class="col-sm-6">
                             <?php
                                 $listaUnidades = (new Public_Model_SubUnidadeOrcamentaria())->recuperarPorUsuario();
-                                echo $simec->select('suoid', 'Unidade', $suoid, $listaUnidades, null, ['label-size'=>2]);
+                                echo $simec->select('suoid', 'Subunidade', $suoid, $listaUnidades, null, ['label-size'=>2]);
                             ?>
                         </div>
 
@@ -168,6 +168,7 @@
                                 
                                 $valoresOrcamentarios = (new Pi_PlanoInterno())->recuperarValoresPiMetaPncESubunidade($mpnid, $suoid);
                         ?>
+                            <input type="hidden" id="mpnid" value="<?php echo $mpnid; ?>" />
                             <hr />
                             
                             <div class="col-sm-12">
@@ -348,71 +349,14 @@
     </div>
 </div>
 
-
-<!-- Div do Modal do Grafico -->
-<div class="row">
-    <div class="col-md-12">
-        <div id="modal_grafico" class="modal fade">
-            <div class="modal_dialog_grafico">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button class="close" aria-hidden="true" data-dismiss="modal" type="button">×</button>
-                        <h4 class="modal-title">Grafico Planos Internos</h4>
-                    </div>
-                    <div class="modal-body">
-                        <?php if($mpnid): ?>
-                            <div class="col-sm-12">
-                                <div class="col-md-8">
-                                    <h3 class="text-center">PI's Associados à Meta</h3>
-                                    <?php
-                                        $listaPI = (new Pi_PlanoInterno())->recuperarValoresPiMetaPncESubunidade($mpnid, $suoid);
-                                        $metaPnc = new Public_Model_MetaPnc($mpnid);
-                                        $dadosGrafico = [];
-                                        if(count($listaPI)){
-                                            foreach ($listaPI as $key => $valor) {
-                                                if(in_array($key, ['previsto', 'provisionado', 'empenhado', 'liquidado', 'pago'])){
-                                                    $dadosGrafico[$key]['descricao'] = ucfirst($key);
-                                                    $dadosGrafico[$key]['valor'] = $valor;
-                                                    $dadosGrafico[$key]['categoria'] = $metaPnc->mpncod;
-                                                }
-                                            }
-                                        }
-
-                                        $colors = "'#55BF3B', '#eeaaee', '#00BFFF', '#aaeeee', '#7798BF', '#DDDF0D', '#7CCD7C', '#DF5353', '#008000', '#CD0000', '#FF4500', '#ff0066', '#4B0082', '#808000', '#800000', '#2F4F4F', '#006400', '#FFA500'";
-                                        $grafico = new Grafico(Grafico::K_TIPO_COLUNA, false);
-                                        $grafico->setFormatoTooltip(Grafico::K_TOOLTIP_DECIMAL_0)
-                                            ->setColors($colors)
-                                            ->setHeight('250px')
-                                            ->gerarGrafico($dadosGrafico);
-                                    ?>
-                                </div>
-                                <div class="col-sm-2">
-                                    <?php
-                                        $percentual = $valoresOrcamentarios['previsto']? $valoresOrcamentarios['empenhado'] * 100 / $valoresOrcamentarios['previsto'] : 0;
-                                    ?>
-                                    <h3 class="text-center">Percentual de Empenho</h3>
-                                    <meter style="display: none;" max="1000" value="<?php echo $percentual; ?>" id="percentual-empenhado"></meter>
-                                </div>
-                            </div>
-                        <?php endif; ?>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-default" data-dismiss="modal" type="button">Fechar</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
 <?php
-//    bootstrapPopup(
-//        "Grafico Planos Internos",
-//        'modal_grafico',
-//        '',
-//        array('fechar'),
-//        array('tamanho' => 'xl')
-//    );
+    bootstrapPopup(
+        "Grafico de execução dos Planos Internos(PIs) da Subunidade vinculados a essa Meta",
+        'modal_grafico',
+        '',
+        array('fechar'),
+        array('tamanho' => 'xl')
+    );
 
     bootstrapPopup(
         "Planos Internos(PIs) da Subunidade vinculados a essa Meta",
@@ -434,6 +378,42 @@
 <script>
     $(function(){
         
+        // Evento do componente de exibir Número da meta
+        $('.div-indicador').mouseenter(function(){
+            var cor = $(this).data('cor');
+            $(this).removeClass(cor).addClass('blue-bg');
+        });
+
+        // Evento do componente de exibir Número da meta
+        $('.div-indicador').mouseleave(function(){
+            var cor = $(this).data('cor');
+            $(this).removeClass('blue-bg').addClass(cor);
+        });
+
+        $('.selecionar-meta-pnc').click(function(){
+            if(!$('#suoid').val()){
+                swal('', 'Por favor, escolha uma Subunidade.', 'warning');
+                return false;
+            }
+        });
+
+        $('#suoid').change(function(){
+            window.location.href = '?modulo=principal/monitorar-pnc&acao=A&suoid=' + $(this).val();
+        });
+
+        $('.detalhe-pi').click(function(){
+            var url = $(this).attr('href');
+            $('#detalhe-pi .modal-body').load(url);
+            $('#detalhe-pi').modal();
+            return false;
+        });
+
+        $('.a_grafico').click(function(){
+            exibirGrafico();
+            return false;
+        });
+
+        // Eventos do ícone(ou número) de edição da lista de indicadores PNC
         $('#div_lista_indicador_pnc').on('click', '.editar_indicador', function(){
             var idpid = $(this).attr('data-idpid');
             var acpid = $(this).attr('data-acpid');
@@ -456,66 +436,24 @@
             return false;
         });
         
+        // Evento do botão salvar da janela modal do Cadastro de Indicadores PNC
         $('#div_modal_acompanhamento_indicador').find('.btn-salvar').click(function(){
             $('#formulario-acompanhamento-indicador').find('[type="submit"]').trigger('click');
         });
 
-        $('.selecionar-meta-pnc').click(function(){
-            if(!$('#suoid').val()){
-                swal('', 'Por favor, escolha uma Subunidade.', 'warning');
-                return false;
-            }
-        });
-
-        $('#suoid').change(function(){
-            window.location.href = '?modulo=principal/monitorar-pnc&acao=A&suoid=' + $(this).val();
-        });
-
-        $('.div-indicador').mouseenter(function(){
-            var cor = $(this).data('cor');
-            $(this).removeClass(cor).addClass('blue-bg');
-        });
-
-        $('.div-indicador').mouseleave(function(){
-            var cor = $(this).data('cor');
-            $(this).removeClass('blue-bg').addClass(cor);
-        });
-
-        $('.detalhe-pi').click(function(){
-            var url = $(this).attr('href');
-            $('#detalhe-pi .modal-body').load(url);
-            $('#detalhe-pi').modal();
-            return false;
-        });
-
-        $('#percentual-empenhado').liquidMeter({
-            shape: 'circle',
-            color: '#0088cc',
-            background: '#F9F9F9',
-            fontSize: '24px',
-            fontWeight: '600',
-            stroke: '#F2F2F2',
-            textColor: '#333',
-            liquidOpacity: 0.9,
-            liquidPalette: ['#333'],
-            speed: 3000
-        });
-
-        $('.a_grafico').click(function(){
-            abrirModalGrafico();
-            return false;
-        });
-
     });
     
-    function abrirModalGrafico() {
-//        var url = $(this).attr('href');
-//        $('#detalhe-pi .modal-body').load(url);
-//        $('#detalhe-pi').modal();
-//
-        $('.modal_dialog_grafico').show();
+    /**
+     * Exibe a janela modal do grafico de execução orçamentária Da Meta da Subunidade.
+     * 
+     * @returns {undefined}
+     */
+    function exibirGrafico(){
+        var suoid = $('#suoid').val();
+        var mpnid = $('#mpnid').val();
+        var url = '?modulo=principal/monitorar-pnc&acao=A&req=exibir-grafico'+ '&suoid='+ suoid+ '&mpnid='+ mpnid;
+        $('#modal_grafico .modal-body').load(url);
         $('#modal_grafico').modal();
-        $('#modal_grafico .chosen-container').css('width', '100%');
     }
 
     /**
