@@ -115,30 +115,11 @@ if ($_REQUEST['alterarCodigoPi']) {
     $mPlanoInterno = new Pi_PlanoInterno($_REQUEST['pliid']);
     $resultado = $mPlanoInterno->consultaCodigoPi($_REQUEST['plicod']);
     if ($resultado) {
-        $resposta = "
-            <script>
-                swal({
-                    title: 'Atenção!',
-                    text: 'O código de PI ". strtoupper($_REQUEST['plicod']). " já está sendo usado!',
-                    type: 'warning'
-                });
-            </script>
-        ";
-        echo strtoupper($_REQUEST['plicodantigo']);
+        echo false;
     } else {
         $dadosPI = $mPlanoInterno->alterarCodigoPi($_REQUEST['plicod']);
-        $resposta = "
-            <script>
-                swal({
-                    title: '',
-                    text: 'O código de PI foi alterado com sucesso!',
-                    type: 'success'
-                });
-            </script>
-        ";
-        echo strtoupper($_REQUEST['plicod']);
+        echo true;
     }
-    echo $resposta;
     die();
 }
 
@@ -253,6 +234,7 @@ include APPRAIZ . "includes/cabecalho.inc";
             <?php if(!empty($dadosPI['plicod'])){ ?>
                 <span style="color: red; padding: 5px;" id="span-plicod"><?= strtoupper($dadosPI['plicod']) ?></span>
                 <input class="upper-text" minlength="15" maxlength="15" type="text" id="plicod" value="<?= $dadosPI['plicod'] ?>" style="display:none;">
+                <input class="upper-text" minlength="15" maxlength="15" type="hidden" id="plicodantigo" value="<?= $dadosPI['plicod'] ?>" style="display:none;">
                 <a style="margin-left: 10px;" class="fa fa-history" id="modal-historico-pi" title="Histórico de alterações"></a>
             <?php } ?>
         </h2>

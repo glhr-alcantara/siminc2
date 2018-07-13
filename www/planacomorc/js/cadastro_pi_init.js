@@ -415,8 +415,30 @@
         // Evento ao alterar o valor do código do PI
         $('#plicod').change(function(){
             var plicod = $(this).val();
-            var plicodantigo = $('#span-plicod').html();
-            $('#span-plicod').load(urlPagina+ '&alterarCodigoPi=ok&pliid='+$('#pliid').val() + '&plicod='+$('#plicod').val()+'&plicodantigo='+plicodantigo);
+            var plicodantigo = $('#plicodantigo').val();
+            if ( plicod != plicodantigo ){
+
+                $.ajax({
+                    url: urlPagina+'&alterarCodigoPi=ok&pliid='+$('#pliid').val()+'&plicod='+$('#plicod').val()+'&plicodantigo='+plicodantigo,
+                    success: function($retorno){
+                        if(!$retorno){
+                            swal({
+                                title: 'Atenção!',
+                                text: 'O código de PI '+plicod+' já está sendo usado!',
+                                type: 'warning'
+                            });
+                            $(this).val(plicodantigo);
+                        } else {
+                            swal({
+                                title: '',
+                                text: 'O código de PI foi alterado com sucesso!',
+                                type: 'success'
+                            });
+                            $('#span-plicod').html(plicod);
+                        }
+                    }
+                });
+            }
         });
 
         // Evento ao mudar sair do campo de código do PI
