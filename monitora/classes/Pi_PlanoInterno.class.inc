@@ -1145,7 +1145,7 @@ class Pi_PlanoInterno extends Modelo
         $plicod = strtoupper($plicod);
 
         $sql = "SELECT
-                    p.plicod
+                    p.pliid
                 FROM
                     monitora.pi_planointerno AS p
                     JOIN workflow.documento AS d ON p.docid = d.docid
@@ -1155,13 +1155,11 @@ class Pi_PlanoInterno extends Modelo
                     OR (plistatus = 'I'
                     AND esdid = '" . ESD_PI_CANCELADO . "'))
         ";
-        return $this->carregar($sql);
-
+        return $this->pegaUm($sql);
     }
 
     public function alterarCodigoPi($plicod)
     {
-
         $codigoAntigo = $this->plicod;
         $this->plicod = $plicod;
         $this->salvar();
@@ -1173,8 +1171,9 @@ class Pi_PlanoInterno extends Modelo
         $mHistoricoPi->salvar();
         $this->commit();
 
-        echo $this->plicod;
+        return $this;
     }
+
     public function verificarPermissaoEditar($estadoAtual, $perfis)
     {
         switch ($estadoAtual['esdid']) {

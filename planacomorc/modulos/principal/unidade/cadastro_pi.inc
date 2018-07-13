@@ -112,14 +112,8 @@ if ($_REQUEST['verificarPactuacaoConvenio']) {
     die();
 }
 if ($_REQUEST['alterarCodigoPi']) {
-    $mPlanoInterno = new Pi_PlanoInterno($_REQUEST['pliid']);
-    $resultado = $mPlanoInterno->consultaCodigoPi($_REQUEST['plicod']);
-    if ($resultado) {
-        echo false;
-    } else {
-        $dadosPI = $mPlanoInterno->alterarCodigoPi($_REQUEST['plicod']);
-        echo true;
-    }
+    $resposta = simec_json_encode(alterarCodigoPi($_REQUEST));
+    echo $resposta;
     die();
 }
 
@@ -214,9 +208,9 @@ include APPRAIZ . "includes/cabecalho.inc";
 <script language="JavaScript" src="../includes/funcoesspo.js?v=1"></script>
 <link rel="stylesheet" href="/library/bootstrap-switch/stylesheets/bootstrap-switch.css">
 <script src="/library/bootstrap-switch/js/bootstrap-switch.min.js"></script>
-<script src="js/cadastro_pi_funcoes.js?v=8"></script>
-<script src="js/cadastro_pi_validacoes.js?v=8"></script>
-<script src="js/cadastro_pi_init.js?v=8"></script>
+<script src="js/cadastro_pi_funcoes.js?v=9"></script>
+<script src="js/cadastro_pi_validacoes.js?v=9"></script>
+<script src="js/cadastro_pi_init.js?v=9"></script>
 <style>
     autorizadocapital {
         display: none;
@@ -233,8 +227,7 @@ include APPRAIZ . "includes/cabecalho.inc";
             Cadastro de PI
             <?php if(!empty($dadosPI['plicod'])){ ?>
                 <span style="color: red; padding: 5px;" id="span-plicod"><?= strtoupper($dadosPI['plicod']) ?></span>
-                <input class="upper-text" minlength="15" maxlength="15" type="text" id="plicod" value="<?= $dadosPI['plicod'] ?>" style="display:none;">
-                <input class="upper-text" minlength="15" maxlength="15" type="hidden" id="plicodantigo" value="<?= $dadosPI['plicod'] ?>" style="display:none;">
+                <input class="upper-text" maxlength="11" type="text" id="plicod" value="<?= $dadosPI['plicod'] ?>" style="display:none;">
                 <a style="margin-left: 10px;" class="fa fa-history" id="modal-historico-pi" title="Histórico de alterações"></a>
             <?php } ?>
         </h2>

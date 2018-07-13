@@ -110,35 +110,11 @@ if ($_REQUEST['verificarPactuacaoConvenio']) {
     die();
 }
 if ($_REQUEST['alterarCodigoPi']) {
-    $mPlanoInterno = new Pi_PlanoInterno($_REQUEST['pliid']);
-    $resultado = $mPlanoInterno->consultaCodigoPi($_REQUEST['plicod']);
-    if ($resultado) {
-        $resposta = "
-            <script>
-                swal({
-                    title: 'Atenção!',
-                    text: 'O código de PI do FNC ". strtoupper($_REQUEST['plicod']). " já está sendo usado!',
-                    type: 'warning'
-                });
-            </script>
-        ";
-        echo strtoupper($_REQUEST['plicodantigo']);
-    } else {
-        $dadosPI = $mPlanoInterno->alterarCodigoPi($_REQUEST['plicod']);
-        $resposta = "
-            <script>
-                swal({
-                    title: '',
-                    text: 'O código de PI do FNC foi alterado com sucesso!',
-                    type: 'success'
-                });
-            </script>
-        ";
-//        echo strtoupper($_REQUEST['plicodantigo']);
-    }
+    $resposta = simec_json_encode(alterarCodigoPi($_REQUEST));
     echo $resposta;
     die();
 }
+
 if($_REQUEST['req'] == 'historico-pi') {
     include_once APPRAIZ. "planacomorc/modulos/principal/unidade/historico_pi_modal.inc";
     die();
@@ -251,9 +227,9 @@ include APPRAIZ . "includes/cabecalho.inc";
 <script language="JavaScript" src="../includes/funcoesspo.js?v=1"></script>
 <link rel="stylesheet" href="/library/bootstrap-switch/stylesheets/bootstrap-switch.css">
 <script src="/library/bootstrap-switch/js/bootstrap-switch.min.js"></script>
-<script src="js/cadastro_pi_funcoes.js?v=8"></script>
-<script src="js/cadastro_pi_validacoes.js?v=8"></script>
-<script src="js/cadastro_pi_init.js?v=8"></script>
+<script src="js/cadastro_pi_funcoes.js?v=9"></script>
+<script src="js/cadastro_pi_validacoes.js?v=9"></script>
+<script src="js/cadastro_pi_init.js?v=9"></script>
 <style>
     autorizadocapital {
         display: none;
@@ -270,7 +246,7 @@ include APPRAIZ . "includes/cabecalho.inc";
             Cadastro de PI do FNC
             <?php if(!empty($dadosPI['plicod'])){ ?>
                 <span style="color: red; padding: 5px;" id="span-plicod"><?= strtoupper($dadosPI['plicod']) ?></span>
-                <input class="upper-text" minlength="15" maxlength="15" type="text" id="plicod" value="<?= $dadosPI['plicod'] ?> " style="display:none;">
+                <input class="upper-text" maxlength="11" type="text" id="plicod" value="<?= $dadosPI['plicod'] ?> " style="display:none;">
                 <a style="margin-left: 10px;" class="fa fa-history" id="modal-historico-pi" title="Histórico de alterações"></a>
             <?php } ?>
         </h2>
