@@ -908,7 +908,6 @@ class Emendas_Model_Emenda extends Modelo
 
     public function atualizarSiconv($benid = NULL)
     {
-        global $configSiconv;
 
         $sql = "
             SELECT
@@ -933,29 +932,38 @@ class Emendas_Model_Emenda extends Modelo
             }
         }
 
-        $usuario = $configSiconv->user;
-        $senha = $configSiconv->pwd;
-
+        $mUsuarioSiconv = (new Emendas_Model_UsuarioSiconv())->RetornaConfiguracaoSiconv();
+        $usuario = $mUsuarioSiconv['usucpf'];
+        $senha = md5(base64_decode($mUsuarioSiconv['ususenhasiconv']));
+        
         $arrParam = array(
             'usuario' => $usuario,
-            'senha' 	=> $senha,
-            'url' 	=> WEB_SERVICE_SICONV_URL,
+            'senha'   => $senha,
+            'url'     => WEB_SERVICE_SICONV_URL,
         );
         $obWS = new WSIntegracaoSiconv($arrParam);
 
         $sql = "delete from siconv.propostaws";
         $this->executar($sql);
-
+                                                                                                                                                                                                                                                                                                            
         if($emenda){
-            $this->recuperarPropostaWs($obWS, $emenda);
-
+            try{
+                $teste = $this->recuperarPropostaWs($obWS, $emenda);
+            }catch(Exception $e){
+                switch (trim($e->getMessage())) {
+                    case ERR_USUARIO_INCORRETO:
+                        $mensagem = "O usuário ou senha estão incorretos para conexão com o WebService do SICONV!";
+                        break;
+                    case ERR_QUANTIDADE_VEZES_EXCEDIDA:
+                        $mensagem = "O sistema recebeu mais de uma solicitação de atualização em menos de 5 segundos. Tente novamente daqui alguns instantes!";
+                        break;
+                    default:
+                        $mensagem = "Erro ao conectar ao WebService do SICONV.";
+                        break;
+                }
+                simec_redirecionar('?modulo=principal/beneficiario_form&acao=A&benid=7966&benid='. $benid, 'error', $mensagem);
+            }
             $mSiconv = new Emendas_Model_Siconv();
-
-//            $filtro = [
-//                "coalesce(situacaopropostaws, '') != ''",
-//                "coalesce(parecerproposta, '') != ''",
-//            ];
-
             $mSiconv->atualizar();
         }
 
@@ -966,13 +974,13 @@ class Emendas_Model_Emenda extends Modelo
 
     public function atualizarPrograma()
     {
-        global $configSiconv;
-
+     
         $mPrograma = new Emendas_Model_Programa();
         $programas = $mPrograma->recuperarTodos();
 
-        $usuario = $configSiconv->user;
-        $senha = $configSiconv->pwd;
+        $mUsuarioSiconv = (new Emendas_Model_UsuarioSiconv())->RetornaConfiguracaoSiconv();
+        $usuario = $mUsuarioSiconv['usucpf'];
+        $senha = md5(base64_decode($mUsuarioSiconv['ususenhasiconv']));
 
         $arrParam = array(
             'usuario' => $usuario,

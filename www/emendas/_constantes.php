@@ -33,3 +33,7 @@ define("PFL_ADMINISTRADOR", 1507);
 define("PFL_ASPAR", 1508);
 define("PFL_SUBUNIDADE", 1506);
 define("PFL_PLANEJAMENTO", 956);
+
+//Erros retornados pelo webservice SICONV
+define('ERR_USUARIO_INCORRETO', 'web.service.erro.nao.foi.encontrado.um.usuario.no.sistema.com.as.credenciais.informadas');
+define('ERR_QUANTIDADE_VEZES_EXCEDIDA', 'br.gov.mp.siconv.ws.exception.WSException: "Deve haver um intervalo de 5 segundos entre duas chamadas seguidas ao Web Service"');
