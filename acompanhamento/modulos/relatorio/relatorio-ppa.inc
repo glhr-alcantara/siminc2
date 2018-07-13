@@ -132,7 +132,7 @@
                                     echo $simec->input('Referência', 'Referência', "{$mJanela->jandsc} ({$janinicio} - {$janfim})");
                                     echo $simec->select('suocod', 'Subunidade', $subUnidade->suocod, (new Public_Model_SubUnidadeOrcamentaria())->queryCombo((object)['exercicio' => $_SESSION['exercicio']]));
                                     echo $simec->input('Objetivo', 'Objetivo', "{$infoMeta['oppcod']} - {$infoMeta['oppdsc']}");
-                                    echo $simec->input('Meta', 'Meta', "{$infoMeta['mppcod']} - {$infoMeta['mppdsc']} {$compartilhada}");
+                                    echo $simec->input('Meta', 'Meta', "{$infoMeta['mppcod']} - {$infoMeta['mppnome']} {$compartilhada}");
                                     echo $simec->input('Previsto', 'Previsto PPA', number_format($infoMeta['mppquantidade'], 2, ',', '.'));
                                     if($infoMeta['mppanualizavel'] == 't'){
                                         echo $simec->input('Previstoa', 'Previsto Anualizado', number_format($infoMeta['mppquantidadeanualizada'], 2, ',', '.'));

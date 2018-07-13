@@ -52,7 +52,7 @@
                             <td class="text-center"><?php echo $botao; ?></td>
                             <td>
                                 <?php
-                                echo $dados['mppcod'] . " - " . $dados['mppdsc'];
+                                echo $dados['mppcod'] . " - " . $dados['mppnome'];
                                 if($dados['compartilhada'] == 't'){
                                     echo ' <i style="font-size: 15px; color: #6892ff;" class="fa fa-handshake-o link" title="Meta Compartilhada com outras Subunidades."></i>';
                                 }

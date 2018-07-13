@@ -298,7 +298,7 @@ function carregarMetasPPA($oppid, $mppid, $suocod = null) {
     $sql = "
         SELECT DISTINCT
             m.mppid AS codigo,
-            m.mppcod || ' - ' || m.mppdsc AS descricao
+            m.mppcod || ' - ' || m.mppnome AS descricao
         FROM public.metappa m
 		JOIN public.objetivometappa om ON m.mppid = om.mppid
         $join
@@ -316,22 +316,33 @@ function carregarMetasPPA($oppid, $mppid, $suocod = null) {
 /**
  * Monta a combo de iniciativas PPA
  */
-function carregarIniciativaPPA($oppid, $ippid) {
+function carregarIniciativaPPA($oppid, $ippid, $listaSubunidades=null) {
     global $db;
-
-    $sql = "
-        SELECT
-            ippid AS codigo,
-            ippcod || ' - ' || ippnome AS descricao
-        FROM public.iniciativappa
-        WHERE
-            ippstatus = 'A'
-            AND prsano = '{$_SESSION['exercicio']}'
-            AND oppid = ". (int)$oppid. "
-        ORDER BY
-            ippcod
-    ";
-
+    $filtroSubUnidades = $listaSubunidades!=null?" and su.suocod =  '$listaSubunidades'":'';
+    $sql = "select i.ippid as codigo,
+                   i.ippcod || ' - ' || i.ippnome AS descricao,
+                   ippcod
+              from public.iniciativappa i
+              left join spo.subunidadeiniciativappa si
+                on i.ippid = si.ippid
+              left join public.vw_subunidadeorcamentaria su
+                on si.suoid = su.suoid
+             where i.prsano = '{$_SESSION['exercicio']}'
+               $filtroSubUnidades
+               and i.oppid = ". (int)$oppid. " 
+               and ippstatus = 'A'
+             union
+            select i.ippid as codigo,
+                   i.ippcod || ' - ' || i.ippnome AS descricao,
+                   ippcod
+              from public.iniciativappa i
+              left join spo.subunidadeiniciativappa si
+                on i.ippid = si.ippid
+             where si.ippid is null 
+               and i.oppid = ". (int)$oppid. " 
+               and ippstatus = 'A'
+             ORDER BY ippcod";
+//ver($sql,d);
     $db->monta_combo('ippid', $sql, 'S', 'Selecione', null, null, null, null, 'N', 'ippid', null, (isset($ippid)? $ippid: null), null, 'class="form-control chosen-select" style="width=100%;"');
 }
 
@@ -2133,7 +2144,7 @@ function carregarPiComDetalhes(stdclass $filtros) {
             pli.eqdid,
             eqd.eqddsc,
             opp.oppcod || ' - ' || opp.oppnome AS objetivo,
-            m.mppcod || ' - ' || m.mppdsc AS meta,
+            m.mppcod || ' - ' || m.mppnome AS meta,
             i.ippcod || ' - ' || i.ippnome AS iniciativa,
             mpn.mpncod || ' - ' || mpn.mpnnome AS meta_pnc,
             ipn.ipncod || ' - ' || ipn.ipndsc AS iniciativa_pnc,
