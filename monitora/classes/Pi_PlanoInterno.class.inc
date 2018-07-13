@@ -1135,40 +1135,46 @@ class Pi_PlanoInterno extends Modelo
         return $dados ? $dados : [];
     }
 
-    public function alterarCodigoPi($plicod)
+    /**
+     * Verifica se o Código de PI inserido está sendo usado.
+     *
+     * @param $plicod
+     * @return array
+     */
+    public function consultaCodigoPi($plicod)
     {
         $plicod = strtoupper($plicod);
+
         $sql = "SELECT
-                    plicod
-                FROM monitora.pi_planointerno
-                WHERE plicod = '" . $plicod . "'
+                    p.pliid
+                FROM
+                    monitora.pi_planointerno AS p
+                    JOIN workflow.documento AS d ON p.docid = d.docid
+                WHERE
+                    plicod = '" . $plicod . "'
+                    AND (plistatus = 'A'
+                    OR (plistatus = 'I'
+                    AND esdid = '" . ESD_PI_CANCELADO . "'))
         ";
-        $resultado = $this->carregar($sql);
-
-        if ($resultado) { ?>
-            <script>
-                swal({
-                    title: "Atenção!",
-                    text: "O código de PI já está sendo usado!",
-                    type: "warning"
-                });
-            </script>
-            <?php
-
-        } else {
-            $codigoAntigo = $this->plicod;
-            $this->plicod = $plicod;
-            $this->salvar();
-            $mHistoricoPi = new Planacomorc_Model_HistoricoPi();
-            $mHistoricoPi->pliid = $this->pliid;
-            $mHistoricoPi->usucpf = $_SESSION['usucpf'];
-            $mHistoricoPi->hpidscantigo = $codigoAntigo;
-            $mHistoricoPi->hpidscnovo = $plicod;
-            $mHistoricoPi->salvar();
-            $this->commit();
-        }
-        echo $this->plicod;
+        return $this->pegaUm($sql);
     }
+
+    public function alterarCodigoPi($plicod)
+    {
+        $codigoAntigo = $this->plicod;
+        $this->plicod = $plicod;
+        $this->salvar();
+        $mHistoricoPi = new Planacomorc_Model_HistoricoPi();
+        $mHistoricoPi->pliid = $this->pliid;
+        $mHistoricoPi->usucpf = $_SESSION['usucpf'];
+        $mHistoricoPi->hpidscantigo = $codigoAntigo;
+        $mHistoricoPi->hpidscnovo = $plicod;
+        $mHistoricoPi->salvar();
+        $this->commit();
+
+        return $this;
+    }
+
     public function verificarPermissaoEditar($estadoAtual, $perfis)
     {
         switch ($estadoAtual['esdid']) {
