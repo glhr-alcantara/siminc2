@@ -711,6 +711,7 @@ class Pi_PlanoInterno extends Modelo
                 AND suo.unofundo IS TRUE
                 AND suo.suocod NOT IN ('203003', '420017')
                 AND suo.prsano = '{$_SESSION['exercicio']}'
+                AND ptr.irpcod <> '6'
             ORDER BY
                 suo.unonome
         ";
