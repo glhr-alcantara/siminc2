@@ -1,4 +1,8 @@
 <?php
+    $mpnid = $_REQUEST['mpnid'];
+    $suoid = $_REQUEST['suoid'];
+    $mPi = new Pi_PlanoInterno();
+    $aPis = $mPi->recuperarPiPorMetaPncESubunidade($mpnid, $suoid);
     if(count($aPis)):
 ?>
     <div class="table-responsive">

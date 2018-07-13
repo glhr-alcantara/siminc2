@@ -17,10 +17,13 @@
             echo json_encode($resultado);
         die;
         case 'listar-indicadores-pnc':
-            $resultado = $cAcompanhamentopnc->listarIndicadoresPNC($_REQUEST['acpid']);
+            include APPRAIZ. 'acompanhamento/modulos/principal/listar-indicadores-pnc.inc';
+        die;
+        case 'listar-atividades-pnc':
+            include APPRAIZ. 'acompanhamento/modulos/principal/listar-atividades-pnc.inc';
         die;
         case 'detalhe-pi':
-            $cAcompanhamentopnc->recuperarPiPorMetaPncESubunidade($_REQUEST['mpnid'], $_REQUEST['suoid']);
+            include_once APPRAIZ . 'acompanhamento/modulos/principal/detalhe-pi.inc';
         die;
         case 'exibir-grafico':
             include_once APPRAIZ. 'acompanhamento/modulos/principal/modal-grafico-pnc.inc';
@@ -247,7 +250,7 @@
                             </div>
 
                             <h1>ATIVIDADES</h1>
-                            <div>
+                            <div data-mode="async" data-url="?modulo=principal/monitorar-pnc&acao=A&req=listar-atividades-pnc&acpid=<?php echo $acompanhamentopnc->acpid; ?>">
                                 Carregando ...
                             </div>
 

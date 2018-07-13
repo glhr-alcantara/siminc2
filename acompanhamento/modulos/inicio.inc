@@ -11,7 +11,7 @@ switch ($_REQUEST['req']) {
         $cAcompanhamento->listarMetasPpa($_REQUEST['suoid'], $_REQUEST['janid']);
         die;
     case 'listar-metas-pnc':
-        $cAcompanhamentopnc->listarMetasPnc($_REQUEST['suoid'], $_REQUEST['janid']);
+        include_once APPRAIZ. 'acompanhamento/modulos/principal/listar-metas-pnc.inc';
         die;
 }
 
@@ -201,7 +201,7 @@ include_once APPRAIZ . "monitora/classes/Pi_PlanoInterno.class.inc";
             <?php $cAcompanhamento->listarMetasPpa($suoid); ?>
         </div>
         <div class="col-md-12" id="box-metas-pnc">
-            <?php $cAcompanhamentopnc->listarMetasPnc($suoid); ?>
+            <?php include_once APPRAIZ. 'acompanhamento/modulos/principal/listar-metas-pnc.inc'; ?>
         </div>
     </div>
 </div>

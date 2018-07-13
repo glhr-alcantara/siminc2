@@ -1,4 +1,5 @@
 <?php
+    $acpid = $_REQUEST['acpid'];
     $acompanhamentopnc = new Acompanhamento_Model_Acompanhamentopnc($acpid);
     $listaIndicadorPnc = $acompanhamentopnc->getIndicadoresPnc();
     
