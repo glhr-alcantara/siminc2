@@ -361,55 +361,6 @@
     </div>
 </div>
 
-<!-- Div do Modal de lista de PIs -->
-<div class="modal fade" id="detalhe-pi" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel"></h4>
-            </div>
-            <div class="modal-body">
-
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-dismiss="modal">Fechar</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Div do Modal do formulário de Anexo de Arquivos -->
-<div class="row">
-    <div class="col-md-12">
-        <div id="modal_upload" class="modal fade">
-            <div class="modal_dialog_upload">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button class="close" aria-hidden="true" data-dismiss="modal" type="button">×</button>
-                        <h4 class="modal-title">Anexar arquivos(Documentos)</h4>
-                    </div>
-                    <div class="modal-body">
-                        <form class="dropzone" method="POST" enctype="multipart/form-data" action="acompanhamento.php?modulo=principal/monitorar-pnc&acao=A&acpid=<?php echo 0 //$acompanhamentopnc->acpid; ?>&aba=1&req=uploadAnexo" id="formularioAnexo" name="formularioAnexo">
-                            <div class="form-group">
-                                <label for="arqdescricao" class="col-lg-2 control-label">Descrição:</label>
-                                <div class="col-lg-10">
-                                    <input type="text" value="" class="CampoEstilo normal form-control" placeholder="Insira a descrição do arquivo." title="Descrição" id="arqdescricao" name="arqdescricao" maxlength="255" size="2">
-                                </div>
-                            </div>
-                            <div class="fallback">
-                                <input name="file" type="file" multiple />
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-default" data-dismiss="modal" type="button">Fechar</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
 <!-- Div do Modal do Grafico -->
 <div class="row">
@@ -467,42 +418,22 @@
     </div>
 </div>
 
-<!-- Modal de Cadastro de Indicador -->
-<div class="row">
-    <div class="col-md-6">
-        <div id="div_modal_cadastro_indicador" class="modal fade">
-            <div class="modal_dialog_upload">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button class="close" aria-hidden="true" data-dismiss="modal" type="button">×</button>
-                        <h4 class="modal-title">Cadastro de acompanhamento do Indicador PNC</h4>
-                    </div>
-                    <div id="div_modal_cadastro_indicador_body" class="modal-body">
-                        
-                        <!-- Formulario de indicador -->
-                        
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-default" type="button" id="Salvar-indicador">Salvar</button>
-                        <button class="btn btn-default" data-dismiss="modal" type="button">Fechar</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
 <?php
+    bootstrapPopup(
+        "Planos Internos(PIs) da Subunidade vinculados a essa Meta",
+        'detalhe-pi',
+        '',
+        array('fechar'),
+        array('tamanho' => 'lg')
+    );
+    
     bootstrapPopup(
         "Cadastro de acompanhamento do Indicador PNC",
         'div_modal_acompanhamento_indicador',
         '',
-        array(
-            'salvar',
-            'fechar'),
-        array(
-            'tamanho' => 'lg'
-        ));
+        array('salvar', 'fechar'),
+        array('tamanho' => 'lg')
+    );
 ?>
 
 <script>
@@ -572,9 +503,7 @@
 
         $('.detalhe-pi').click(function(){
             var url = $(this).attr('href');
-            var title = $(this).attr('title');
             $('#detalhe-pi .modal-body').load(url);
-            $('#detalhe-pi .modal-title').html(title);
             $('#detalhe-pi').modal();
             return false;
         });
