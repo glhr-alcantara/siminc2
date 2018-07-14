@@ -29,6 +29,9 @@
         case 'listar-atividades-pnc':
             include APPRAIZ. 'acompanhamento/modulos/principal/listar-atividades-pnc.inc';
         die;
+        case 'listar-anexos-pnc':
+            include APPRAIZ. 'acompanhamento/modulos/principal/listar-anexos-pnc.inc';
+        die;
         case 'detalhe-pi':
             include_once APPRAIZ . 'acompanhamento/modulos/principal/detalhe-pi.inc';
         die;
@@ -262,7 +265,7 @@
                             </div>
 
                             <h1>ANEXOS</h1>
-                            <div>
+                            <div data-mode="async" data-url="?modulo=principal/monitorar-pnc&acao=A&req=listar-anexos-pnc&acpid=<?php echo $acompanhamentopnc->acpid; ?>">
                                 Carregando ...
                             </div>
                         </div>
@@ -307,6 +310,14 @@
         '',
         array('salvar', 'fechar'),
         array('tamanho' => 'lg')
+    );
+    
+    bootstrapPopup(
+        "Anexar arquivos(Documentos)",
+        'div_modal_acompanhamento_anexo',
+        '',
+        array('fechar'),
+        array('tamanho' => 'xl')
     );
 ?>
 
@@ -398,6 +409,24 @@
         var url = '?modulo=principal/monitorar-pnc&acao=A&req=listar-atividades-pnc'+ '&acpid='+ acpid;
         $('#div_lista_atividade_pnc').empty();
         $('#div_lista_atividade_pnc').load(url);
+    }
+    
+    /**
+     * Carrega a lista de anexos das metas PNC via AJAX.
+     * 
+     * @param {type} acpid
+     * @returns {undefined}
+     */
+    function carregarListaAnexoPnc(acpid){
+        var url = '?modulo=principal/monitorar-pnc&acao=A&req=listar-anexos-pnc'+ '&acpid='+ acpid;
+        $('#div_lista_anexo_pnc').empty();
+        $('#div_lista_anexo_pnc').load(url);
+    }
+
+    function abrirModalUpload() {
+        $('.modal_dialog_upload').show();
+        $('#modal_upload').modal();
+        $('#modal_upload .chosen-container').css('width', '100%');
     }
 
 </script>
