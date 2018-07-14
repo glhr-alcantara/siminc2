@@ -149,6 +149,27 @@ class Acompanhamento_Model_Acompanhamentopnc extends Modelo
     }
     
     /**
+     * Busca anexos do acompanhamento da Meta PNC.
+     * 
+     * @return array
+     */
+    public function buscarAnexos()
+    {
+        $sql = "
+            SELECT
+                a.arqid,
+                a.arqnome || '.' || a.arqextensao AS arqnome,
+                a.arqdescricao
+            FROM acompanhamento.acompanhamentopncarquivo entanexo
+                JOIN public.arquivo a ON(entanexo.arqid = a.arqid)
+            WHERE
+                entanexo.acpid = ". (int)$acpid;
+
+        $dados = $this->carregar($sql);
+        return $dados ? $dados : [];
+    }
+    
+    /**
      * Busca atividades do acompanhamento da Meta PNC.
      * 
      * @return array/boolean
