@@ -12,9 +12,16 @@
         case 'acompanhamento-indicador-pnc-form':
             include_once APPRAIZ. 'acompanhamento/modulos/principal/acompanhamento_indicador_pnc_form.inc';
         die;
+        case 'acompanhamento-atividade-pnc-form':
+            include_once APPRAIZ. 'acompanhamento/modulos/principal/acompanhamento_atividade_pnc_form.inc';
+        die;
         case 'salvar-acompanhamento-indicador-pnc':
-            $resultado = $cAcompanhamentopnc->salvarIndicadorPnc($_REQUEST);
-            echo json_encode($resultado);
+            $resultado = $cAcompanhamentopnc->salvarIndicadorPnc(simec_utf8_decode_recursive($_REQUEST));
+            echo simec_json_encode($resultado);
+        die;
+        case 'salvar-acompanhamento-atividade-pnc':
+            $resultado = $cAcompanhamentopnc->salvarAtividadePnc(simec_utf8_decode_recursive($_REQUEST));
+            echo simec_json_encode($resultado);
         die;
         case 'listar-indicadores-pnc':
             include APPRAIZ. 'acompanhamento/modulos/principal/listar-indicadores-pnc.inc';
@@ -377,7 +384,20 @@
      */
     function carregarListaIndicadorPnc(acpid){
         var url = '?modulo=principal/monitorar-pnc&acao=A&req=listar-indicadores-pnc'+ '&acpid='+ acpid;
+        $('#div_lista_indicador_pnc').empty();
         $('#div_lista_indicador_pnc').load(url);
+    }
+    
+    /**
+     * Carrega a lista de indicadores PNC via AJAX.
+     * 
+     * @param {type} acpid
+     * @returns {undefined}
+     */
+    function carregarListaAtividadePnc(acpid){
+        var url = '?modulo=principal/monitorar-pnc&acao=A&req=listar-atividades-pnc'+ '&acpid='+ acpid;
+        $('#div_lista_atividade_pnc').empty();
+        $('#div_lista_atividade_pnc').load(url);
     }
 
 </script>

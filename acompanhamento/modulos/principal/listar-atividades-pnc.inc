@@ -28,9 +28,8 @@
                 <tr>
                     <td><?php echo $atividade['atvtitulo']; ?></td>
                     <td><?php echo $atividade['atvproduto']; ?></td>
-                    <td><?php echo $atividade['atvprodutoqtd']; ?></td>
+                    <td><?= number_format($atividade['atvprodutoqtd'], 2, ',', '.'); ?></td>
                     <td><?php echo $atividade['mundescricao']. '-'. $atividade['estuf']; ?></td>
-                    <td><?php echo $atividade['atvfonteinformacao']; ?></td>
                     <td>
                         <?php if(
                                 in_array(PFL_SUPERUSUARIO, $listaPerfis)
@@ -53,7 +52,9 @@
             <tr>
                 <td colspan="4"></td>
                 <td>
-                    Button
+                    <button class="btn btn-success editar_atividade" data-atvid="" data-acpid="<?php echo $acpid; ?>" type="button">
+                        <i class="fa fa-check"></i>&nbsp;Incluir nova atividade
+                    </button>
                 </td>
             </tr>
         </tfoot>
@@ -65,7 +66,7 @@
                 <tr>
                     <td colspan="4"></td>
                     <td style="text-align: right;">
-                        <button class="btn btn-success editar_atividade" data-acpid="<?php echo $acpid; ?>" type="button">
+                        <button class="btn btn-success editar_atividade" data-atvid="" data-acpid="<?php echo $acpid; ?>" type="button">
                             <i class="fa fa-check"></i>&nbsp;Incluir nova atividade
                         </button>
                     </td>

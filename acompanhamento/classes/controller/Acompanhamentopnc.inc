@@ -18,13 +18,39 @@ class Acompanhamento_Controller_Acompanhamentopnc
             $acompanhamentoIndicadorPnc->commit();
 
             return array(
-                'success' => utf8_encode('Operação realizada com sucesso!'),
+                'success' => 'Operação realizada com sucesso!',
                 'acpid' => $dados['acpid']
             );
         } catch (Exception $e){
             $acompanhamentoIndicadorPnc->rollback();
             return array(
-                'error' => utf8_encode('Ocorreu um erro ao executar operação!'),
+                'error' => 'Ocorreu um erro ao executar operação!',
+                'acpid' => $dados['acpid']
+            );
+        }
+    }
+    
+    public static function salvarAtividadePnc($dados)
+    {
+        try {
+            if($dados['atvid']){
+                $acompanhamentoAtividadePnc = new Acompanhamento_Model_Atividadepnc($dados['atvid']);
+            } else {
+                $acompanhamentoAtividadePnc = new Acompanhamento_Model_Atividadepnc();
+            }
+            $acompanhamentoAtividadePnc->popularDadosObjeto($dados);
+            $acompanhamentoAtividadePnc->atvprodutoqtd = $acompanhamentoAtividadePnc->atvprodutoqtd? desformata_valor($acompanhamentoAtividadePnc->atvprodutoqtd): NULL;
+            $acompanhamentoAtividadePnc->salvar(NULL, NULL, ['atvproduto', 'atvprodutoqtd', 'muncod']);
+            $acompanhamentoAtividadePnc->commit();
+
+            return array(
+                'success' => 'Operação realizada com sucesso!',
+                'acpid' => $dados['acpid']
+            );
+        } catch (Exception $e){
+            $acompanhamentoAtividadePnc->rollback();
+            return array(
+                'error' => 'Ocorreu um erro ao executar operação!',
                 'acpid' => $dados['acpid']
             );
         }
