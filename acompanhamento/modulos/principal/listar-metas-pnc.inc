@@ -1,3 +1,12 @@
+<?php
+        $suoid = $suoid? $suoid: $_REQUEST['suoid'];
+        $janid = $janid? $janid: $_REQUEST['janid'];
+        $mAcompanhamentopnc = new Acompanhamento_Model_Acompanhamentopnc();
+
+        $mJanela = new Acompanhamento_Model_Janela();
+        $janelaAtiva = $mJanela->recuperarJanelaAtiva(Acompanhamento_Model_Tipo::K_TIPO_INDICADOR_PNC);
+        $aJanelas = $mJanela->recuperarTodos('*', ["prsano = '{$_SESSION['exercicio']}'", "janstatus = 'A'", "tipid = " . Acompanhamento_Model_Tipo::K_TIPO_INDICADOR_PNC], 'janinicio desc');
+?>
 <div class="ibox float-e-margins">
     <div class="ibox-title">
         <?php

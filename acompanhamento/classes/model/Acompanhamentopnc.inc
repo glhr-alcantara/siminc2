@@ -148,7 +148,40 @@ class Acompanhamento_Model_Acompanhamentopnc extends Modelo
         return $listaMetas? $listaMetas: array();
     }
     
-    public function getIndicadoresPnc()
+    /**
+     * Busca atividades do acompanhamento da Meta PNC.
+     * 
+     * @return array/boolean
+     */
+    public function buscarAtividades()
+    {
+        $sql = "
+            SELECT
+                atv.atvid,
+                atv.acpid,
+                atv.atvtitulo,
+                atv.atvproduto,
+                atv.atvprodutoqtd,
+                atv.muncod,
+                mun.mundescricao,
+                mun.estuf,
+                atv.atvfonteinformacao,
+                atv.atvdatacadastro
+            FROM acompanhamento.atividade_pnc atv
+                LEFT JOIN territorios.municipio mun ON(atv.muncod = mun.muncod)
+            WHERE
+                atv.atvstatus = 'A'
+                AND atv.acpid = ". (int)$this->acpid;
+        $listaAtividades = $this->carregar($sql);
+        return $listaAtividades;
+    }
+    
+    /**
+     * Busca Indicadores do acompanhamento da Meta PNC.
+     * 
+     * @return array/boolean
+     */
+    public function buscarIndicadoresPnc()
     {
         $listaIndicadoresPnc = array();
 
