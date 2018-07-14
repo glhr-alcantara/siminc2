@@ -1,7 +1,7 @@
 <?php
     $acpid = $_REQUEST['acpid'];
     $acompanhamentopnc = new Acompanhamento_Model_Acompanhamentopnc($acpid);
-    $listaIndicadorPnc = $acompanhamentopnc->getIndicadoresPnc();
+    $listaIndicadorPnc = $acompanhamentopnc->buscarIndicadoresPnc();
     
     # Busca informações da Unidade e Subunidade pra exibir informações extras pra o usuário
     $subunidade = new Public_Model_SubUnidadeOrcamentaria($acompanhamentopnc->suoid);

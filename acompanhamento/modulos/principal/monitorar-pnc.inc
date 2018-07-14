@@ -293,6 +293,14 @@
         array('salvar', 'fechar'),
         array('tamanho' => 'lg')
     );
+    
+    bootstrapPopup(
+        "Atividade",
+        'div_modal_acompanhamento_atividade',
+        '',
+        array('salvar', 'fechar'),
+        array('tamanho' => 'lg')
+    );
 ?>
 
 <script>
