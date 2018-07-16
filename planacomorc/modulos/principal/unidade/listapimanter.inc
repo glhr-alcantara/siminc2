@@ -133,7 +133,7 @@
                                 <button id="btn-exportar-xls" class="btn btn-primary btn-buscar" type="button">
                                     <i class="fa fa-file-excel-o"></i> Exportar XLS
                                 </button>
-                                <?php if(!array_intersect($perfis, [PFL_CONSULTA, PFL_GESTÃO_CONSULTA])){ ?>
+                                <?php if(!array_intersect($perfis, [PFL_CONSULTA, PFL_CONSULTA_UNIDADE])){ ?>
                                 <button class="btn btn-success btn-novo" type="button">
                                     <span class="glyphicon glyphicon-plus"></span>
                                     Novo
@@ -184,9 +184,8 @@
                         ?>
                         <tr>
                             <td class="text-center" nowrap="nowrap">
-                              <?php if(!array_intersect($perfis, [PFL_GESTÃO_CONSULTA])){ ?>
                                 <a href="javascript:alterarPi(<?php echo $dados['pliid']; ?>);" title="Editar"><span class="btn btn-primary btn-sm glyphicon glyphicon-pencil"></span></a>
-                              <?php } if (!array_intersect([PFL_GESTÃO_CONSULTA, PFL_SUBUNIDADE, PFL_CONSULTA], $perfis)) {?>
+                              <?php if (!array_intersect([PFL_CONSULTA_UNIDADE, PFL_SUBUNIDADE, PFL_CONSULTA], $perfis)) {?>
                                 <a href="javascript:removerPi(<?php echo $dados['pliid']; ?>);" title="Apagar"><span class="btn btn-danger btn-sm glyphicon glyphicon-trash"></span></a>
                              <?php } ?>
                             </td>

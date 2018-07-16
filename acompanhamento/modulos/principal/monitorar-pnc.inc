@@ -255,17 +255,17 @@
                         <!-- STEPS INICIO -->
                         <div id="wizard">
                             <h1>INDICADORES</h1>
-                            <div data-mode="async" data-url="?modulo=principal/monitorar-pnc&acao=A&req=listar-indicadores-pnc&acpid=<?php echo $acompanhamentopnc->acpid; ?>">
+                            <div class="div_lista_indicadores_pnc" data-mode="async" data-url="?modulo=principal/monitorar-pnc&acao=A&req=listar-indicadores-pnc&acpid=<?php echo $acompanhamentopnc->acpid; ?>">
                                 Carregando ...
                             </div>
 
                             <h1>ATIVIDADES</h1>
-                            <div data-mode="async" data-url="?modulo=principal/monitorar-pnc&acao=A&req=listar-atividades-pnc&acpid=<?php echo $acompanhamentopnc->acpid; ?>">
+                            <div class="div_lista_atividades_pnc" data-mode="async" data-url="?modulo=principal/monitorar-pnc&acao=A&req=listar-atividades-pnc&acpid=<?php echo $acompanhamentopnc->acpid; ?>">
                                 Carregando ...
                             </div>
 
                             <h1>ANEXOS</h1>
-                            <div data-mode="async" data-url="?modulo=principal/monitorar-pnc&acao=A&req=listar-anexos-pnc&acpid=<?php echo $acompanhamentopnc->acpid; ?>">
+                            <div class="div_lista_anexos_pnc" data-mode="async" data-url="?modulo=principal/monitorar-pnc&acao=A&req=listar-anexos-pnc&acpid=<?php echo $acompanhamentopnc->acpid; ?>">
                                 Carregando ...
                             </div>
                         </div>
@@ -372,6 +372,54 @@
             return false;
         });
 
+        // Eventos do ícone(ou número) de edição da lista de indicadores PNC
+        $('.div_lista_indicadores_pnc').on('click', '.editar_indicador', function(){
+            var idpid = $(this).attr('data-idpid');
+            var acpid = $(this).attr('data-acpid');
+            var unocod = $(this).attr('data-unocod');
+            var suocod = $(this).attr('data-suocod');
+            var ipncod = $(this).attr('data-ipncod');
+            var prsano = $(this).attr('data-prsano');
+            var url = '?modulo=principal/monitorar-pnc&acao=A'+
+                '&req=acompanhamento-indicador-pnc-form'+
+                '&idpid='+ idpid+
+                '&acpid='+ acpid+
+                '&unocod='+ unocod+
+                '&suocod='+ suocod+
+                '&ipncod='+ ipncod+
+                '&prsano='+ prsano;
+
+            $('#div_modal_acompanhamento_indicador').find('div.modal-body').empty();
+            $('#div_modal_acompanhamento_indicador').find('div.modal-body').load(url);
+            $('#div_modal_acompanhamento_indicador').modal();
+            return false;
+        });
+        
+        // Evento do botão salvar da janela modal do Cadastro de Indicadores PNC
+        $('#div_modal_acompanhamento_indicador').find('.btn-salvar').click(function(){
+            $('#formulario-acompanhamento-indicador').find('[type="submit"]').trigger('click');
+        });
+        
+        // Eventos do ícone(ou número) de edição da lista de atividades PNC
+        $('.div_lista_atividades_pnc').on('click', '.editar_atividade', function(){
+            var atvid = $(this).attr('data-atvid');
+            var acpid = $(this).attr('data-acpid');
+            var url = '?modulo=principal/monitorar-pnc&acao=A'+
+                '&req=acompanhamento-atividade-pnc-form'+
+                '&atvid='+ atvid+
+                '&acpid='+ acpid;
+
+            $('#div_modal_acompanhamento_atividade').find('div.modal-body').empty();
+            $('#div_modal_acompanhamento_atividade').find('div.modal-body').load(url);
+            $('#div_modal_acompanhamento_atividade').modal();
+            return false;
+        });
+        
+        // Evento do botão salvar da janela modal do Cadastro de Indicadores PNC
+        $('#div_modal_acompanhamento_atividade').find('.btn-salvar').click(function(){
+            $('#formulario-acompanhamento-atividade').find('[type="submit"]').trigger('click');
+        });
+
     });
     
     /**
@@ -395,8 +443,8 @@
      */
     function carregarListaIndicadorPnc(acpid){
         var url = '?modulo=principal/monitorar-pnc&acao=A&req=listar-indicadores-pnc'+ '&acpid='+ acpid;
-        $('#div_lista_indicador_pnc').empty();
-        $('#div_lista_indicador_pnc').load(url);
+        $('.div_lista_indicadores_pnc').empty();
+        $('.div_lista_indicadores_pnc').load(url);
     }
     
     /**
@@ -407,8 +455,8 @@
      */
     function carregarListaAtividadePnc(acpid){
         var url = '?modulo=principal/monitorar-pnc&acao=A&req=listar-atividades-pnc'+ '&acpid='+ acpid;
-        $('#div_lista_atividade_pnc').empty();
-        $('#div_lista_atividade_pnc').load(url);
+        $('.div_lista_atividades_pnc').empty();
+        $('.div_lista_atividades_pnc').load(url);
     }
     
     /**
@@ -419,8 +467,8 @@
      */
     function carregarListaAnexoPnc(acpid){
         var url = '?modulo=principal/monitorar-pnc&acao=A&req=listar-anexos-pnc'+ '&acpid='+ acpid;
-        $('#div_lista_anexo_pnc').empty();
-        $('#div_lista_anexo_pnc').load(url);
+        $('.div_lista_anexos_pnc').empty();
+        $('.div_lista_anexos_pnc').load(url);
     }
 
     function abrirModalUpload() {

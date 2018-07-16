@@ -1208,7 +1208,7 @@ class Pi_PlanoInterno extends Modelo
         if(!self::verificarPermissaoEditarUnidade($perfis, $listaJanelasDeAlteracao)){
             return false;
         }
-        if(array_intersect($perfis, [PFL_CONSULTA, PFL_GESTÃO_CONSULTA])){
+        if(array_intersect($perfis, [PFL_CONSULTA, PFL_CONSULTA_UNIDADE])){
           return false;
         }
         switch ($estadoAtual['esdid']) {
