@@ -1366,8 +1366,8 @@
     /**
      * Carrega novo conteúdo para o select de Metas PPA via requisição ajax.
      */
-    function carregarIniciativaPPA(codigo) {
-        $.post(urlPagina+ '&carregarIniciativaPPA=ok&oppid=' + codigo, function(response) {
+    function carregarIniciativaPPA(codigo, suoid) {
+        $.post(urlPagina+ '&carregarIniciativaPPA=ok&oppid=' + codigo + '&suoid=' + suoid, function(response) {
             $('#ippid').remove();
             $('.div_ippid').html(response);
             $(".chosen-select").chosen();
