@@ -125,7 +125,7 @@ if($_REQUEST['req'] == 'historico-pi') {
  * @see cadastropi_requisicoes.inc
  */
 
-require(APPRAIZ . 'planacomorc/modulos/principal/planointerno/cadastropi_requisicoes.inc');
+require(APPRAIZ . 'planacomorc/modulos/principal/unidade/cadastropi_requisicoes.inc');
 
 // -- Identificando se o usuário atual faz parte do CGSO/CPMO
 $pulaSolicitacao = pulaSolicitacao();
