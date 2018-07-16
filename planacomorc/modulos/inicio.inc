@@ -1,479 +1,350 @@
 <?php
 
-// Redireciona o usuário para a página incial de acordo com perfil
-$perfis = pegaPerfilGeral();
+include_once APPRAIZ . "includes/library/simec/Grafico.php";
 
-//if(count(array_intersect($perfis, [PFL_ADMINISTRADOR, PFL_SUPERUSUARIO, PFL_PLANEJAMENTO]))){
-    # Todos os perfis são redirecionados para a nova tela de Painel
-    $urlPainel = 'planacomorc.php?modulo=principal/unidade/painel&acao=A';
-    if($_REQUEST['exercicio']){
-        $urlPainel .= '&exercicio='. $_REQUEST['exercicio'];
-    }
-    if($_REQUEST['req']){
-        $urlPainel .= '&req='. $_REQUEST['req'];
-    }
-    if($_REQUEST['pliid']){
-        $urlPainel .= '&pliid='. $_REQUEST['pliid'];
-    }
-    simec_redirecionar($urlPainel);
-//}
+include_once '_funcoespi.php';
 
-/**
- * Tela inicial do módulo planacomorc com o menu de opções disponíveis no sistema.
- * $Id: inicio.inc 103493 2015-10-08 19:31:03Z werteralmeida $
- */
-/*
- * Componetnes para a criação da página Início
- */
-include APPRAIZ . "includes/dashboardbootstrap.inc";
+require_once APPRAIZ . 'includes/workflow.php';
+include_once APPRAIZ . "monitora/classes/Pi_PlanoInterno.class.inc";
 
-$perfis = pegaPerfilGeral();
-// -- Setando o novo exercicio escolhido via seletor no cabeçalho da página
-if (isset($_REQUEST['exercicio'])) {
-    $_SESSION['exercicio'] = $_REQUEST['exercicio'];
+# Cores dos Graficos
+$colors = "'#FFD700', '#FF0000', '#55BF3B', '#eeaaee', '#00BFFF', '#aaeeee', '#7798BF', '#DDDF0D', '#7CCD7C', '#DF5353', '#008000', '#CD0000', '#FF4500', '#ff0066', '#4B0082', '#808000', '#800000', '#2F4F4F', '#006400', '#FFA500'";
+
+# Verifica se o usuário tem vinculo de Sub-Unidades no seu Perfil
+$listaSubUnidadeUsuario = buscarSubUnidadeUsuario((object) array('usucpf' => $_SESSION['usucpf']));
+
+$prsano = $_REQUEST['exercicio']?$_REQUEST['exercicio']:$_SESSION['exercicio'];
+$oPlanoInterno = new Pi_PlanoInterno();
+
+switch ($_REQUEST['req']) {
+    case 'detalhe-subunidade':
+        $oPlanoInterno->recuperarPiPorSubunidade($_REQUEST['suoid']);
+        die;
+    case 'espelho-pi':
+        include APPRAIZ. 'planacomorc/modulos/principal/unidade/espelho-pi.inc';
+        die;
+    case 'detalhe-funcional':
+        $oPlanoInterno->recuperarPiPorFuncional((object) array('suoid' => $_REQUEST['suoid'], 'ptrid' => $_REQUEST['ptrid']));
+        die;
+    case 'detalhe-grafico-subunidade':
+        $oPlanoInterno->recuperarDetalhesValoresGrafico(TRUE, $_REQUEST['tipo_valor'], $_REQUEST['sigla'], true);
+        die;
+    case 'detalhe-grafico-uo':
+        $oPlanoInterno->recuperarDetalhesValoresGrafico(FALSE, $_REQUEST['tipo_valor'], $_REQUEST['sigla']);
+        die;
+    case 'carregarGraficoUnidade':
+        carregarGraficoUnidade($colors, true);
+        die;
+    case 'carregarGraficoDireta':
+        carregarGraficoDireta($colors, true);
+        die;
+    case 'carregarGraficoCgconCogep':
+        carregarGraficoCgconCogep($colors, true);
+        die;
 }
 
+$filtros = array(
+    "suo.prsano = '". $prsano. "'",
+    'suo.unofundo = FALSE',
+);
+# Filtro por Subunidades do perfil do usuário logado.
+if($listaSubUnidadeUsuario){
+    $filtros[] = "suo.suocod IN('". join("','", $listaSubUnidadeUsuario). "')";
+}
+
+$aPropostas = $oPlanoInterno->recuperarExecucaoOrcamentaria($filtros);
+
+/**
+ * Cabeçalho padrão do sistema.
+ * @see cabecalho.inc
+ */
 include APPRAIZ . "includes/cabecalho.inc";
+
+?>
+<script src="js/unidade/lista-pi-manter.js?v=4"></script>
+<style>
+    .detalhe-subunidade, .detalhe-funcional{
+        cursor: pointer;
+    }
+
+    .title-disponivel{
+        cursor: help;
+    }
+
+    .linha_subunidade {
+        background-color: rgba(241, 246, 215, 0.3) !important;
+        font-weight: bold;
+    }
+</style>
+
+<div class="row wrapper border-bottom white-bg page-heading">
+    <div class="col-lg-4">
+        <h2>Painel de Acompanhamento</h2>
+    </div>
+    <div class="col-lg-8">
+        <div style="padding-top: 10px;" class="text-right">
+            <a class="btn btn-success" href="planacomorc.php?modulo=principal/unidade/painel_fnc&acao=A">
+                <i class="fa fa-area-chart"></i> Painel FNC
+            </a>
+            <a class="btn btn-danger" href="planacomorc.php?modulo=principal/unidade/listapimanter&acao=A">
+                <i class="fa fa-list"></i> Lista de PI
+            </a>
+            <?php if(!array_intersect($perfis, [PFL_CONSULTA, PFL_GESTÃO_CONSULTA])){ ?>
+                <a class="btn btn-warning" href="planacomorc.php?modulo=principal/unidade/cadastro_pi&acao=A">
+                    <i class="fa fa-plus-circle"></i> Criar PI
+                </a>
+            <?php }?>
+            <a class="btn btn-primary" href="planacomorc.php?modulo=relatorio/geral&acao=A&fundo=f">
+                <i class="fa fa-file-excel-o"></i> Relatório Geral
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+
+        <?php if (!$listaSubUnidadeUsuario): ?>
+            <div class="col-md-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>Valores por Unidades</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div class="tabs-container tabs">
+                            <ul class="nav nav-tabs prodTabs">
+                                <li class="active"><a data-toggle="tab" href="#tab-1" data-url="?modulo=principal/unidade/painel&acao=A&req=carregarGraficoUnidade"> Gráficos das Unidades</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab-2" data-url="?modulo=principal/unidade/painel&acao=A&req=carregarGraficoDireta"> Gráficos da Direta</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab-3" data-url="?modulo=principal/unidade/painel&acao=A&req=carregarGraficoCgconCogep"> Gráficos da CGCON/COGEP</a></li>
+                            </ul>
+                            <div class="tab-content">
+                                <div id="tab-1" class="tab-pane active">
+                                    <!--O grafico 1 será carregado aqui via ajax-->
+                                    <?php carregarGraficoUnidade($colors, true); ?>
+                                </div>
+                                <div id="tab-2" class="tab-pane">
+                                    <!--O grafico 2 será carregado aqui via ajax-->
+                                </div>
+                                <div id="tab-3" class="tab-pane">
+                                    <!--O grafico 3 será carregado aqui via ajax-->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <?php else: ?>
+            <div class="col-md-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>Valores por Unidades</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div class="tabs-container">
+                            <div class="tab-content">
+                                <div class="panel-body">
+                                    <?php
+                                    $codigoUnidadesWhere = "'". join($listaSubUnidadeUsuario, "','"). "'";
+                                    $estatistica = $oPlanoInterno->recuperarEstatisticaPagamentoDetalhe((object) array(
+                                        'exercicio' => $_SESSION['exercicio'],
+                                        'unofundo' => 'FALSE',
+                                        'unidades'=>"suocod IN(". $codigoUnidadesWhere. ")"));
+                                    $grafico = new Grafico(Grafico::K_TIPO_COLUNA, false);
+                                    $grafico
+                                        ->setWidth('85%')
+                                        ->setColors($colors)
+                                        ->setFormatoTooltip(Grafico::K_TOOLTIP_DECIMAL_0)
+                                        ->setEvent(array('click' => "exibirModalDetalheGrafico(1, event.point.series.name, event.point.category);"))
+                                        ->gerarGrafico($estatistica);
+                                    ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <?php endif; ?>
+
+        <div class="col-md-12">
+
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Acompanhamento de Plano Interno</h5>
+                </div>
+                <div class="ibox-content">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover" >
+                            <thead>
+                            <tr class="text-center">
+                                <th rowspan="2" style="border-right: 1px black solid;">
+                                    <i class="fa fa-plus detalhar-todos link"></i>&nbsp;&nbsp;Unidade
+                                </th>
+                                <th colspan="2" style="border-right: 1px black solid;">Custeio</th>
+                                <th colspan="2" style="border-right: 1px black solid;">Capital</th>
+                                <th colspan="2" style="border-right: 1px black solid;">Total</th>
+                                <th rowspan="2" style="border-right: 1px black solid;">Limite</th>
+                            </tr>
+                            <tr class="text-center">
+                                <th>Dotação</th>
+                                <th style="border-right: 1px black solid;">Planejado</th>
+                                <th>Dotação</th>
+                                <th style="border-right: 1px black solid;">Planejado</th>
+                                <th>Dotação</th>
+                                <th style="border-right: 1px black solid;">Planejado</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <?php foreach($aPropostas as $dados){
+                                $dado = $dados['detalhe'][0];
+                                ?>
+                                <tr class="linha_subunidade">
+                                    <td style="border-right: 1px black solid;">
+                                        <i class="fa fa-plus detalhar-linha link" data-suoid="<?php echo $dado['suoid']; ?>"></i>&nbsp;&nbsp;
+                                        <span class="detalhe-subunidade" data-suoid="<?php echo $dado['suoid']; ?>" title="Visualizar PIs dessa Unidade">
+                                            <?php echo $dado['unosigla'] . ' - ' . $dado['suonome'] . ' (' . $dado['suocod'] . ')'; ?>
+                                        </span>
+                                    </td>
+
+                                    <td class="text-right"><?php echo number_format($dados['dotacaoCusteio'], 0, ',', '.'); ?></td>
+                                    <?php $disponivel = $dados['dotacaoCusteio'] - $dados['planejadoCusteio']; ?>
+                                    <td style="color: <?php echo $oPlanoInterno->getCorPainelPorValorDisponivel($disponivel); ?>; border-right: 1px black solid;" class="text-right title-disponivel" title="Disponível: <?php echo number_format($disponivel, 0, ',', '.'); ?>">
+                                        <?php echo number_format($dados['planejadoCusteio'], 0, ',', '.'); ?>
+                                    </td>
+
+                                    <td class="text-right"><?php echo number_format($dados['dotacaoCapital'], 0, ',', '.'); ?></td>
+                                    <?php $disponivel = $dados['dotacaoCapital'] - $dados['planejadoCapital']; ?>
+                                    <td style="color: <?php echo $oPlanoInterno->getCorPainelPorValorDisponivel($disponivel); ?>; border-right: 1px black solid;" class="text-right title-disponivel" title="Disponível: <?php echo number_format($disponivel, 0, ',', '.'); ?>">
+                                        <?php echo number_format($dados['planejadoCapital'], 0, ',', '.'); ?>
+                                    </td>
+
+                                    <td class="text-right"><?php echo number_format(($dados['dotacaoCusteio'] + $dados['dotacaoCapital']), 0, ',', '.'); ?></td>
+                                    <?php $disponivel = ($dados['dotacaoCusteio'] + $dados['dotacaoCapital']) - $dados['totalPlanejado']; ?>
+                                    <td style="color: <?php echo $oPlanoInterno->getCorPainelPorValorDisponivel($disponivel); ?>; border-right: 1px black solid;" class="text-right title-disponivel" title="Disponível: <?php echo number_format($disponivel, 0, ',', '.'); ?>">
+                                        <?php echo number_format($dados['totalPlanejado'], 0, ',', '.'); ?>
+                                    </td>
+
+                                    <?php $disponivel = $dado['lmuvlr'] - $dados['totalPlanejado']; ?>
+                                    <td style="color: <?php echo $oPlanoInterno->getCorPainelPorValorDisponivel($disponivel); ?>; border-right: 1px black solid;" class="text-right title-disponivel" title="Disponível: <?php echo number_format($disponivel, 0, ',', '.'); ?>">
+                                        <?php echo number_format($dado['lmuvlr'], 0, ',', '.'); ?>
+                                    </td>
+                                </tr>
+                                <?php foreach($dados['detalhe'] as $dado){ ?>
+                                    <tr class="tr_<?php echo $dado['suoid']; ?> tr_detalhe" style="display: none;">
+                                        <td style="padding-left: 30px; border-right: 1px black solid;" >
+                                            <span class="detalhe-funcional" data-ptrid="<?php echo $dado['ptrid']; ?>" data-suoid="<?php echo $dado['suoid']; ?>" title="Visualizar lista de PIs com essa funcional">
+                                                <?php echo $dado['funcional'] . ' - ' . $dado['acatitulo'] . ': ' . $dado['plodsc'] . ' (RP ' . $dado['irpcod'] . ')'; ?>
+                                            </span>
+                                            <?php if($dado['compartilhada'] > 1): ?>
+                                                &nbsp;<i class="fa fa-handshake-o link" title="Funcional Compartilhada com outras Subunidades."></i>
+                                            <?php endif; ?>
+                                        </td>
+
+                                        <td class="text-right"><?php echo number_format($dado['ptrdotacao_custeio'], 0, ',', '.'); ?></td>
+                                        <?php $disponivel = $dado['ptrdotacao_custeio'] - $dado['picvalorcusteio']; ?>
+                                        <td style="color: <?php echo $oPlanoInterno->getCorPainelPorValorDisponivel($disponivel); ?>; border-right: 1px black solid;" class="text-right title-disponivel" title="Disponível: <?php echo number_format($disponivel, 0, ',', '.'); ?>">
+                                            <?php echo number_format($dado['picvalorcusteio'], 0, ',', '.'); ?>
+                                        </td>
+
+                                        <td class="text-right"><?php echo number_format($dado['ptrdotacao_capital'], 0, ',', '.'); ?></td>
+                                        <?php $disponivel = $dado['ptrdotacao_capital'] - $dado['picvalorcapital']; ?>
+                                        <td style="color: <?php echo $oPlanoInterno->getCorPainelPorValorDisponivel($disponivel); ?>; border-right: 1px black solid;" class="text-right title-disponivel" title="Disponível: <?php echo number_format($disponivel, 0, ',', '.'); ?>">
+                                            <?php echo number_format($dado['picvalorcapital'], 0, ',', '.'); ?>
+                                        </td>
+
+                                        <td class="text-right"><?php echo number_format(($dado['ptrdotacao_custeio'] + $dado['ptrdotacao_capital']), 0, ',', '.'); ?></td>
+                                        <?php $disponivel = ($dado['ptrdotacao_custeio'] + $dado['ptrdotacao_capital']) - ($dado['picvalorcusteio'] + $dado['picvalorcapital']); ?>
+                                        <td style="color: <?php echo $oPlanoInterno->getCorPainelPorValorDisponivel($disponivel); ?>; border-right: 1px black solid;" class="text-right title-disponivel" title="Disponível: <?php echo number_format($disponivel, 0, ',', '.'); ?>">
+                                            <?php echo number_format(($dado['picvalorcusteio'] + $dado['picvalorcapital']), 0, ',', '.'); ?>
+                                        </td>
+                                        <td class="text-center" style="border-right: 1px black solid;"> - </td>
+                                    </tr>
+                                <?php } ?>
+                            <?php } ?>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<?php
+// -- popup de detalhamento do PI
+bootstrapPopup("PI's da Unidade", 'detalhe-subunidade', '', array('fechar'), array('tamanho' => 'lg'));
+bootstrapPopup("PI's da Funcional na Unidade", 'detalhe-funcional', '', array('fechar'), array('tamanho' => 'lg'));
+bootstrapPopup("Detalhe da Unidade", 'detalhe-grafico', '', array('fechar'), array('tamanho' => 'lg'));
 ?>
 
-<link href="/includes/spo.css" rel="stylesheet" media="screen">
-<script type="text/javascript" src="/includes/funcoesspo.js"></script>
-<script type="text/javascript" lang="javascript">
-    $(document).ready(function () {
-        inicio();
+<script>
+    $(document).ready(function(){
+
+        $('.tabs').on('click', '.tablink, .prodTabs a',function (e) {
+            e.preventDefault();
+            var url = $(this).attr("data-url");
+
+            if (typeof url !== "undefined") {
+                var pane = $(this), href = this.hash;
+
+                // ajax load from data-url
+                $(href).empty().load(url, function(result){
+                    pane.tab('show');
+                });
+            } else {
+                $(this).tab('show');
+            }
+        });
+        $('.detalhe-subunidade').click(function(){
+            $('#detalhe-subunidade .modal-body').load('planacomorc.php?modulo=inicio&acao=C&req=detalhe-subunidade&suoid='+ $(this).data('suoid'));
+            $('#detalhe-subunidade').modal();
+        });
+
+        $('.detalhe-funcional').click(function(){
+            $('#detalhe-funcional .modal-body').load('planacomorc.php?modulo=inicio&acao=C&req=detalhe-funcional&ptrid='+ $(this).data('ptrid')+ '&suoid='+ $(this).data('suoid'));
+            $('#detalhe-funcional').modal();
+        });
+
+        $('.detalhar-linha').click(function(){
+
+            var suoid = $(this).data('suoid');
+
+            if($(this).hasClass('fa-minus')){
+                $(this).removeClass('fa-minus').addClass('fa-plus');
+                $('.tr_' + suoid).hide();
+            } else {
+                $(this).removeClass('fa-plus').addClass('fa-minus');
+                $('.tr_' + suoid).show('slow');
+            }
+        });
+
+        $('.detalhar-todos').click(function(){
+
+            if($(this).hasClass('fa-minus')){
+                $(this).removeClass('fa-minus').addClass('fa-plus');
+                $('.detalhar-linha').removeClass('fa-minus').addClass('fa-plus');
+                $('.tr_detalhe').hide();
+            } else {
+                $(this).removeClass('fa-plus').addClass('fa-minus');
+                $('.detalhar-linha').removeClass('fa-plus').addClass('fa-minus');
+                $('.tr_detalhe').show('slow');
+            }
+        });
     });
+
+    function exibirModalDetalheGrafico(tipoGraficoSubunidade, tipoValor, sigla){
+        var urlBase = 'planacomorc.php?modulo=inicio&acao=C'
+        if(tipoGraficoSubunidade === 1){
+            var parametroTipoGrafico = '&req=detalhe-grafico-subunidade';
+        } else {
+            var parametroTipoGrafico = '&req=detalhe-grafico-uo';
+        }
+        // Dotação ou Planejado
+        if(tipoValor.substr(0, 3) === "Dot" || tipoValor.substr(0, 3) === "Pla"){
+            $('#detalhe-grafico .modal-body').load(urlBase+ '&tipo_valor='+ tipoValor.substr(0, 3)+ '&sigla='+ sigla+ parametroTipoGrafico);
+            $('#detalhe-grafico').modal();
+        }
+    }
+
+
 </script>
-<div style="width: 450px; float:right; ">
-    <p style="color:tomato; font-weight: bold; margin-bottom: 4px;">
-        <span class="glyphicon glyphicon-asterisk"></span> Atenção,
-    </p>
-    <p>
-        Tudo referente a <b>Acompanhamentos</b> está em um módulo <a href="/acomporc/acomporc.php?modulo=inicio&acao=C">Novo</a>.
-    </p>
-</div>
-<div style="clear:both;"></div>
-
-<!--<div class="row">-->
-<!--    <div class="col-md-3">-->
-<!--        <div class="ibox float-e-margins">-->
-<!--        	<div class="ibox-title">-->
-<!--        		<h5>Plano Interno</h5>-->
-<!--        	</div>-->
-<!--        	<div class="ibox-content">-->
-<!---->
-<!--                <table class="table table-striped table-hover table-condensed">-->
-<!--                    <tbody>-->
-<!--                    <tr>-->
-<!--                        <td><a href="planacomorc.php?modulo=principal/unidade/listapimanter&acao=A">Lista de PI</a></td>-->
-<!--                    </tr>-->
-<!--                    <tr>-->
-<!--                        <td><a href="planacomorc.php?modulo=principal/unidade/cadastro_pi&acao=A">Cadastrar PI</a></td>-->
-<!--                    </tr>-->
-<!--                    <tr>-->
-<!--                        <td><a href="planacomorc.php?modulo=principal/unidade/listar_propostas_pi&acao=A">Criar PI por Proposta</a></td>-->
-<!--                    </tr>-->
-<!--                    <tr>-->
-<!--                        <td><a href="planacomorc.php?modulo=principal/unidade/listaptres&acao=A">Lista de PTRES</a></td>-->
-<!--                    </tr>-->
-<!--                    <tr>-->
-<!--                        <td><a href="../planacomorc/manual_simec_subacoes_e_pis_unidades.pdf">Manual de Cadastro de PI e Subações (Instituições Federais)</a></td>-->
-<!--                    </tr>-->
-<!--                    </tbody>-->
-<!--                </table>-->
-<!--        	</div>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--    <div class="col-md-3">-->
-<!--        <div class="ibox float-e-margins">-->
-<!--        	<div class="ibox-title">-->
-<!--        		<h5>Ações 2016</h5>-->
-<!--        	</div>-->
-<!--        	<div class="ibox-content">-->
-<!---->
-<!---->
-<!--        	</div>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--    <div class="col-md-3">-->
-<!--        <div class="ibox float-e-margins">-->
-<!--        	<div class="ibox-title">-->
-<!--        		<h5>PTRES 2016</h5>-->
-<!--        	</div>-->
-<!--        	<div class="ibox-content">-->
-<!---->
-<!---->
-<!--        	</div>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--    <div class="col-md-3">-->
-<!--        <div class="ibox float-e-margins">-->
-<!--        	<div class="ibox-title">-->
-<!--        		<h5>Tabelas de Apoio</h5>-->
-<!--        	</div>-->
-<!--        	<div class="ibox-content">-->
-<!---->
-<!---->
-<!--        	</div>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--    <div class="col-md-3">-->
-<!--        <div class="ibox float-e-margins">-->
-<!--        	<div class="ibox-title">-->
-<!--        		<h5>Manuais</h5>-->
-<!--        	</div>-->
-<!--        	<div class="ibox-content">-->
-<!---->
-<!---->
-<!--        	</div>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--    <div class="col-md-3">-->
-<!--        <div class="ibox float-e-margins">-->
-<!--        	<div class="ibox-title">-->
-<!--        		<h5>Comunicados</h5>-->
-<!--        	</div>-->
-<!--        	<div class="ibox-content">-->
-<!---->
-<!---->
-<!--        	</div>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</div>-->
-
-
-<table width="95%" class="tabela" bgcolor="#f5f5f5" border="0" cellSpacing="1" cellPadding="3" align="center">
-    <tr align="center">
-        <td align="center" >
-                <div style=" background-color: #9370DB;" class="divGraf">
-                    <center>
-                        <span class="tituloCaixa" >Plano Interno</span> <br><br><br>
-                    </center>
-
-                    <?php
-                    /*$params = array();
-                    $params['texto'] = 'Lista de Subações';
-                    $params['tipo'] = 'listar';
-                    $params['url'] = 'planacomorc.php?modulo=principal/unidade/listasubacoes&acao=A';
-                    montaBotaoInicio($params);
-
-                    $params = array();
-                    $params['texto'] = 'Cadastrar Subação';
-                    $params['tipo'] = 'cadastrar';
-                    $params['url'] = 'planacomorc.php?modulo=principal/unidade/cadastro_subacoes&acao=A';
-                    montaBotaoInicio($params);*/
-
-                    $params = array();
-                    $params['texto'] = 'Painel';
-                    $params['tipo'] = 'listar';
-                    $params['url'] = 'planacomorc.php?modulo=principal/unidade/painel&acao=A';
-                    montaBotaoInicio($params);
-
-                    $params = array();
-                    $params['texto'] = 'Lista de PI';
-                    $params['tipo'] = 'listar';
-                    $params['url'] = 'planacomorc.php?modulo=principal/unidade/listapimanter&acao=A';
-                    montaBotaoInicio($params);
-
-                    $params = array();
-                    $params['texto'] = 'Cadastrar PI';
-                    $params['tipo'] = 'cadastrar';
-                    $params['url'] = 'planacomorc.php?modulo=principal/unidade/cadastro_pi&acao=A';
-                    montaBotaoInicio($params);
-
-                    $params = array();
-                    $params['texto'] = 'Criar por Proposta';
-                    $params['tipo'] = 'listar';
-                    $params['url'] = 'planacomorc.php?modulo=principal/unidade/listar_propostas_pi&acao=A';
-                    montaBotaoInicio($params);
-
-                    $params = array();
-                    $params['texto'] = 'Lista de PTRES';
-                    $params['tipo'] = 'listar';
-                    $params['url'] = 'planacomorc.php?modulo=principal/unidade/listaptres&acao=A';
-                    montaBotaoInicio($params);
-
-                    $params = array();
-                    $params['texto'] = 'Manual de Cadastro de PI e Subações (Instituições Federais)';
-                    $params['tipo'] = 'pdf';
-                    $params['url'] = '../planacomorc/manual_simec_subacoes_e_pis_unidades.pdf';
-                    montaBotaoInicio($params);
-                    ?>
-                </div>
-                <?php
-
-            if (in_array(PFL_SUPERUSUARIO, $perfis) || in_array(PFL_ADMINISTRADOR, $perfis)) {
-                ?>
-                <!--                <div style="background-color: #FF8C00;" class="divGraf">
-                                    <span class="tituloCaixa" >Relatório de Gestão (TCU/CGU)</span> <br><br><br>
-                <?php
-                $params = array();
-                $params['texto'] = 'Preencher Relatório';
-                $params['tipo'] = 'cadastrar';
-                $params['url'] = 'planacomorc.php?modulo=principal/relatoriogestao/cadastro_gestao&acao=A';
-                montaBotaoInicio($params);
-                ?>
-                                    <span class="subTituloCaixa">Questionário por Exercício</span>
-                <?php
-                $params = array();
-                $params['texto'] = 'Questionário de Relatório';
-                $params['tipo'] = 'questionario';
-                $params['url'] = '/planacomorc/planacomorc.php?modulo=principal/questionariorelatoriogestao/listaquestionario&acao=A';
-                montaBotaoInicio($params);
-                ?>
-                                </div>-->
-            <?php } ?>
-            <div id="divAcoes" class="divGraf bg-ds">
-                <span class="tituloCaixa">Ações <?= $_SESSION['exercicio']; ?></span> <br><br><br>
-                <?php
-                $params = array();
-                $params['texto'] = 'Extrato completo das Ações ' . $_SESSION['exercicio'];
-                $params['tipo'] = 'snapshot';
-                $params['url'] = 'planacomorc.php?modulo=principal/dadosacoes/listadadosacoes&acao=A';
-                montaBotaoInicio($params);
-
-//                    $params = array();
-//                    $params['texto'] = 'Central de Acompanhamento';
-//                    $params['tipo'] = 'central';
-//                    $params['url'] = 'planacomorc.php?modulo=centralacompanhamento&acao=A';
-//                    montaBotaoInicio($params);
-//
-//                    $params = array();
-//                    $params['texto'] = 'Acompanhamento de Ações';
-//                    $params['tipo'] = 'acompanhamento';
-//                    $params['url'] = 'planacomorc.php?modulo=principal/acoes/listaunidades&acao=A';
-//                    montaBotaoInicio($params);
-//
-//                    $params = array();
-//                    $params['texto'] = 'Questionário de Acompanhamento';
-//                    $params['tipo'] = 'questionario';
-//                    $params['url'] = 'planacomorc.php?modulo=principal/questionario/listaquestionario&acao=A';
-//                    montaBotaoInicio($params);
-//
-//                    $params = array();
-//                    $params['texto'] = 'Períodos de Referência do Acompanhamento';
-//                    $params['tipo'] = 'calendario';
-//                    $params['url'] = 'planacomorc.php?modulo=principal/periodoreferencia/listaperiodoreferencia&acao=A';
-//                    montaBotaoInicio($params);
-//
-//                    $params = array();
-//                    $params['texto'] = 'Metodologia do Acompanhamento';
-//                    $params['tipo'] = 'calendario';
-//                    $params['url'] = 'planacomorc.php?modulo=principal/produto/listametodologia&acao=A';
-//                    montaBotaoInicio($params);
-//
-//                    $params = array();
-//                    $params['texto'] = 'Enviar Acompanhamento para o SIOP em LOTE';
-//                    $params['tipo'] = 'enviar';
-//                    $params['url'] = '/planacomorc/planacomorc.php?modulo=sistema/comunica/enviaQuantitativos&acao=A';
-//                    montaBotaoInicio($params);
-                ?>
-                <span class="subTituloCaixa">Relatórios</span>
-                <?php
-//                    $params = array();
-//                    $params['texto'] = 'Responsáveis';
-//                    $params['tipo'] = 'user';
-//                    $params['url'] = '/planacomorc/planacomorc.php?modulo=relatorio/responsaveis/acoes&acao=A';
-//                    montaBotaoInicio($params);
-
-                $params = array();
-                $params['texto'] = 'Espelho das Ações';
-                $params['tipo'] = 'espelho';
-                $params['url'] = 'planacomorc.php?modulo=principal/dadosacoes/espelho&acao=A';
-                montaBotaoInicio($params);
-                ?>
-            </div>
-<!--
-            <div class="divGraf bg-ds" id="divSubacoes">
-                <span class="tituloCaixa">Subações <?= $_SESSION['exercicio']; ?></span><br><br><br>
-                <?php
-                $params = array();
-                $params['texto'] = 'Lista de Subações';
-                $params['tipo'] = 'listar';
-                $params['url'] = 'planacomorc.php?modulo=principal/subacoes/listasubacoesmanter&acao=A';
-                montaBotaoInicio($params);
-
-                $params = array();
-                $params['texto'] = 'Cadastrar Subação';
-                $params['tipo'] = 'cadastrar';
-                $params['url'] = 'planacomorc.php?modulo=principal/subacoes/cadastro&acao=A';
-                montaBotaoInicio($params);
-
-//                    $params = array();
-//                    $params['texto'] = 'Acompanhamento';
-//                    $params['tipo'] = 'acompanhamento';
-//                    $params['url'] = 'planacomorc.php?modulo=principal/subacoes/listasubacoes&acao=A';
-//                    montaBotaoInicio($params);
-//
-//                    $params = array();
-//                    $params['texto'] = 'Central de Acompanhamento';
-//                    $params['tipo'] = 'central';
-//                    $params['url'] = 'planacomorc.php?modulo=principal/subacoes/centralacompanhamento&acao=A';
-//                    montaBotaoInicio($params);
-//
-//                    $params = array();
-//                    $params['texto'] = 'Produtos das Subações';
-//                    $params['tipo'] = 'listar';
-//                    $params['url'] = 'planacomorc.php?modulo=principal/produto/listaproduto&acao=A';
-//                    montaBotaoInicio($params);
-//                                        $params = array();
-//                    $params['texto'] = 'Questionário de Acompanhamento de Subações';
-//                    $params['tipo'] = 'questionario';
-//                    $params['url'] = 'planacomorc.php?modulo=principal/questionariosubacoes/listaquestionario&acao=A';
-//                    montaBotaoInicio($params);
-//
-                $params = array();
-                $params['texto'] = 'Solicitação de Remanejamento de Subação';
-                $params['tipo'] = 'processo';
-                $params['url'] = 'planacomorc.php?modulo=principal/remanejavalorsubacao/listaptres&acao=A';
-                montaBotaoInicio($params);
-
-                $params = array();
-                $params['texto'] = 'Remanejamento de Subação';
-                $params['tipo'] = 'processo';
-                $params['url'] = 'planacomorc.php?modulo=principal/remanejavalorsubacao/listaptres&acao=A';
-                montaBotaoInicio($params);
-
-                $params = array();
-                $params['texto'] = 'Transações de Remanejamento de Subação';
-                $params['tipo'] = 'listar';
-                $params['url'] = 'planacomorc.php?modulo=principal/remanejavalorsubacao/listartransacoes&acao=A';
-                montaBotaoInicio($params);
-                ?>
-                <!--<span class="subTituloCaixa">Relatórios</span>-->
-                <?php
-//                    $params = array();
-//                    $params['texto'] = 'Produtos das Subações';
-//                    $params['tipo'] = 'user';
-//                    $params['url'] = '/planacomorc/planacomorc.php?modulo=relatorio/responsaveis/subacoes&acao=A';
-//                    montaBotaoInicio($params);
-                ?>
-<!--            </div> -->
-<!--
-            <div id="divPI" class="divGraf">
-                <span class="tituloCaixa" >Plano Interno</span> <br><br><br>
-                <?php
-                $params = array();
-                $params['texto'] = 'Lista de PI';
-                $params['tipo'] = 'listar';
-                $params['url'] = 'planacomorc.php?modulo=principal/planointerno/listapimanter&acao=A';
-                montaBotaoInicio($params);
-
-                $params = array();
-                $params['texto'] = 'Cadastrar PI';
-                $params['tipo'] = 'cadastrar';
-                $params['url'] = 'planacomorc.php?modulo=principal/planointerno/cadastro&acao=A';
-                montaBotaoInicio($params);
-
-                $params = array();
-                $params['texto'] = 'Solicitação de Cadastro de PI';
-                $params['tipo'] = 'cadastrar';
-                $params['url'] = 'planacomorc.php?modulo=principal/planointerno/cadastro&acao=A';
-                montaBotaoInicio($params);
-
-                $params = array();
-                $params['texto'] = 'Listar Transações de Solicitação de Cadastro de PI';
-                $params['tipo'] = 'listar';
-                $params['url'] = 'planacomorc.php?modulo=principal/planointerno/listatransacoes&acao=A';
-                montaBotaoInicio($params);
-                ?>
-            </div>
--->
-            <div style="background-color: darksalmon;" class="divGraf">
-                <span class="tituloCaixa" >PTRES <?= $_SESSION['exercicio']; ?></span> <br><br><br>
-                <?php
-                $params = array();
-                $params['texto'] = 'Lista de PTRES';
-                $params['tipo'] = 'listar';
-                $params['url'] = 'planacomorc.php?modulo=principal/ptres/listaptres&acao=A';
-                montaBotaoInicio($params);
-                ?>
-            </div>
-            <?php if (in_array(PFL_SUPERUSUARIO, $perfis) || in_array(PFL_ADMINISTRADOR, $perfis)) { ?>
-                <div id="divTabelaApoio" class="divGraf">
-                    <span class="tituloCaixa" >Tabelas de Apoio</span> <br><br><br>
-                    <?php
-                    $params = array();
-                    $params['texto'] = 'Enquadramentos de Despesa';
-                    $params['tipo'] = 'cadastrar';
-                    $params['url'] = 'planacomorc.php?modulo=sistema/tabelasapoio/cadEnquadramentoDespesas&acao=A';
-                    montaBotaoInicio($params);
-
-                    $params = array();
-                    $params['texto'] = 'Área Cultural';
-                    $params['tipo'] = 'cadastrar';
-                    $params['url'] = 'planacomorc.php?modulo=sistema/tabelasapoio/cadModalidadesEnsino&acao=A';
-                    montaBotaoInicio($params);
-
-                    $params = array();
-                    $params['texto'] = 'Seguimento Cultural';
-                    $params['tipo'] = 'cadastrar';
-                    $params['url'] = 'planacomorc.php?modulo=sistema/tabelasapoio/cadNivelEtapaEnsino&acao=A';
-                    montaBotaoInicio($params);
-
-                    $params = array();
-                    $params['texto'] = 'Executor Orçamentário e Financeiro';
-                    $params['tipo'] = 'cadastrar';
-                    $params['url'] = 'planacomorc.php?modulo=sistema/tabelasapoio/cadExecutorOrcamentarioFinanceiro&acao=A';
-                    montaBotaoInicio($params);
-
-    /*              $params = array();
-                    $params['texto'] = 'Gestor da Subação';
-                    $params['tipo'] = 'cadastrar';
-                    $params['url'] = 'planacomorc.php?modulo=sistema/tabelasapoio/cadGestorSubacao&acao=A';
-                    montaBotaoInicio($params);
-
-                    $params = array();
-                    $params['texto'] = 'Vinculação de Enquadramentos de Despesa a Subação';
-                    $params['tipo'] = 'cadastrar';
-                    $params['url'] = 'planacomorc.php?modulo=sistema/tabelasapoio/AddEnquadramentoSubacao&acao=A';
-                    montaBotaoInicio($params);*/
-
-                    $params = array();
-                    $params['texto'] = 'Vinculação Orçamentária da Ação Estratégica.';
-                    $params['tipo'] = 'cadastrar';
-                    $params['url'] = 'planacomorc.php?modulo=sistema/tabelasapoio/vinculacaoOrcamentaria&acao=A&listar=true';
-                    montaBotaoInicio($params);
-
-                    $params = array();
-                    $params['texto'] = ' Modalidade de Pactuação.';
-                    $params['tipo'] = 'cadastrar';
-                    $params['url'] = 'planacomorc.php?modulo=sistema/tabelasapoio/cadCategoriaApropriacao&acao=A&listar=true';
-                    montaBotaoInicio($params);
-                    ?>
-                </div>
-            <?php } ?>
-
-            <div id="divManuais" class="divGraf">
-                <span class="tituloCaixa" >Manuais</span> <br><br><br>
-                <?php
-//                $params = array();
-//                $params['texto'] = 'Planejamento e Acompanhamento Orçamentário 2013';
-//                $params['tipo'] = 'pdf';
-//                $params['url'] = '../planacomorc/Manual_SIMEC_Planejamento_e_Acompanhamento_Orcamentario_2013.pdf';
-//                montaBotaoInicio($params);
-
-                $params = array();
-                $params['texto'] = 'Manual de Cadastro de PI e Subações (Instituições Federais)';
-                $params['tipo'] = 'pdf';
-                $params['url'] = '../planacomorc/manual_simec_subacoes_e_pis_unidades.pdf';
-                montaBotaoInicio($params);
-                ?>
-                <?php
-                if (in_array(PFL_SUPERUSUARIO, $perfis) || in_array(PFL_ADMINISTRADOR, $perfis)) {
-                    $params = array();
-                    $params['texto'] = 'Calendário da SPO';
-                    $params['tipo'] = 'calendario';
-                    $params['url'] = '../planacomorc/calendario_spo.pdf';
-                    montaBotaoInicio($params);
-                }
-                ?>
-            </div>
-            <div id="divComunicados" class="divCap">
-                <span class="tituloCaixa">Comunicados</span>
-                <?php
-                montaComunicados();
-                ?>
-            </div>
-        </td>
-    </tr>
-</table>
