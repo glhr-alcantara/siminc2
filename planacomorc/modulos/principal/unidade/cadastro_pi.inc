@@ -1328,7 +1328,7 @@ include APPRAIZ . "includes/cabecalho.inc";
                                 </div>
                             </div>
                         </form>
-                    <?php if (!(in_array(PFL_CONSULTA, $perfis))) {?>
+                    <?php if (!(array_intersect([PFL_CONSULTA,PFL_GESTÃO_CONSULTA], $perfis))) {?>
                         <div class="form-group">
                             <div class="text-center">
                                 <button class="btn btn-primary" type="button" name="btg" onclick="submeter('<?php echo $plicod; ?>//');" <?php echo $disabled; ?>><i class="fa fa-check"></i>&nbsp;Salvar</button>
