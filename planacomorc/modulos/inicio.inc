@@ -113,9 +113,9 @@ include APPRAIZ . "includes/cabecalho.inc";
                     <div class="ibox-content">
                         <div class="tabs-container tabs">
                             <ul class="nav nav-tabs prodTabs">
-                                <li class="active"><a data-toggle="tab" href="#tab-1" data-url="?modulo=principal/unidade/painel&acao=A&req=carregarGraficoUnidade"> Gráficos das Unidades</a></li>
-                                <li class=""><a data-toggle="tab" href="#tab-2" data-url="?modulo=principal/unidade/painel&acao=A&req=carregarGraficoDireta"> Gráficos da Direta</a></li>
-                                <li class=""><a data-toggle="tab" href="#tab-3" data-url="?modulo=principal/unidade/painel&acao=A&req=carregarGraficoCgconCogep"> Gráficos da CGCON/COGEP</a></li>
+                                <li class="active"><a data-toggle="tab" href="#tab-1" data-url="?modulo=inicio&acao=C&req=carregarGraficoUnidade"> Gráficos das Unidades</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab-2" data-url="?modulo=inicio&acao=C&req=carregarGraficoDireta"> Gráficos da Direta</a></li>
+                                <li class=""><a data-toggle="tab" href="#tab-3" data-url="?modulo=inicio&acao=C&req=carregarGraficoCgconCogep"> Gráficos da CGCON/COGEP</a></li>
                             </ul>
                             <div class="tab-content">
                                 <div id="tab-1" class="tab-pane active">
