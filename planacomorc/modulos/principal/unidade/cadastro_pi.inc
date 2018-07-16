@@ -126,7 +126,7 @@ if($_REQUEST['req'] == 'historico-pi') {
  * Processa as requições enviadas a esta página.
  * @see cadastropi_requisicoes.inc
  */
-require(APPRAIZ. 'planacomorc/modulos/principal/planointerno/cadastropi_requisicoes.inc');
+require(APPRAIZ. 'planacomorc/modulos/principal/unidade/cadastropi_requisicoes.inc');
 
 // -- Identificando se o usuário atual faz parte do CGSO/CPMO
 $pulaSolicitacao = pulaSolicitacao();
@@ -1328,7 +1328,7 @@ include APPRAIZ . "includes/cabecalho.inc";
                                 </div>
                             </div>
                         </form>
-                    <?php if (!(array_intersect([PFL_CONSULTA,PFL_GESTÃO_CONSULTA], $perfis))) {?>
+                    <?php if (!(array_intersect([PFL_CONSULTA,PFL_CONSULTA_UNIDADE], $perfis))) {?>
                         <div class="form-group">
                             <div class="text-center">
                                 <button class="btn btn-primary" type="button" name="btg" onclick="submeter('<?php echo $plicod; ?>//');" <?php echo $disabled; ?>><i class="fa fa-check"></i>&nbsp;Salvar</button>
