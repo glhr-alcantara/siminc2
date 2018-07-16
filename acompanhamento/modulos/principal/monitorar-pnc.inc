@@ -401,7 +401,7 @@
         });
         
         // Eventos do ícone(ou número) de edição da lista de atividades PNC
-        $('#div_lista_atividades_pnc').on('click', '.editar_atividade', function(){
+        $('.div_lista_atividades_pnc').on('click', '.editar_atividade', function(){
             var atvid = $(this).attr('data-atvid');
             var acpid = $(this).attr('data-acpid');
             var url = '?modulo=principal/monitorar-pnc&acao=A'+
@@ -467,8 +467,8 @@
      */
     function carregarListaAnexoPnc(acpid){
         var url = '?modulo=principal/monitorar-pnc&acao=A&req=listar-anexos-pnc'+ '&acpid='+ acpid;
-        $('#div_lista_anexos_pnc').empty();
-        $('#div_lista_anexos_pnc').load(url);
+        $('.div_lista_anexos_pnc').empty();
+        $('.div_lista_anexos_pnc').load(url);
     }
 
     function abrirModalUpload() {
