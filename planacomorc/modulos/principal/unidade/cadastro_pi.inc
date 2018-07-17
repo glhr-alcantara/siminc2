@@ -45,7 +45,6 @@ $urlModulo = '?modulo=principal/unidade/cadastro_pi&acao=A&aba=1';
 
 # Requisições
 include_once APPRAIZ. "acompanhamento/modulos/principal/monitorar-pi-request.inc";
-
 if ($_REQUEST['carregarComboUG']) {
     echo carregarComboUG($_REQUEST['unicod']);
     die();
@@ -462,6 +461,7 @@ include APPRAIZ . "includes/cabecalho.inc";
                             </div>
 
                             <div class="col-md-1">
+                                <a style="margin-left: 15px; height:13px; zoom: 200%;" class="fa fa-history" id="modal-historico-pi" title="Histórico de alterações"></a>
                                 <?php wf_desenhaBarraNavegacao($dadosPI['docid'], array('pliid' => $dadosPI['pliid'])); ?>
                                 <div id="div_comentario_estado_atual" style="display: none;"><?php echo wf_pegarComentarioEstadoAtual($dadosPI['docid']); ?></div>
                             </div>
