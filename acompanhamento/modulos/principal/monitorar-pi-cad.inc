@@ -130,8 +130,8 @@
                             <div class="form-group">
                                 <div class="text-center">
                                     <?php
-                                        # Caso o usuário logado não esteja com perfil de consulta o formulario exibe o botão de salvar
-                                        if(!in_array(PFL_CONSULTA, $listaPerfis)):
+                                        # Caso o usuário logado não esteja com perfil de consulta ou o de consulta unidade o formulario exibe o botão de salvar
+                                        if(!in_array(PFL_CONSULTA, $listaPerfis) && !(in_array(PFL_CONSULTA_UNIDADE, $listaPerfis))) :
                                     ?>
                                         <button class="btn btn-primary" type="button" id="btn-salvar"><i class="fa fa-check"></i>&nbsp;Salvar</button>
                                     <?php endif; ?>
