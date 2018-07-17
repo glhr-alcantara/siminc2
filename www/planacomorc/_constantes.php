@@ -1,6 +1,6 @@
 <?php
 /**
- * Constantes do sistema planacomorc.
+ * Constantes do sistema Planejamento Orçamentário.
  * $Id: _constantes.php 98005 2015-05-29 20:02:53Z werteralmeida $
  */
 define('SISID_PLANEJAMENTO', 157);
@@ -16,7 +16,7 @@ define("PFL_PLANEJAMENTO", 956);
 define("PFL_ASPAR", 957);
 define("PFL_SUBUNIDADE", 994);
 define("PFL_CONSULTA", 1504);
-define("PFL_GESTÃO_CONSULTA", 1503);
+define("PFL_CONSULTA_UNIDADE", 1503);
 
 // -- Constantes utilizadas em: monitora/modulos/principal/planotrabalhoUN/popuphistoricoplanointernoUN.inc
 define("PFL_CGSO", 1044);
