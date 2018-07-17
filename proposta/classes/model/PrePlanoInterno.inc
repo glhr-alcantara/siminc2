@@ -879,6 +879,7 @@ class Proposta_Model_PrePlanoInterno extends Modelo
                 JOIN monitora.vw_ptres ptr ON(
                     ptr.ptrid = psu.ptrid
                     AND ptr.ptrano = suo.prsano
+                    and ptr.ptrstatus = 'A'
                 )
                 LEFT JOIN(
                     SELECT DISTINCT
