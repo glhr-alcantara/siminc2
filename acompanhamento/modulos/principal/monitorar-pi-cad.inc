@@ -131,10 +131,9 @@
                                 <div class="text-center">
                                     <?php
                                         # Caso o usuário logado não esteja com perfil de consulta ou o de consulta unidade o formulario exibe o botão de salvar
-                                        if(!in_array(PFL_CONSULTA, $listaPerfis) && !(in_array(PFL_CONSULTA_UNIDADE, $listaPerfis))) :
-                                    ?>
+                                        if(!in_array(PFL_CONSULTA, $listaPerfis) && !(in_array(PFL_CONSULTA_UNIDADE, $listaPerfis))) { ?>
                                         <button class="btn btn-primary" type="button" id="btn-salvar"><i class="fa fa-check"></i>&nbsp;Salvar</button>
-                                    <?php endif; ?>
+                                    <?php } ?>
                                     <a href="?modulo=inicio&acao=C" class="btn btn-warning" id="btn-voltar" type="button"><i class="fa fa-arrow-left"></i>&nbsp;Voltar</a>
                                     <?php if($mAcompanhamento->acoid){ ?>
     <!--                                        <a href="?modulo=apoio/acompanhamento_form&acao=A&req=excluir&acoid=--><?php //echo $mAcompanhamento->acoid; ?><!--" class="btn btn-danger link-excluir" id="btn-excluir" type="button"><i class="fa fa-close"></i>&nbsp;Excluir</a>-->
@@ -183,7 +182,7 @@
                                 <div class="text-center">
                                     <?php
                                         # Caso o usuário logado não esteja com perfil de consulta o formulario exibe o botão de salvar
-                                        if(!in_array(PFL_CONSULTA, $listaPerfis)):
+                                        if(!in_array(PFL_CONSULTA, $listaPerfis) && (!in_array(PFL_CONSULTA_UNIDADE, $listaPerfis))):
                                     ?>
                                         <input type="button" id="btn_inserir_anexos_acompanhamento" title="Inserir Anexos" value="Inserir Anexos" class="btn btn-info"/>
                                     <?php endif; ?>
