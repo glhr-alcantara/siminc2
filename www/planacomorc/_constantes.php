@@ -1,6 +1,6 @@
 <?php
 /**
- * Constantes do sistema planacomorc.
+ * Constantes do sistema Planejamento Orçamentário.
  * $Id: _constantes.php 98005 2015-05-29 20:02:53Z werteralmeida $
  */
 define('SISID_PLANEJAMENTO', 157);
