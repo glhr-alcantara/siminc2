@@ -45,7 +45,7 @@ switch ($_REQUEST['req']) {
         $cImportaDadosSiop = new Planacomorc_Controller_ImportaDadosSiop();
         $cImportaDadosSiop->AtualizarDados();
         $cImportaDadosSiop->AtualizarDotacao();
-//        die;
+        die;
 }
 
 $filtros = array(
@@ -360,17 +360,21 @@ bootstrapPopup("Detalhe da Unidade", 'detalhe-grafico', '', array('fechar'), arr
         $.post("planacomorc.php?modulo=inicio&acao=C&req=atualizarSIOP",
             function(data){
                  divCarregado();
-                 swal({
-                     title: "",
-                     text: "Dados Atualizados!",
-                     type: "success",
-                     showCancelButton: false,
-                     confirmButtonText: "OK",
-                     closeOnConfirm: true
-                 },
-                 function(){
-                     window.location.href = "planacomorc.php?modulo=inicio&acao=C";
-                 });
+                 if (data==''){
+                    swal({
+                        title: "",
+                        text: "Dados Atualizados!",
+                        type: "success",
+                        showCancelButton: false,
+                        confirmButtonText: "OK",
+                        closeOnConfirm: true
+                    },
+                    function(){
+                        window.location.href = "planacomorc.php?modulo=inicio&acao=C";
+                    });
+                }else{
+                    swal('Erro!', 'Houve algum erro na importação de dados do SIOP!', 'warning');
+                }
             }
         );
     }

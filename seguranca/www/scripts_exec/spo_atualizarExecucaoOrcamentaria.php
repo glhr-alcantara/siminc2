@@ -20,8 +20,16 @@
  */
 
 define('BASE_PATH_SIMEC', realpath(dirname(__FILE__) . '/../../../'));
+//define('BASE_PATH_SIMEC', '/var/www/html/siminc2');
 require_once BASE_PATH_SIMEC . "/global/config.inc";
-include_once APPRAIZ."planacomorc/classes/controller/ImportarDadosSiop.inc";
+require_once APPRAIZ . "includes/classes_simec.inc";
+include_once APPRAIZ."planacomorc/classes/controller/ImportaDadosSiop.inc";
+include_once APPRAIZ."planacomorc/classes/model/ImportaDadosSiop.inc";
+require_once(APPRAIZ . 'spo/ws/sof/Quantitativo.php');
+$db = new cls_banco();
 $cImportaDadosSiop = new Planacomorc_Controller_ImportaDadosSiop();
+echo "Atualizando, dados!<br>";
 $cImportaDadosSiop->AtualizarDados();
+echo "Montando email para ser enviado!<br>";
 $cImportaDadosSiop->AtualizarDotacao();
+echo "Rotina Finalizada!";
