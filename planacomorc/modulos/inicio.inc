@@ -41,6 +41,11 @@ switch ($_REQUEST['req']) {
     case 'carregarGraficoCgconCogep':
         carregarGraficoCgconCogep($colors, true);
         die;
+    case 'atualizarSIOP':
+        $cImportaDadosSiop = new Planacomorc_Controller_ImportaDadosSiop();
+        $cImportaDadosSiop->AtualizarDados();
+        $cImportaDadosSiop->AtualizarDotacao();
+//        die;
 }
 
 $filtros = array(
@@ -83,6 +88,10 @@ include APPRAIZ . "includes/cabecalho.inc";
     </div>
     <div class="col-lg-8">
         <div style="padding-top: 10px;" class="text-right">
+            <!--<a class="btn btn-success" href="planacomorc.php?modulo=inicio&acao=C&req=atualizarSIOP">-->
+            <a class="btn btn-success" href="javascript:AtualizarSIOP();">
+                <i class="fa fa-cloud-download"></i> Atualizar SIOP
+            </a>
             <a class="btn btn-success" href="planacomorc.php?modulo=principal/unidade/painel_fnc&acao=A">
                 <i class="fa fa-area-chart"></i> Painel FNC
             </a>
@@ -345,6 +354,25 @@ bootstrapPopup("Detalhe da Unidade", 'detalhe-grafico', '', array('fechar'), arr
             $('#detalhe-grafico').modal();
         }
     }
-
+    
+    function AtualizarSIOP(){
+        divCarregando();
+        $.post("planacomorc.php?modulo=inicio&acao=C&req=atualizarSIOP",
+            function(data){
+                 divCarregado();
+                 swal({
+                     title: "",
+                     text: "Dados Atualizados!",
+                     type: "success",
+                     showCancelButton: false,
+                     confirmButtonText: "OK",
+                     closeOnConfirm: true
+                 },
+                 function(){
+                     window.location.href = "planacomorc.php?modulo=inicio&acao=C";
+                 });
+            }
+        );
+    }
 
 </script>
