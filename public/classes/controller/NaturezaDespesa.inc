@@ -22,7 +22,7 @@ class Public_Controller_NaturezaDespesa
 
     public function excluir($ndpid)
     {
-        $url = '?modulo=apoio/natureza_despesa_form&acao=A';
+        $url = '?modulo=apoio/natureza_despesa&acao=A';
 
         try {
             $mdnatDespesa = new Public_Model_NaturezaDespesa($ndpid);

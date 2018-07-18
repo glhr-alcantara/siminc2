@@ -8,7 +8,7 @@ switch ($_REQUEST['req']) {
         $cNaturesaDespesa->salvar($_REQUEST);
         break;
     case 'excluir-natureza':
-        $cNaturesaDespesa->excluir($_REQUEST);
+        $cNaturesaDespesa->excluir($_REQUEST['ndpid']);
         break;
 }
 
@@ -44,7 +44,7 @@ include APPRAIZ . "includes/cabecalho.inc";
                                 <button class="btn btn-primary" type="submit" id="btn-salvar"><i class="fa fa-check"></i>&nbsp;Salvar</button>
                                 <a href="?modulo=apoio/natureza_despesa&acao=A" class="btn btn-warning" id="btn-voltar" type="button"><i class="fa fa-arrow-left"></i>&nbsp;Voltar</a>
                                 <?php if($mNaturesaDespesa->ndpid){ ?>
-                                    <a href="?modulo=apoio/natureza_despesa_form&acao=A&req=excluir-natureza&ndpid=<?= $mAreaCultural->ndpid; ?>" class="btn btn-danger link-excluir" id="btn-excluir" type="button"><i class="fa fa-close"></i>&nbsp;Excluir</a>
+                                    <a href="?modulo=apoio/natureza_despesa_form&acao=A&req=excluir-natureza&ndpid=<?php echo $mNaturesaDespesa->ndpid; ?>" class="btn btn-danger link-excluir" id="btn-excluir" type="button"><i class="fa fa-close"></i>&nbsp;Excluir</a>
                                 <?php } ?>
                             </div>
                         </div>
