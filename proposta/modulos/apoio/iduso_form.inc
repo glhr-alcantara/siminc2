@@ -8,7 +8,7 @@ switch ($_REQUEST['req']) {
         $cIduso->salvar($_REQUEST);
         break;
     case 'excluir-iduso':
-        $cIduso->excluir($_REQUEST['mdeid']);
+        $cIduso->excluir($_REQUEST['iducod']);
         break;
 }
 
@@ -31,7 +31,6 @@ include APPRAIZ . "includes/cabecalho.inc";
                 <div class="ibox-content">
                     <form id="formulario" name="formulario" method="post" class="form-horizontal">
                         <input type="hidden" name="req" id="req" value="salvar-iduso" />
-                        <input name="iducod" id="iducod" type="hidden" value="<?php echo $mIduso->iducod; ?>">
                         
                         <?php
                             echo $simec->input('iducod', 'Código do IDUSO', $mIduso->iducod, ['required','maxlength' => 1, 'class' => 'upper-text']);
@@ -43,7 +42,7 @@ include APPRAIZ . "includes/cabecalho.inc";
                                 <button class="btn btn-primary" type="submit" id="btn-salvar"><i class="fa fa-check"></i>&nbsp;Salvar</button>
                                 <a href="?modulo=apoio/iduso&acao=A" class="btn btn-warning" id="btn-voltar" type="button"><i class="fa fa-arrow-left"></i>&nbsp;Voltar</a>
                                 <?php if($mIduso->iducod){ ?>
-                                    <a href="?modulo=apoio/iduso_form&acao=A&req=excluir&iducod=<?php echo $mIduso->iducod; ?>" class="btn btn-danger link-excluir" id="btn-excluir" type="button"><i class="fa fa-close"></i>&nbsp;Excluir</a>
+                                    <a href="?modulo=apoio/iduso_form&acao=A&req=excluir-iduso&iducod=<?php echo $mIduso->iducod; ?>" class="btn btn-danger link-excluir" id="btn-excluir" type="button"><i class="fa fa-close"></i>&nbsp;Excluir</a>
                                 <?php } ?>                                
                             </div>
                         </div>                        

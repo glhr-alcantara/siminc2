@@ -9,6 +9,7 @@ class Public_Controller_Iduso
         try {
             $mdIduso = new Public_Model_IdentifUso($dados['iducod']);
             $mdIduso->popularDadosObjeto($dados);
+            $mdIduso->idustatus = 'A';
             $mdIduso->salvar();
             $mdIduso->commit();
             simec_redirecionar($url . '&iducod=' . $mdIduso->iducod, 'success');
@@ -17,7 +18,7 @@ class Public_Controller_Iduso
             simec_redirecionar($url, 'error');
         }
     } //end salvar()
-
+        
     public function excluir($iducod)
     {
         $url = '?modulo=apoio/iduso&acao=A';

@@ -11,7 +11,7 @@
  */
 
 
-require_once APPRAIZ .'includes/classes/Modelo.class.inc';
+require_once APPRAIZ .'includes/classes/Modelo_PK_Char.class.inc';
 
 
 /**
@@ -24,7 +24,7 @@ require_once APPRAIZ .'includes/classes/Modelo.class.inc';
  * @version  Release: 
  * @link     no link
  */
-class Public_Model_IdentifUso extends Modelo
+class Public_Model_IdentifUso extends Modelo_PK_Char
 {
     /**
      * Nome da tabela especificada
@@ -58,6 +58,6 @@ class Public_Model_IdentifUso extends Modelo
         'idudsc' => null,
         'idustatus' => null,
     );
-
+    
 }//end Class
 ?>
