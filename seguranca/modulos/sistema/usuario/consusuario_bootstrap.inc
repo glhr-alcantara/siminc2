@@ -259,10 +259,10 @@ DML;
                 <label class="col-md-2 control-label">SubUnidade Orçamentária:</label>
                 <section class="col-md-10">
                     <?php
-                    $sql = "SELECT suoid as codigo,
+                    $sql = "SELECT suocod as codigo,
                                    suocod || ' - ' || suonome || ' - ' || suosigla as descricao
                               FROM public.vw_subunidadeorcamentaria
-                             where suostatus = 'A'
+                             where suostatus = 'A' and prsano = '".$_SESSION['exercicio']."'
                              ORDER BY suoid";
                     $options = array(
                         'titulo' => 'Selecione a(s) SubUnidade(s)',
@@ -405,12 +405,12 @@ DML;
         $texto.= " and usuario.muncod = '" . $_REQUEST['muncod'] . "'";
     //Unidade Orcamentaria
     if (!empty($_REQUEST['suocod'][0])) {
-        foreach ($_REQUEST['suocod'] as $unidade) {
-            $und[] = "unidadex.suocod = '" . (integer) $unidade . "'";
+        $innerResponsabilidade = " INNER JOIN {$_SESSION['sisdiretorio']}.usuarioresponsabilidade resp ON usuario.usucpf = resp.usucpf and resp.rpustatus = 'A' ";        
+        $texto .= " and resp.ungcod in (";
+        for ($i=0;$i<count($_REQUEST['suocod']);$i++){
+            $texto .= "'". $_REQUEST['suocod'][$i]."',";
         }
-        if (!empty($und)) {
-            $texto .= ' AND ' . implode(' OR ', $und);
-        }
+        $texto = substr($texto, 0, strlen($texto)-1).')';
     }
     // Se já acessou o sistema
     if ($_REQUEST["usuchaveativacao"])
@@ -435,7 +435,6 @@ DML;
             $texto .= " and (perfil.pflcod = " . $_REQUEST["pflcod"] . " OR usuariosistema.pflcod = " . $_REQUEST["pflcod"] . ")";
     }
 
-
     if ($arrCampo) {
         foreach ($arrCampo as $campo => $valor) {
             if ($campo && is_array($valor)) {
@@ -451,13 +450,11 @@ DML;
                 "seguranca.perfil perfil
 			inner join seguranca.perfilusuario perfilusuario    on perfil.pflcod = perfilusuario.pflcod and perfil.pflcod = %d
 			right join seguranca.usuario usuario		    	on usuario.usucpf = perfilusuario.usucpf
-			left join
-			(select	unocod, suocod, suonome from	public.vw_subunidadeorcamentaria  where suostatus = 'A') as unidadex on usuario.unicod = unidadex.unocod", $_REQUEST['pflcod']
+			left join", $_REQUEST['pflcod']
         );
     } else {
         $oin_sql = "
-			( select unocod, suocod, suonome from public.vw_subunidadeorcamentaria  where	suostatus = 'A') as unidadex
-			right join seguranca.usuario usuario	on usuario.unicod = unidadex.unocod
+			seguranca.usuario usuario
 			left join seguranca.perfilusuario perfilusuario on usuario.usucpf = perfilusuario.usucpf
 			left join seguranca.perfil perfil on perfil.pflcod = perfilusuario.pflcod
 			";
@@ -475,7 +472,7 @@ DML;
         usuario.usucpf AS cpf,
         usuario.usunome AS nomeusuario,
         '(' || usuario.usufoneddd || ') ' || usuario.usufonenum AS fone,
-        CASE WHEN entidade.entid = 390402 THEN trim(usuario.orgao) ELSE trim(unidadex.suonome) END AS unidsc,
+        CASE WHEN entidade.entid = 390402 THEN trim(usuario.orgao) ELSE trim(unidadex.unidsc) END AS unidsc,
         '<section class=\"btn-group\">' ||
         CASE WHEN usuariosistema.suscod = 'A' THEN
             '<label class=\"btn btn-default active\">Ativo</label>'
@@ -491,7 +488,7 @@ DML;
     ";
 
     $groupby = "usuario.usucpf, usuario.usunome, usuario.usufoneddd, usuario.usufonenum, usuario.usuemail, entidade.entid,
-                usuario.orgao, unidadex.suonome, cargo.cardsc, usuario.usufuncao, entidade.entnome, usuario.regcod,
+                usuario.orgao, unidadex.unidsc, cargo.cardsc, usuario.usufuncao, entidade.entnome, usuario.regcod,
                 municipio.mundescricao, usuario.usudataatualizacao, usuariosistema.suscod, usuario.usuchaveativacao, perfil.pflcod";
 
     $sql = "
@@ -501,6 +498,7 @@ DML;
             " . $oin_sql . "
             left join  territorios.municipio municipio on municipio.muncod = usuario.muncod
             inner join seguranca.usuario_sistema usuariosistema on usuario.usucpf = usuariosistema.usucpf
+            left join public.unidade unidadex on usuario.unicod = unidadex.unicod
             left join  entidade.entidade entidade on usuario.entid = entidade.entid
             left join  public.cargo cargo on cargo.carid = usuario.carid
             $innerResponsabilidade
@@ -510,7 +508,7 @@ DML;
             $groupby
         ORDER BY
             nomeusuario";
-
+//ver($sql,d);
     $cabecalho = array(
         'CPF',
         'Nome Completo',
