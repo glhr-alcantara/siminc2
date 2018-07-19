@@ -9,49 +9,88 @@
 
 ?>
 
-<div id="div_lista_atividade_pnc">
-    <div class="form-group">
-        <div class="col-lg-6">
-            <table id="table_anexos" cellpadding="5" border="0" width="98%" align="center" class="table table-striped table-hover table-bordered table-hover">
-                <tr>
-                    <td style="text-align: left;"><b>Nome do arquivo</b></td>
-                    <td style="text-align: left;"><b>Descrição</b></td>
-                    <td style="text-align: center;"><b>Ação</b></td>
-                </tr>
-                <?php 
-                    if($listaDeAnexos):
-                        foreach($listaDeAnexos as $anexo):
-                ?>
-                    <tr style="height: 30px;" class="tr_anexos_<?php echo $anexo['arqid']; ?>" >
-                        <td style="text-align: left;"><a href="#" onclick="javascript:abrirArquivo('<?php echo $anexo['arqid']; ?>'); return false;" ><?php echo $anexo['arqnome']. '.'. $anexo['arqextensao']; ?></a></td>
-                        <td style="text-align: left;"><?php echo $anexo['arqdescricao']; ?></td>
-                        <td style="text-align: center;">
-                            <input type="hidden" value="<?php echo $anexo['arqid']; ?>" name="listaAnexos[]">
-                            <span class="glyphicon glyphicon-trash btnRemoverAnexos link" title="Excluir o arquivo <?php echo $anexo['arqnome']. '.'. $anexo['arqextensao']; ?>" data-anexos="<?php echo $anexo['arqid']; ?>" />
-                        </td>
-                    </tr>
-                <?php
-                        endforeach;
-                    endif;
-                ?>
-            </table>
-        </div>
-    </div>
 
-    <?php if(
-            in_array(PFL_SUPERUSUARIO, $listaPerfis)
-            || in_array(PFL_ADMINISTRADOR, $listaPerfis)
-            || in_array(PFL_PNC, $listaPerfis)
-            || (in_array(PFL_UNIDADE, $listaPerfis) && $ano == $exercicio)
-        ):
-    ?>
-        <div class="form-group">
-            <div class="text-center">
-                <input type="button" id="btn_inserir_anexos" title="Inserir Anexos" value="Inserir Anexos" class="btn btn-info"/>
+
+            <div class="row">
+                <div class="col-sm-12">
+                   <h2>Anexos</h2>
+                </div>
+                <div class="col-sm-12">
+                    <h3>Inclua novos anexos que tenham um papel importante para a verificação dos indicadores e atividades cadastradas.</h3>
+                </div>
             </div>
-        </div>
-    <?php endif; ?>
-</div>
+
+            <table cellpadding="5" border="0" align="center" class="table_anexos table table-striped table-hover table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <td style="text-align: left;"><b>Nome do arquivo</b></td>
+                        <td style="text-align: left;"><b>Descrição</b></td>
+                        <td style="text-align: left;"><b>Ação</b></td>
+                    </tr>
+                </thead>
+                <?php if($listaDeAnexos): ?>
+                    <tbody>
+                        <?php foreach($listaDeAnexos as $anexo): ?>
+                            <tr style="height: 30px;" class="tr_anexos_<?php echo $anexo['arqid']; ?>" >
+                                <td style="text-align: left;">
+                                    <a href="#" onclick="javascript:abrirArquivo('<?php echo $anexo['arqid']; ?>'); return false;" ><?php echo $anexo['arqnome']. '.'. $anexo['arqextensao']; ?></a>
+                                </td>
+                                <td style="text-align: left;">
+                                    <?php echo $anexo['arqdescricao']; ?>
+                                </td>
+                                <td style="text-align: center;">
+                                    <input type="hidden" value="<?php echo $anexo['arqid']; ?>" name="listaAnexos[]">
+                                    <span class="glyphicon glyphicon-trash btnRemoverAnexos link" title="Excluir o arquivo <?php echo $anexo['arqnome']. '.'. $anexo['arqextensao']; ?>" data-anexos="<?php echo $anexo['arqid']; ?>" />
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                        <?php if(
+                                  in_array(PFL_SUPERUSUARIO, $listaPerfis)
+                                  || in_array(PFL_ADMINISTRADOR, $listaPerfis)
+                                  || in_array(PFL_PNC, $listaPerfis)
+                                  || (in_array(PFL_UNIDADE, $listaPerfis) && $ano == $exercicio)
+                              ):
+                        ?>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="2"></td>
+                                    <td style="text-align: right;">
+                                        <button class="btn btn-success btn_inserir_anexos" data-acpid="<?php echo $acpid; ?>" type="button">
+                                            <i class="fa fa-plus-circle"></i>&nbsp;Inserir Anexos
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        <?php endif; ?>
+                <?php else: ?>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3">Não existem anexos cadastrados pra essa Meta PNC.</td>
+                        </tr>
+                            <?php if(
+                                      in_array(PFL_SUPERUSUARIO, $listaPerfis)
+                                      || in_array(PFL_ADMINISTRADOR, $listaPerfis)
+                                      || in_array(PFL_PNC, $listaPerfis)
+                                      || (in_array(PFL_UNIDADE, $listaPerfis) && $ano == $exercicio)
+                                  ):
+                            ?>
+                                <tr>
+                                    <td colspan="2"></td>
+                                    <td style="text-align: right;">
+                                        <button class="btn btn-success btn_inserir_anexos" data-acpid="<?php echo $acpid; ?>" type="button">
+                                            <i class="fa fa-plus-circle"></i>&nbsp;Inserir Anexos
+                                        </button>
+                                    </td>
+                                </tr>
+                            <?php endif; ?>
+                    </tfoot>
+                <?php endif; ?>
+            </table>
+
+
+
+
 
 <script>
     $(function(){
