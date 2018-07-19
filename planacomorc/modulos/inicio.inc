@@ -88,7 +88,6 @@ include APPRAIZ . "includes/cabecalho.inc";
     </div>
     <div class="col-lg-8">
         <div style="padding-top: 10px;" class="text-right">
-            <!--<a class="btn btn-success" href="planacomorc.php?modulo=inicio&acao=C&req=atualizarSIOP">-->
             <a class="btn btn-success" href="javascript:AtualizarSIOP();">
                 <i class="fa fa-cloud-download"></i> Atualizar SIOP
             </a>
