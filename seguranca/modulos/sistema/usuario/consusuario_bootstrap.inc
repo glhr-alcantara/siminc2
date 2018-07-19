@@ -72,7 +72,7 @@ if ($_REQUEST['formulario']) {
     $muncod = $_REQUEST['muncod'];
     $usuchaveativacao = $_REQUEST['usuchaveativacao'];
     $sitperfil = $_REQUEST['sitperfil'];
-    $unidade = $_REQUEST['unidade'];
+    $suocod = $_REQUEST['suocod'];
 } else {
     $codigo = $_SESSION['sisid'];
 }
@@ -256,21 +256,19 @@ DML;
                 </section>
             </section>
             <section class="form-group">
-                <label class="col-md-2 control-label">Unidade Orçamentária:</label>
+                <label class="col-md-2 control-label">SubUnidade Orçamentária:</label>
                 <section class="col-md-10">
                     <?php
-                    $sql = "
-                                SELECT
-                                    unicod as codigo,
-                                    unicod || ' - ' || unidsc as descricao
-                                    FROM public.unidade
-                                    where orgcod = '". CODIGO_ORGAO_SISTEMA. "' and unistatus = 'A'
-                                    ORDER BY unicod
-";
+                    $sql = "SELECT suoid as codigo,
+                                   suocod || ' - ' || suonome || ' - ' || suosigla as descricao
+                              FROM public.vw_subunidadeorcamentaria
+                             where suostatus = 'A'
+                             ORDER BY suoid";
                     $options = array(
-                        'titulo' => 'Selecione o(s) Perfil(s)'
+                        'titulo' => 'Selecione a(s) SubUnidade(s)',
+                        'multiple' => true
                     );
-                    inputCombo('unidade[]', $sql, $unidade, 'unidade', $options);
+                    inputCombo('suocod[]', $sql, $suocod, 'unidade', $options);
                     ?>
                 </section>
             </section>
@@ -406,9 +404,9 @@ DML;
     if ($_REQUEST['muncod'])
         $texto.= " and usuario.muncod = '" . $_REQUEST['muncod'] . "'";
     //Unidade Orcamentaria
-    if (!empty($_REQUEST['unidade'][0])) {
-        foreach ($_REQUEST['unidade'] as $unidade) {
-            $und[] = "unidadex.unicod = '" . (integer) $unidade . "'";
+    if (!empty($_REQUEST['suocod'][0])) {
+        foreach ($_REQUEST['suocod'] as $unidade) {
+            $und[] = "unidadex.suocod = '" . (integer) $unidade . "'";
         }
         if (!empty($und)) {
             $texto .= ' AND ' . implode(' OR ', $und);
@@ -454,12 +452,12 @@ DML;
 			inner join seguranca.perfilusuario perfilusuario    on perfil.pflcod = perfilusuario.pflcod and perfil.pflcod = %d
 			right join seguranca.usuario usuario		    	on usuario.usucpf = perfilusuario.usucpf
 			left join
-			(select	unicod,	unidsc from	public.unidade  where unitpocod = 'U') as unidadex on usuario.unicod = unidadex.unicod", $_REQUEST['pflcod']
+			(select	unocod, suocod, suonome from	public.vw_subunidadeorcamentaria  where suostatus = 'A') as unidadex on usuario.unicod = unidadex.unocod", $_REQUEST['pflcod']
         );
     } else {
         $oin_sql = "
-			( select unicod, unidsc from public.unidade  where	unitpocod = 'U') as unidadex
-			right join seguranca.usuario usuario	on usuario.unicod = unidadex.unicod
+			( select unocod, suocod, suonome from public.vw_subunidadeorcamentaria  where	suostatus = 'A') as unidadex
+			right join seguranca.usuario usuario	on usuario.unicod = unidadex.unocod
 			left join seguranca.perfilusuario perfilusuario on usuario.usucpf = perfilusuario.usucpf
 			left join seguranca.perfil perfil on perfil.pflcod = perfilusuario.pflcod
 			";
@@ -477,7 +475,7 @@ DML;
         usuario.usucpf AS cpf,
         usuario.usunome AS nomeusuario,
         '(' || usuario.usufoneddd || ') ' || usuario.usufonenum AS fone,
-        CASE WHEN entidade.entid = 390402 THEN trim(usuario.orgao) ELSE trim(unidadex.unidsc) END AS unidsc,
+        CASE WHEN entidade.entid = 390402 THEN trim(usuario.orgao) ELSE trim(unidadex.suonome) END AS unidsc,
         '<section class=\"btn-group\">' ||
         CASE WHEN usuariosistema.suscod = 'A' THEN
             '<label class=\"btn btn-default active\">Ativo</label>'
@@ -493,7 +491,7 @@ DML;
     ";
 
     $groupby = "usuario.usucpf, usuario.usunome, usuario.usufoneddd, usuario.usufonenum, usuario.usuemail, entidade.entid,
-                usuario.orgao, unidadex.unidsc, cargo.cardsc, usuario.usufuncao, entidade.entnome, usuario.regcod,
+                usuario.orgao, unidadex.suonome, cargo.cardsc, usuario.usufuncao, entidade.entnome, usuario.regcod,
                 municipio.mundescricao, usuario.usudataatualizacao, usuariosistema.suscod, usuario.usuchaveativacao, perfil.pflcod";
 
     $sql = "
