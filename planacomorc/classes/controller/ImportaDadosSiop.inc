@@ -19,7 +19,7 @@ class Planacomorc_Controller_ImportaDadosSiop{
     
     public function AtualizarDados(){
         ini_set('display_errors', 1);
-        ini_set('error_reporting', E_ALL & ~E_NOTICE);
+        ini_set('error_reporting', E_ALL & ~E_NOTICE & ~E_DEPRECATED);
         set_time_limit(0);
         ini_set("memory_limit", "2048M");
         session_start();
@@ -80,12 +80,11 @@ class Planacomorc_Controller_ImportaDadosSiop{
         
         $listaDivergenciaPlanejada = $mImportaDadosSiop->RetornaDivergenciaPlanejado($this->exercicio);
         $this->GeraTabelaDivergenciaPlanejado($listaDivergenciaPlanejada);
-        
         if($this->boAlteracao){$this->corpoEmailV3 .= $this->htmlTabela1;}
         if($this->boAlteracaoCompartilhada){$this->corpoEmailV3 .= $this->htmlTabela2;}
         if($this->boAlteracaoProvisionado){$this->corpoEmailV3 .= $this->htmlTabela3;}
         if($this->boDivergenciaPlanejada){$this->corpoEmailV3 .= $this->htmlTabela4;}
-        
+
         $this->destinatarios = $mImportaDadosSiop->RetornaEmailsSuperUsuarios();
         $this->EnviaEmail();
     }

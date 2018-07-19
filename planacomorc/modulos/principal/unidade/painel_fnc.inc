@@ -19,6 +19,11 @@ switch ($_REQUEST['req']) {
     case 'detalhe-funcional':
         $oPlanoInterno->recuperarPiPorFuncional($_REQUEST['ptrid'], 'fnc');
         die;
+    case 'atualizarSIOP':
+        $cImportaDadosSiop = new Planacomorc_Controller_ImportaDadosSiop();
+        $cImportaDadosSiop->AtualizarDados();
+        $cImportaDadosSiop->AtualizarDotacao();
+        die;        
 }
 
 $filtros = array(
@@ -42,6 +47,9 @@ include APPRAIZ . "includes/cabecalho.inc";
     </div>
     <div class="col-lg-8">
         <div style="padding-top: 10px;" class="text-right">
+            <a class="btn btn-success" href="javascript:AtualizarSIOP();">
+                <i class="fa fa-cloud-download"></i> Atualizar SIOP
+            </a>            
             <a class="btn btn-success" href="planacomorc.php?modulo=inicio&acao=C"><i class="fa fa-area-chart"></i> Painel</a>
             <a class="btn btn-danger" href="planacomorc.php?modulo=principal/unidade/listapimanter_fnc&acao=A"><i class="fa fa-list"></i> Lista de PI - FNC</a>
             <?php if(!array_intersect($perfis, [PFL_CONSULTA, PFL_CONSULTA_UNIDADE])){ ?>
@@ -320,3 +328,28 @@ include APPRAIZ . "includes/cabecalho.inc";
         </div>
     </div>
 </div>
+<script>
+    function AtualizarSIOP(){
+        divCarregando();
+        $.post("planacomorc.php?modulo=inicio&acao=C&req=atualizarSIOP",
+            function(data){
+                 divCarregado();
+                 if (data==''){
+                    swal({
+                        title: "",
+                        text: "Dados Atualizados!",
+                        type: "success",
+                        showCancelButton: false,
+                        confirmButtonText: "OK",
+                        closeOnConfirm: true
+                    },
+                    function(){
+                        window.location.href = "planacomorc.php?modulo=inicio&acao=C";
+                    });
+                }else{
+                    swal('Erro!', 'Houve algum erro na importação de dados do SIOP!', 'warning');
+                }
+            }
+        );
+    }    
+</script>
