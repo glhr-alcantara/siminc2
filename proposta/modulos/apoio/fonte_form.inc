@@ -10,6 +10,11 @@ switch ($_REQUEST['req']) {
     case 'excluir-fonte':
         $cFonte->excluir($_REQUEST['foncod']);
         break;
+    case 'valida-codigo':
+        $cFonte = new Public_Controller_Fonte();
+        $resposta = $cFonte->validaFonte($_REQUEST);
+        echo $resposta;
+        die;
 }
 
 include APPRAIZ . "includes/cabecalho.inc";
@@ -31,11 +36,13 @@ include APPRAIZ . "includes/cabecalho.inc";
                 <div class="ibox-content">
                     <form id="formulario" name="formulario" method="post" class="form-horizontal">
                         <input type="hidden" name="req" id="req" value="salvar-fonte" />
-                        <input name="foncod" id="foncod" type="hidden" value="<?= $mFonte->foncod; ?>">
-                        
+                        <input name="foncod_chave" id="foncod_chave" type="hidden" value="<?= $mFonte->foncod; ?>">
+
+                        <div id="codigo-fonte">
+                            <?php echo $simec->input('foncod', 'Código', $mFonte->foncod, ['required', 'maxlength' => 3]); ?>
+                        </div>
                         <?php
-                            echo $simec->input('foncodq', 'Código', $mFonte->fondsc, ['required', 'maxlength' => 250]);
-                            echo $simec->input('fondsc', 'Descrição', $mFonte->fondsc, ['required', 'maxlength' => 250]);
+                            echo $simec->input('fondsc', 'Descrição', $mFonte->fondsc, ['maxlength' => 150]);
                         ?>
 
                         <div class="form-group">
@@ -46,10 +53,32 @@ include APPRAIZ . "includes/cabecalho.inc";
                                     <a href="?modulo=apoio/fonte_form&acao=A&req=excluir-fonte&foncod=<?php echo $mFonte->foncod; ?>" class="btn btn-danger link-excluir" id="btn-excluir" type="button"><i class="fa fa-close"></i>&nbsp;Excluir</a>
                                 <?php } ?>                                
                             </div>
-                        </div>                        
+                        </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    $(function(){
+        $('#codigo-fonte').change(function () {
+
+            $.ajax({
+                url: 'proposta.php?modulo=apoio/fonte_form&acao=A&req=valida-codigo&foncod_chave='+ $('#foncod_chave').val() + '&foncod='+ $('#foncod').val(),
+                dataType: 'json',
+                success: function(response){
+                    if(response.type == 'error'){
+                        swal({
+                            title: response.title,
+                            text: response.text,
+                            type: response.type
+                        });
+                        $('#foncod').val('');
+                    }
+                }
+            });
+        });
+    });
+</script>

@@ -11,7 +11,7 @@
  */
 
 
-require_once APPRAIZ .'includes/classes/Modelo.class.inc';
+require_once APPRAIZ . 'includes/classes/Modelo_PK_Char.class.inc';
 
 
 /**
@@ -24,7 +24,7 @@ require_once APPRAIZ .'includes/classes/Modelo.class.inc';
  * @version  Release: 
  * @link     no link
  */
-class Public_Model_FonteRecurso extends Modelo
+class Public_Model_FonteRecurso extends Modelo_PK_Char
 {
     /**
      * Nome da tabela especificada
@@ -62,5 +62,23 @@ class Public_Model_FonteRecurso extends Modelo
         'clasproporc' => null,
     );
 
-}//end Class
-?>
+    /**
+     * Consulta se o código inserido existe e retorna a primeira coluna do primeiro registro.
+     * OBS: O código que está sendo passado por parametro está sendo instanciado em Public_Controller_Fonte
+     * @return Modelo_PK_Char
+     */
+    public function carregarPorCodigo()
+    {
+        $sql = "SELECT * FROM public.fonterecurso WHERE fonstatus = 'A' AND foncod ='". $this->foncod ."'";
+
+        $resultado = $this->pegaLinha($sql);
+        if($resultado){
+            $this->popularDadosObjeto($resultado);
+        } else {
+            $this->foncod = NULL;
+        }
+
+        return $this;
+    }
+
+}

@@ -32,4 +32,29 @@ class Public_Controller_Fonte
             simec_redirecionar($url, 'error');
         }
     } //end salvar()
+
+
+    /**
+     * Valida se o código da Fonte pode ser alterado ou inserido.
+     *
+     * @param array $request
+     * @return array
+     */
+    function validaFonte($request)
+    {
+        $resposta = array();
+        # Verifica se o código inserido está sendo usado.
+        $mFonte = new Public_Model_FonteRecurso($request['foncod']);
+        $mFonte->carregarPorCodigo();
+//ver($mFonte->foncod,d);
+        if (!empty($mFonte->foncod)) {
+            $resposta['title'] = NULL;
+            $resposta['text'] = 'O código da Fonte ' . $mFonte->foncod . ' já está sendo usado!';
+            $resposta['type'] = 'error';
+        } else {
+            $resposta['type'] = 'success';
+        }
+
+        return simec_json_encode($resposta);
+    }
 }
