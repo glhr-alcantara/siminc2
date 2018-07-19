@@ -7,7 +7,7 @@ scp [USUÁRIO_SERVIDOR_BKP]@[IP_SERVIDOR_BKP]:/home/bkp_siminc/bkp_prod_dbsiminc.
 # Criar banco siminc2_tr_new
 psql --host [IP_SERVIDOR_BANCO] --port 5432 --username "postgres" -c "CREATE DATABASE siminc2_tr_new;"
 
-psql --host [IP_SERVIDOR_BANCO] --port 5432 --username "postgres" -c "ALTER DATABASE siminc2_tr_new SET datestyle TO European;"
+psql --host [IP_SERVIDOR_BANCO] --port 5432 --username "postgres" -c "ALTER DATABASE siminc2_tr_new SET datestyle TO European; ALTER DATABASE siminc2_tr_new SET timezone TO 'America/Sao_Paulo';"
 
 pg_restore --host [IP_SERVIDOR_BANCO] --port 5432 --username "postgres" --dbname "siminc2_tr_new" --disable-triggers -O -x --verbose bkp_prod_dbsiminc.backup
 
