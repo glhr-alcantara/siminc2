@@ -34,9 +34,8 @@ include APPRAIZ . "includes/cabecalho.inc";
                         <input name="idoid" id="idoid" type="hidden" value="<?php echo $mIdoc->idoid; ?>">
 
                         <?php
-                        echo $simec->input('idocod', 'C?digo', $mIdoc->idocod, ['class' => 'inteiro', 'required', 'maxlength' => 8]);
-                        echo $simec->input('idodsc', 'Descri??o', $mIdoc->idodsc, ['required', 'maxlength' => 255]);
-//                        echo $simec->select('gndcod', 'GND', $mNaturesaDespesa->gndcod, (new Public_Model_Gnd())->recuperarlistaGnd(), ['required']);
+                        echo $simec->input('idocod', 'Codigo', $mIdoc->idocod, ['class' => 'inteiro', 'required', 'maxlength' => 8]);
+                        echo $simec->input('idodsc', 'Descrição', $mIdoc->idodsc, ['required', 'maxlength' => 255]);
                         ?>
 
                         <div class="form-group">

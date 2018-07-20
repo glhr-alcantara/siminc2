@@ -1,7 +1,8 @@
 <?php
 
-//$listaIdoc = (new Public_Model_Idoc())->recuperarTodos('*', ["idostatus = 'A'". $_SESSION['exercicio']. "'"], 'idodsc');
-//$listaIdoc = (new Public_Model_Idoc())->recuperarTodos('*', ["idostatus = 'A'", " = '". $_SESSION['exercicio']. "'"], 'idodsc');
+$listaIdoc = (new Public_Model_Idoc())->recuperarTodos('*', ["idostatus = 'A'"], 'idodsc');
+
+
 
 include APPRAIZ . "includes/cabecalho.inc";
 
@@ -28,9 +29,9 @@ include APPRAIZ . "includes/cabecalho.inc";
                         <table class="table table-striped table-bordered table-hover dataTables">
                             <thead>
                             <tr class="text-center">
-                                <th style="10%">A??es</th>
-                                <th>C?digo Do Idoc</th>
-                                <th>Descri??o</th>
+                                <th style="10%">Ações</th>
+                                <th>Codigo Do Idoc</th>
+                                <th>Descrição</th>
                             </tr>
                             </thead>
                             <tbody>
