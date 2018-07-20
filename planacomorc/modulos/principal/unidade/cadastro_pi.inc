@@ -117,10 +117,6 @@ if ($_REQUEST['alterarCodigoPi']) {
     die();
 }
 
-if($_REQUEST['req'] == 'historico-pi') {
-    include_once APPRAIZ. "planacomorc/modulos/principal/unidade/historico_pi_modal.inc";
-    die();
-}
 
 /**
  * Processa as requições enviadas a esta página.
@@ -243,6 +239,7 @@ include APPRAIZ . "includes/cabecalho.inc";
 </div>
 
 <?php bootstrapPopup("Histórico de Alterações", 'historico-pi', APPRAIZ. "planacomorc/modulos/principal/unidade/historico_pi_modal.inc", array('fechar'), array('tamanho' => 'lg')); ?>
+<?php bootstrapPopup("Registro do último usuário que alterou este pi", 'historico-pi-usuario', APPRAIZ. "planacomorc/modulos/principal/unidade/historico_pi_usuario_modal.inc", array('fechar'), array('tamanho' => 'lg')); ?>
 
 <div class="wrapper wrapper-content animated fadeInRight">
     <div class="row">
@@ -462,6 +459,7 @@ include APPRAIZ . "includes/cabecalho.inc";
                             </div>
 
                             <div class="col-md-1">
+                                <a style="margin-left: 15px; height:13px; zoom: 200%;" class="fa fa-history" id="modal-historico-pi-usuario" title="Último usuário que salvou"></a>
                                 <?php wf_desenhaBarraNavegacao($dadosPI['docid'], array('pliid' => $dadosPI['pliid'])); ?>
                                 <div id="div_comentario_estado_atual" style="display: none;"><?php echo wf_pegarComentarioEstadoAtual($dadosPI['docid']); ?></div>
                             </div>
