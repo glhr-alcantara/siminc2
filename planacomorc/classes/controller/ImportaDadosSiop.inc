@@ -28,7 +28,6 @@ class Planacomorc_Controller_ImportaDadosSiop{
         $this->exercicio = date('Y');
         $this->filtro = array('anoExercicio' => $this->exercicio);
         
-        $continuar = true;
         $mImportaDadosSiop->excluiDadosWsOrcamentario($this->exercicio);
         $this->ConsultaDadosWs();
         $mImportaDadosSiop->commit();
@@ -38,6 +37,7 @@ class Planacomorc_Controller_ImportaDadosSiop{
     }
     
     private function ConsultaDadosWs(){
+        $continuar = true;
         do {
             $ws = new Spo_Ws_Sof_Quantitativo('spo', Spo_Ws_Sof_Quantitativo::PRODUCTION);
             $resultados = $ws->consultarExecucaoOrcamentaria($this->filtro, null, $this->pagina, true);
@@ -51,7 +51,7 @@ class Planacomorc_Controller_ImportaDadosSiop{
                 }
             }
 
-            $pagina++;
+            $this->pagina++;
             if (count($resultados) < 2000) {
                 $continuar = false;
                 break;
