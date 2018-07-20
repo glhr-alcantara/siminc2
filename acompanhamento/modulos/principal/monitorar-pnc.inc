@@ -15,6 +15,9 @@
         case 'acompanhamento-atividade-pnc-form':
             include_once APPRAIZ. 'acompanhamento/modulos/principal/acompanhamento_atividade_pnc_form.inc';
         die;
+        case 'acompanhamento-anexo-pnc-form':
+            include_once APPRAIZ. 'acompanhamento/modulos/principal/acompanhamento_anexo_pnc_form.inc';
+        die;
         case 'salvar-acompanhamento-indicador-pnc':
             $resultado = Acompanhamento_Controller_Acompanhamentopnc::salvarIndicadorPnc(simec_utf8_decode_recursive($_REQUEST));
             echo simec_json_encode($resultado);
@@ -319,7 +322,7 @@
     bootstrapPopup(
         "Anexar arquivos(Documentos)",
         'div_modal_acompanhamento_anexo',
-        '',
+        APPRAIZ. 'acompanhamento/modulos/principal/acompanhamento_anexo_pnc_form.inc',
         array('fechar'),
         array('tamanho' => 'xl')
     );
@@ -340,6 +343,38 @@
                 loading: "Carregando ..."
             }
         });
+        
+        // Evento de terminar de carregar arquivos
+        Dropzone.options.formularioAnexo = {
+            init: function() {
+                
+                this.on("success", function(file, response){
+                    var jsonResponse = $.parseJSON(response);
+                    inserirNovoAnexo(jsonResponse);
+                });
+
+                this.on("queuecomplete", function(file){
+
+                    // Armazena o objeto Dropzone para chamar métodos
+                    objFormularioAnexo = this;
+                    // Chama mensagem de sucesso
+                    swal({
+                      title: "",
+                      text: "Arquivos salvos com sucesso!",
+                      timer: 2000,
+                      showConfirmButton: false,
+                      type: "success"
+                    }, function(){
+                        // Fecha o swal alert
+                        swal.close();
+                        // limpa campo de upload
+                        objFormularioAnexo.removeAllFiles();
+                        // fecha modal após a seleção
+                        $('#div_modal_acompanhamento_anexo').modal('hide');
+                    });
+                });
+            }
+        };
         
         // Evento do componente de exibir Número da meta
         $('.div-indicador').mouseenter(function(){
@@ -429,8 +464,14 @@
         });
         
         // Evento do botão salvar da janela modal do Cadastro de Indicadores PNC
-        $('#div_modal_acompanhamento_atividade').find('.btn-salvar').click(function(){
+        $('#div_modal_acompanhamento_atividade').find('.btn-salvar').click( function(){
             $('#formulario-acompanhamento-atividade').find('[type="submit"]').trigger('click');
+        });
+
+        // Eventos do ícone(ou número) de edição da lista de atividades PNC
+        $('.div_lista_anexos_pnc').on('click', '.inserir_anexo', function(){
+            $('#div_modal_acompanhamento_anexo').modal();
+            return false;
         });
 
     });
@@ -519,12 +560,6 @@
         var url = '?modulo=principal/monitorar-pnc&acao=A&req=listar-anexos-pnc'+ '&acpid='+ acpid;
         $('.div_lista_anexos_pnc').empty();
         $('.div_lista_anexos_pnc').load(url);
-    }
-
-    function abrirModalUpload() {
-        $('.modal_dialog_upload').show();
-        $('#modal_upload').modal();
-        $('#modal_upload .chosen-container').css('width', '100%');
     }
 
 </script>

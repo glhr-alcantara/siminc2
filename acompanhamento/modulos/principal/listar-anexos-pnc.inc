@@ -37,8 +37,7 @@
                         <?php echo $anexo['arqdescricao']; ?>
                     </td>
                     <td style="text-align: center;">
-                        <input type="hidden" value="<?php echo $anexo['arqid']; ?>" name="listaAnexos[]">
-                        <span class="glyphicon glyphicon-trash btnRemoverAnexos link" title="Excluir o arquivo <?php echo $anexo['arqnome']. '.'. $anexo['arqextensao']; ?>" data-anexos="<?php echo $anexo['arqid']; ?>" />
+                        <span class="glyphicon glyphicon-trash excluir_anexo link" title="Excluir o arquivo <?php echo $anexo['arqnome']. '.'. $anexo['arqextensao']; ?>" data-anexos="<?php echo $anexo['arqid']; ?>" />
                     </td>
                 </tr>
             <?php endforeach; ?>
@@ -54,7 +53,7 @@
                     <tr>
                         <td colspan="2"></td>
                         <td style="text-align: right;">
-                            <button class="btn btn-success btn_inserir_anexos" data-acpid="<?php echo $acpid; ?>" type="button">
+                            <button class="btn btn-success inserir_anexo" data-acpid="<?php echo $acpid; ?>" type="button">
                                 <i class="fa fa-plus-circle"></i>&nbsp;Inserir Anexos
                             </button>
                         </td>
@@ -76,7 +75,7 @@
                     <tr>
                         <td colspan="2"></td>
                         <td style="text-align: right;">
-                            <button class="btn btn-success btn_inserir_anexos" data-acpid="<?php echo $acpid; ?>" type="button">
+                            <button class="btn btn-success inserir_anexo" data-acpid="<?php echo $acpid; ?>" type="button">
                                 <i class="fa fa-plus-circle"></i>&nbsp;Inserir Anexos
                             </button>
                         </td>
