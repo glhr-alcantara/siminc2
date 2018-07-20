@@ -40,7 +40,7 @@
                         &nbsp;
                         <span class="editar_atividade fa fa-pencil link" data-atvid="<?php echo $atividade['atvid']; ?>" data-acpid="<?php echo $acpid; ?>" title="Editar Atividade"></span>
                         <span style="color: red;">
-                            <span class="excluir_atividade glyphicon glyphicon-trash link" data-atvid="<?php echo $atividade['atvid']; ?>" data-atvtitulo="<?php echo $atividade['atvtitulo']; ?>" title="Excluir Atividade: <?php echo $atividade['atvtitulo']; ?>" /></span>
+                            <span class="excluir_atividade glyphicon glyphicon-trash link" data-acpid="<?php echo $acpid; ?>" data-atvid="<?php echo $atividade['atvid']; ?>" data-atvtitulo="<?php echo $atividade['atvtitulo']; ?>" title="Excluir Atividade: <?php echo $atividade['atvtitulo']; ?>" /></span>
                         </span>
                     <?php else: ?>
                         <?= $atividade['atvfonteinformacao']; ?>

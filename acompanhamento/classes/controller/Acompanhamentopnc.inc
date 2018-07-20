@@ -56,6 +56,27 @@ class Acompanhamento_Controller_Acompanhamentopnc
         }
     }
     
+    public static function excluirAtividadePnc($dados)
+    {
+        try {
+            $acompanhamentoAtividadePnc = new Acompanhamento_Model_Atividadepnc($dados['atvid']);
+            $acompanhamentoAtividadePnc->atvstatus = 'I';
+            $acompanhamentoAtividadePnc->salvar(NULL, NULL, ['atvproduto', 'atvprodutoqtd', 'muncod']);
+            $acompanhamentoAtividadePnc->commit();
+
+            return array(
+                'success' => 'Operação realizada com sucesso!',
+                'acpid' => $acompanhamentoAtividadePnc->acpid
+            );
+        } catch (Exception $e){
+            $acompanhamentoAtividadePnc->rollback();
+            return array(
+                'error' => 'Ocorreu um erro ao executar operação!',
+                'acpid' => $dados['acpid']
+            );
+        }
+    }
+    
     public static function buscarAcompanhamentoJanelaSubunidadeMeta($suoid = NULL, $janid = NULL, $mpnid = NULL){
         $modelAcompanhamento = new Acompanhamento_Model_Acompanhamentopnc();
         $modelAcompanhamento->suoid = $suoid;

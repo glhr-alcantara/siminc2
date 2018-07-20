@@ -16,11 +16,15 @@
             include_once APPRAIZ. 'acompanhamento/modulos/principal/acompanhamento_atividade_pnc_form.inc';
         die;
         case 'salvar-acompanhamento-indicador-pnc':
-            $resultado = $cAcompanhamentopnc->salvarIndicadorPnc(simec_utf8_decode_recursive($_REQUEST));
+            $resultado = Acompanhamento_Controller_Acompanhamentopnc::salvarIndicadorPnc(simec_utf8_decode_recursive($_REQUEST));
             echo simec_json_encode($resultado);
         die;
         case 'salvar-acompanhamento-atividade-pnc':
-            $resultado = $cAcompanhamentopnc->salvarAtividadePnc(simec_utf8_decode_recursive($_REQUEST));
+            $resultado = Acompanhamento_Controller_Acompanhamentopnc::salvarAtividadePnc(simec_utf8_decode_recursive($_REQUEST));
+            echo simec_json_encode($resultado);
+        die;
+        case 'excluir-acompanhamento-atividade-pnc':
+            $resultado = Acompanhamento_Controller_Acompanhamentopnc::excluirAtividadePnc(simec_utf8_decode_recursive($_REQUEST));
             echo simec_json_encode($resultado);
         die;
         case 'listar-indicadores-pnc':
@@ -415,12 +419,58 @@
             return false;
         });
         
+        // Eventos do ícone(ou número) de exclusão da lista de atividades PNC
+        $('.div_lista_atividades_pnc').on('click', '.excluir_atividade', function(){
+            var acpid = $(this).attr('data-acpid');
+            var atvid = $(this).attr('data-atvid');
+            var descricaoItem = $(this).attr('data-atvtitulo');
+            excluirAtividade(acpid, atvid, descricaoItem);
+            return false;
+        });
+        
         // Evento do botão salvar da janela modal do Cadastro de Indicadores PNC
         $('#div_modal_acompanhamento_atividade').find('.btn-salvar').click(function(){
             $('#formulario-acompanhamento-atividade').find('[type="submit"]').trigger('click');
         });
 
     });
+    
+    /**
+     * Exclui a atividade selecionada.
+     * 
+     * @param {int} acpid
+     * @param {int} atvid
+     * @param {string} descricaoItem
+     * @returns {void}
+     */
+    function excluirAtividade(acpid, atvid, descricaoItem){
+        swal({
+            title: "Confirmação",
+            text: "Você quer excluir essa atividade: "+ descricaoItem+ '?',
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: '#DD6B55',
+            confirmButtonText: 'Sim, eu quero.',
+            cancelButtonText: "Não, eu não quero!",
+            closeOnConfirm: false,
+            closeOnCancel: false
+        },
+        function(isConfirm){
+            if(isConfirm){
+                $.ajax({
+                    url: '?modulo=principal/monitorar-pnc&acao=A&req=excluir-acompanhamento-atividade-pnc&acpid='+ acpid+ '&atvid='+ atvid,
+                    type: 'DELETE',
+                    dataType: 'json',
+                    success: function(response){
+                        carregarListaAtividadePnc(response.acpid);
+                        swal("Lista atualizada!", "Atividade excluída!", "success");
+                    }
+                });
+             } else {
+               swal("Exclusão Cancelada", "Sua Atividade permanece cadastrada :)", "error");
+             }
+        });
+    }
     
     /**
      * Exibe a janela modal do grafico de execução orçamentária Da Meta da Unidade.
