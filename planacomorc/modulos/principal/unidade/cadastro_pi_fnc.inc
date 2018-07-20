@@ -116,11 +116,6 @@ if ($_REQUEST['alterarCodigoPi']) {
     die();
 }
 
-//if($_REQUEST['req'] == 'historico-pi') {
-//    include_once APPRAIZ. "planacomorc/modulos/principal/unidade/historico_pi_modal.inc";
-//    die();
-//}
-
 /**
  * Processa as requições enviadas a esta página.
  * @see cadastropi_requisicoes.inc
