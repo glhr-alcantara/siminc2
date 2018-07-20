@@ -16,7 +16,7 @@ class Simec_View_Helper_Element extends Zend_View_Helper_FormElement
         $labelSize = !empty($config['label-size']) ? $config['label-size'] : 3;
         $inputSize = !empty($config['input-size']) ? $config['input-size'] : (12 - $labelSize);
         if ($attribs['type']=='password'){
-            $passtype = '<div class="fa link fa-eye eye-slash col-sm-1 col-md-1 col-lg-1" id="eye-slash'.$attribs['id'].'" style="font-size:4em; color: #1c84c6" data-target="#'.$attribs['id'].'"></div>';
+            $passtype = '<div title="Clique aqui para visualizar a senha." class="fa link fa-eye eye-slash col-sm-1 col-md-1 col-lg-1" id="eye-slash'.$attribs['id'].'" style="font-size:3em; color: #1c84c6" data-target="#'.$attribs['id'].'"></div>';
             $passtype .= '<script>';
             $passtype .= '   $("#eye-slash'.$attribs['id'].'").click(function () {
                                 var id = $(this).data("target");
