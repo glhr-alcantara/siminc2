@@ -73,4 +73,3 @@ class Public_Model_NaturezaDespesa extends Modelo
     );
 
 }//end Class
-?>
