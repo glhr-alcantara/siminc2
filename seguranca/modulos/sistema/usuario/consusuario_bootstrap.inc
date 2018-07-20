@@ -72,7 +72,7 @@ if ($_REQUEST['formulario']) {
     $muncod = $_REQUEST['muncod'];
     $usuchaveativacao = $_REQUEST['usuchaveativacao'];
     $sitperfil = $_REQUEST['sitperfil'];
-    $suocod = $_REQUEST['suocod'];
+    $suoid = $_REQUEST['suoid'];
 } else {
     $codigo = $_SESSION['sisid'];
 }
@@ -259,7 +259,7 @@ DML;
                 <label class="col-md-2 control-label">SubUnidade Orçamentária:</label>
                 <section class="col-md-10">
                     <?php
-                    $sql = "SELECT suocod as codigo,
+                    $sql = "SELECT suoid as codigo,
                                    suocod || ' - ' || suonome || ' - ' || suosigla as descricao
                               FROM public.vw_subunidadeorcamentaria
                              where suostatus = 'A' and prsano = '".$_SESSION['exercicio']."'
@@ -268,7 +268,7 @@ DML;
                         'titulo' => 'Selecione a(s) SubUnidade(s)',
                         'multiple' => true
                     );
-                    inputCombo('suocod[]', $sql, $suocod, 'unidade', $options);
+                    inputCombo('suoid[]', $sql, $suoid, 'unidade', $options);
                     ?>
                 </section>
             </section>
@@ -404,11 +404,12 @@ DML;
     if ($_REQUEST['muncod'])
         $texto.= " and usuario.muncod = '" . $_REQUEST['muncod'] . "'";
     //Unidade Orcamentaria
-    if (!empty($_REQUEST['suocod'][0])) {
-        $innerResponsabilidade = " INNER JOIN {$_SESSION['sisdiretorio']}.usuarioresponsabilidade resp ON usuario.usucpf = resp.usucpf and resp.rpustatus = 'A' ";        
-        $texto .= " and resp.ungcod in (";
-        for ($i=0;$i<count($_REQUEST['suocod']);$i++){
-            $texto .= "'". $_REQUEST['suocod'][$i]."',";
+    if (!empty($_REQUEST['suoid'][0])) {
+        $innerResponsabilidade = " INNER JOIN {$_SESSION['sisdiretorio']}.usuarioresponsabilidade resp ON usuario.usucpf = resp.usucpf and resp.rpustatus = 'A'
+                                   inner join vw_subunidadeorcamentaria sub on resp.ungcod = sub.suocod and sub.suostatus = 'A'";        
+        $texto .= " and sub.suoid in (";
+        for ($i=0;$i<count($_REQUEST['suoid']);$i++){
+            $texto .= "'". $_REQUEST['suoid'][$i]."',";
         }
         $texto = substr($texto, 0, strlen($texto)-1).')';
     }
@@ -449,8 +450,7 @@ DML;
         $oin_sql = sprintf(
                 "seguranca.perfil perfil
 			inner join seguranca.perfilusuario perfilusuario    on perfil.pflcod = perfilusuario.pflcod and perfil.pflcod = %d
-			right join seguranca.usuario usuario		    	on usuario.usucpf = perfilusuario.usucpf
-			left join", $_REQUEST['pflcod']
+			right join seguranca.usuario usuario		    	on usuario.usucpf = perfilusuario.usucpf", $_REQUEST['pflcod']
         );
     } else {
         $oin_sql = "
