@@ -30,7 +30,7 @@ include APPRAIZ . "includes/cabecalho.inc";
                 </div>
                 <div class="ibox-content">
                     <form id="formulario" name="formulario" method="post" class="form-horizontal">
-                        <input type="hidden" name="req" id="req" value="salvar-natureza" />
+                        <input type="hidden" name="req" id="req" value="salvar-idoc" />
                         <input name="idoid" id="idoid" type="hidden" value="<?php echo $mIdoc->idoid; ?>">
 
                         <?php

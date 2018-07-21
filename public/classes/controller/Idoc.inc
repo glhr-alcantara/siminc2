@@ -13,7 +13,7 @@ class Public_Controller_Idoc
 //            ver($mdnatDespesa,d);
             $mdidoc->salvar(null,null);
             $mdidoc->commit();
-            simec_redirecionar($url . '&idoid=' . $mdidoc->ndpid, 'success');
+            simec_redirecionar($url . '&idoid=' . $mdidoc->idoid, 'success');
         } catch (Exception $e){
             $mdidoc->rollback();
             simec_redirecionar($url, 'error');
@@ -25,7 +25,7 @@ class Public_Controller_Idoc
         $url = '?modulo=apoio/idoc&acao=A';
 
         try {
-            $mdidoc = new Public_Model_NaturezaDespesa($idoid);
+            $mdidoc = new Public_Model_Idoc($idoid);
             $mdidoc->idostatus = 'I';
             $mdidoc->salvar();
             $mdidoc->commit();
