@@ -4,9 +4,6 @@
     $listaDeAnexos = $acompanhamentopnc->buscarAnexos();
     
     $listaPerfis = pegaPerfilGeral();
-    
-//    $podeEditar = in_array(PFL_CONSULTA, $listaPerfis)? 0:($mJanela->isAtual() == 't'?1 :0);
-
 ?>
 
 <div class="row">
@@ -36,8 +33,18 @@
                     <td style="text-align: left;">
                         <?php echo $anexo['arqdescricao']; ?>
                     </td>
-                    <td style="text-align: center;">
-                        <span class="glyphicon glyphicon-trash excluir_anexo link" title="Excluir o arquivo <?php echo $anexo['arqnome']. '.'. $anexo['arqextensao']; ?>" data-anexos="<?php echo $anexo['arqid']; ?>" />
+                    <td style="text-align: left;">
+                        <?php if(
+                                  in_array(PFL_SUPERUSUARIO, $listaPerfis)
+                                  || in_array(PFL_ADMINISTRADOR, $listaPerfis)
+                                  || in_array(PFL_PNC, $listaPerfis)
+                                  || (in_array(PFL_UNIDADE, $listaPerfis) && $ano == $exercicio)
+                              ):
+                        ?>
+                            <span style="color: red;">
+                                <span class="glyphicon red glyphicon-trash excluir_anexo link" title="Excluir o arquivo <?php echo $anexo['arqnome']. '.'. $anexo['arqextensao']; ?>" data-acpid="<?php echo $acpid; ?>" data-arqid="<?php echo $anexo['arqid']; ?>" data-descricao="<?php echo $anexo['arqnome']. '.'. $anexo['arqextensao']; ?>" />
+                            </span>
+                        <?php endif; ?>
                     </td>
                 </tr>
             <?php endforeach; ?>

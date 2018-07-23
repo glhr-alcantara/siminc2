@@ -30,6 +30,10 @@
             $resultado = Acompanhamento_Controller_Acompanhamentopnc::excluirAtividadePnc(simec_utf8_decode_recursive($_REQUEST));
             echo simec_json_encode($resultado);
         die;
+        case 'excluir-acompanhamento-anexo-pnc':
+            $resultado = Acompanhamento_Controller_Acompanhamentopnc::excluirAnexoPnc(simec_utf8_decode_recursive($_REQUEST));
+            echo simec_json_encode($resultado);
+        die;
         case 'listar-indicadores-pnc':
             include APPRAIZ. 'acompanhamento/modulos/principal/listar-indicadores-pnc.inc';
         die;
@@ -48,25 +52,35 @@
         case 'ver-historico':
 //            $cAcompanhamentopnc->recuperarHistorico($_REQUEST['acpid']);
 //            die;
-        case 'uploadAnexo':
-//            $file = new FilesSimec();
-//            if($file->setUpload($_REQUEST['arqdescricao'], '', false)){
-//                echo simec_json_encode(array(
-//                    'arqid' => $file->getIdArquivo(),
-//                    'arqnome' => $_FILES['file']['name'],
-//                    'arqdescricao' => $_REQUEST['arqdescricao']
-//                ));
-//            }else{
-//                echo simec_json_encode(array(
-//                    'error' => 1,
-//                    'errorMensage' => 'Não foi possível enviar o arquivo!'
-//                ));
-//            }
-//        die;
+        case 'anexar-arquivos-monitoramento-Pnc':
+            $acpid = $_REQUEST['acpid'];
+            $file = new FilesSimec();
+            if($file->setUpload($_REQUEST['arqdescricao'], '', false)){
+                $arqid = $file->getIdArquivo();
+                $acompanhamentoPncArquivo = New Acompanhamento_Model_Acompanhamentopncarquivo();
+                $acompanhamentoPncArquivo->acpid = $acpid;
+                $acompanhamentoPncArquivo->arqid = $arqid;
+                $acompanhamentoPncArquivo->salvar();
+                $acompanhamentoPncArquivo->commit();
+
+                echo simec_json_encode(array(
+                    'acpid' => $acpid,
+                    'arqid' => $arqid,
+                    'arqnome' => $_FILES['file']['name'],
+                    'arqdescricao' => $_REQUEST['arqdescricao']
+                ));
+            }else{
+                echo simec_json_encode(array(
+                    'acpid' => $acpid,
+                    'error' => 1,
+                    'errorMensage' => 'Não foi possível enviar o arquivo!'
+                ));
+            }
+        die;
     }
 
     $acompanhamentopnc = new Acompanhamento_Model_Acompanhamentopnc($_REQUEST['acpid']);
-//ver($acompanhamentopnc, d);
+
     // Recuperando Janela Ativa
     $janela = (new Acompanhamento_Model_Janela())->recuperarJanelaAtiva(Acompanhamento_Model_Tipo::K_TIPO_INDICADOR_PNC);
     $janid = $acompanhamentopnc->janid = $acompanhamentopnc->janid? $acompanhamentopnc->janid: $janela['janid'];
@@ -74,8 +88,6 @@
     // Recuperando SubUnidade
     $suoid = $acompanhamentopnc->suoid? $acompanhamentopnc->suoid: $_REQUEST['suoid'];
     
-//    $listaDeAnexos = (new Acompanhamento_Model_AcompanhamentoArquivo())->buscarPorAcompanhamento($acompanhamentopnc->acpid);
-
     if($mpnid){
         # Busca acompanhamento Ativo de acordo com a Unidade, Janela e Meta.
         $stdAcompanhamento = Acompanhamento_Controller_Acompanhamentopnc::buscarAcompanhamentoJanelaSubunidadeMeta($suoid, $janid, $mpnid);
@@ -94,6 +106,9 @@
             $acompanhamentopnc->commit();
         }
     }
+    
+    # Usado no formulário modal de upload de arquivos do acompanhamento da Meta PNC
+    $acpid = $acompanhamentopnc->acpid;
     
     include APPRAIZ . "includes/cabecalho.inc";
 ?>
@@ -318,13 +333,16 @@
         array('salvar', 'fechar'),
         array('tamanho' => 'lg')
     );
-    
+
     bootstrapPopup(
         "Anexar arquivos(Documentos)",
         'div_modal_acompanhamento_anexo',
         APPRAIZ. 'acompanhamento/modulos/principal/acompanhamento_anexo_pnc_form.inc',
         array('fechar'),
-        array('tamanho' => 'xl')
+        array(
+            'tamanho' => 'xl',
+            'acpid' => $acpid
+        )
     );
 ?>
 
@@ -345,18 +363,18 @@
         });
         
         // Evento de terminar de carregar arquivos
-        Dropzone.options.formularioAnexo = {
+        Dropzone.options.formularioAcompanhamentoAnexo = {
             init: function() {
                 
                 this.on("success", function(file, response){
                     var jsonResponse = $.parseJSON(response);
-                    inserirNovoAnexo(jsonResponse);
+                    carregarListaAnexoPnc(jsonResponse.acpid);
                 });
 
                 this.on("queuecomplete", function(file){
 
                     // Armazena o objeto Dropzone para chamar métodos
-                    objFormularioAnexo = this;
+                    objFormularioAcompanhamentoAnexo = this;
                     // Chama mensagem de sucesso
                     swal({
                       title: "",
@@ -368,7 +386,7 @@
                         // Fecha o swal alert
                         swal.close();
                         // limpa campo de upload
-                        objFormularioAnexo.removeAllFiles();
+                        objFormularioAcompanhamentoAnexo.removeAllFiles();
                         // fecha modal após a seleção
                         $('#div_modal_acompanhamento_anexo').modal('hide');
                     });
@@ -463,6 +481,15 @@
             return false;
         });
         
+        // Eventos do ícone(ou número) de exclusão da lista de atividades PNC
+        $('.div_lista_anexos_pnc').on('click', '.excluir_anexo', function(){
+            var acpid = $(this).attr('data-acpid');
+            var arqid = $(this).attr('data-arqid');
+            var descricaoItem = $(this).attr('data-descricao');
+            excluirAnexo(acpid, arqid, descricaoItem);
+            return false;
+        });
+        
         // Evento do botão salvar da janela modal do Cadastro de Indicadores PNC
         $('#div_modal_acompanhamento_atividade').find('.btn-salvar').click( function(){
             $('#formulario-acompanhamento-atividade').find('[type="submit"]').trigger('click');
@@ -508,7 +535,44 @@
                     }
                 });
              } else {
-               swal("Exclusão Cancelada", "Sua Atividade permanece cadastrada :)", "error");
+               swal("Exclusão Cancelada", "Sua Atividade permanece cadastrada :)", "warning");
+             }
+        });
+    }
+    
+    /**
+     * Exclui anexo selecionado.
+     * 
+     * @param {int} acpid
+     * @param {int} arqid
+     * @param {string} descricaoItem
+     * @returns {void}
+     */
+    function excluirAnexo(acpid, arqid, descricaoItem){
+        swal({
+            title: "Confirmação",
+            text: "Você quer excluir esse anexo: "+ descricaoItem+ '?',
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: '#DD6B55',
+            confirmButtonText: 'Sim, eu quero.',
+            cancelButtonText: "Não, eu não quero!",
+            closeOnConfirm: false,
+            closeOnCancel: false
+        },
+        function(isConfirm){
+            if(isConfirm){
+                $.ajax({
+                    url: '?modulo=principal/monitorar-pnc&acao=A&req=excluir-acompanhamento-anexo-pnc&acpid='+ acpid+ '&arqid='+ arqid,
+                    type: 'DELETE',
+                    dataType: 'json',
+                    success: function(response){
+                        carregarListaAnexoPnc(response.acpid);
+                        swal("Lista atualizada!", "Anexo excluído!", "success");
+                    }
+                });
+             } else {
+               swal("Exclusão Cancelada", "Seu anexo permanece salvo :)", "warning");
              }
         });
     }

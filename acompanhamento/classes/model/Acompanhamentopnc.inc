@@ -163,7 +163,8 @@ class Acompanhamento_Model_Acompanhamentopnc extends Modelo
             FROM acompanhamento.acompanhamentopncarquivo entanexo
                 JOIN public.arquivo a ON(entanexo.arqid = a.arqid)
             WHERE
-                entanexo.acpid = ". (int)$acpid;
+                a.arqstatus = 'A'
+                AND entanexo.acpid = ". (int)$this->acpid;
 
         $dados = $this->carregar($sql);
         return $dados ? $dados : [];
