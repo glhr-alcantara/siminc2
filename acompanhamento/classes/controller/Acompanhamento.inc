@@ -130,7 +130,7 @@ class Acompanhamento_Controller_Acompanhamento
     private function _gravarHistorico($acoid)
     {
         $mHistorico = new Acompanhamento_Model_Historico();
-
+        
         $mHistorico->acoid = $acoid;
         $mHistorico->usucpf = $_SESSION['usucpforigem'];
         $mHistorico->hisdata = date('Y-m-d H:i:s');

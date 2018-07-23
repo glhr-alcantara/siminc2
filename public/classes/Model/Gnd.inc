@@ -60,5 +60,22 @@ class Public_Model_Gnd extends Modelo
         'gndstatus' => null,
     );
 
+    /**
+     * Recupera lista com código e descrição por gnd.
+     *
+     * @return string
+     */
+    public function recuperarlistaGnd()
+    {
+        $sql ="SELECT
+                    gndcod AS codigo,
+                    gndcod || ' - ' || gnddsc AS descricao
+                FROM
+                    public.gnd
+                WHERE
+                    gndstatus = 'A'
+        ";
+        return $sql;
+    }
 }//end Class
 ?>
