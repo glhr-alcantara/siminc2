@@ -56,6 +56,56 @@ class Acompanhamento_Controller_Acompanhamentopnc
         }
     }
     
+    public static function excluirAtividadePnc($dados)
+    {
+        try {
+            $acompanhamentoAtividadePnc = new Acompanhamento_Model_Atividadepnc($dados['atvid']);
+            $acompanhamentoAtividadePnc->atvstatus = 'I';
+            $acompanhamentoAtividadePnc->salvar(NULL, NULL, ['atvproduto', 'atvprodutoqtd', 'muncod']);
+            $acompanhamentoAtividadePnc->commit();
+
+            return array(
+                'success' => 'Operação realizada com sucesso!',
+                'acpid' => $acompanhamentoAtividadePnc->acpid
+            );
+        } catch (Exception $e){
+            $acompanhamentoAtividadePnc->rollback();
+            return array(
+                'error' => 'Ocorreu um erro ao executar operação!',
+                'acpid' => $dados['acpid']
+            );
+        }
+    }
+    
+    public static function excluirAnexoPnc($dados)
+    {
+        try {
+            $arquivo = new Public_Model_Arquivo($dados['arqid']);
+            $arquivo->arqstatus = 'I';
+            $arquivo->salvar(NULL, NULL, [
+                'arqdescricao',
+                'arqextensao',
+                'arqtamanho',
+                'arqdata',
+                'arqhora',
+                'arqstatus',
+                'usucpf',
+                'sisid']);
+            $arquivo->commit();
+
+            return array(
+                'success' => 'Operação realizada com sucesso!',
+                'acpid' => $dados['acpid']
+            );
+        } catch (Exception $e){
+            $arquivo->rollback();
+            return array(
+                'error' => 'Ocorreu um erro ao executar operação!',
+                'acpid' => $dados['acpid']
+            );
+        }
+    }
+    
     public static function buscarAcompanhamentoJanelaSubunidadeMeta($suoid = NULL, $janid = NULL, $mpnid = NULL){
         $modelAcompanhamento = new Acompanhamento_Model_Acompanhamentopnc();
         $modelAcompanhamento->suoid = $suoid;

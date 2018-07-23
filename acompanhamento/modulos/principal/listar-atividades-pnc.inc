@@ -39,6 +39,9 @@
                         <?= $atividade['atvfonteinformacao']; ?>
                         &nbsp;
                         <span class="editar_atividade fa fa-pencil link" data-atvid="<?php echo $atividade['atvid']; ?>" data-acpid="<?php echo $acpid; ?>" title="Editar Atividade"></span>
+                        <span style="color: red;">
+                            <span class="excluir_atividade glyphicon glyphicon-trash link" data-acpid="<?php echo $acpid; ?>" data-atvid="<?php echo $atividade['atvid']; ?>" data-atvtitulo="<?php echo $atividade['atvtitulo']; ?>" title="Excluir Atividade: <?php echo $atividade['atvtitulo']; ?>" /></span>
+                        </span>
                     <?php else: ?>
                         <?= $atividade['atvfonteinformacao']; ?>
                     <?php endif; ?>
@@ -49,9 +52,9 @@
     <tfoot>
         <tr>
             <td colspan="4"></td>
-            <td>
+            <td style="text-align: right;">
                 <button class="btn btn-success editar_atividade" data-atvid="" data-acpid="<?php echo $acpid; ?>" type="button">
-                    <i class="fa fa-check"></i>&nbsp;Incluir nova atividade
+                    <i class="fa fa-plus-circle"></i>&nbsp;Incluir nova atividade
                 </button>
             </td>
         </tr>
@@ -65,7 +68,7 @@
                 <td colspan="4"></td>
                 <td style="text-align: right;">
                     <button class="btn btn-success editar_atividade" data-atvid="" data-acpid="<?php echo $acpid; ?>" type="button">
-                        <i class="fa fa-check"></i>&nbsp;Incluir nova atividade
+                        <i class="fa fa-plus-circle"></i>&nbsp;Incluir nova atividade
                     </button>
                 </td>
             </tr>
