@@ -150,7 +150,7 @@ if(!empty($_REQUEST['sbacao'])){
     $where .=" and upper(ac.acadsc) like upper('%".$_REQUEST['sbacao']."%') ";
 }
 if (!empty($_REQUEST['secid'][0])){
-    $where .=" and asec.secid in (".implode(', ', $_REQUEST['secid']).")";
+    $whereSec =" and asec.acaid in (select acaid from painel.acaosecretaria where secid in (".implode(', ', $_REQUEST['secid']).")) "; 
 }
 if (!empty($_REQUEST['exoid'][0])){
     $where .=" and ind.exoid in (".implode(', ', $_REQUEST['exoid']).")";
@@ -167,7 +167,7 @@ if (!empty($_REQUEST['dirid'][0])){
 						</a>
 					</center>' as acao, 
 				ac.acadsc,
-                                s.secdsc
+                                array_to_string(array_agg(s.secdsc), ' / ')
 				FROM painel.acao ac 
                                 left join painel.acaosecretaria asec
                                   on ac.acaid = asec.acaid
@@ -176,6 +176,8 @@ if (!empty($_REQUEST['dirid'][0])){
                                 left join painel.indicador ind
                                   on ac.acaid = ind.acaid
 				$where
+                                $whereSec
+                                group by ac.acaid, ac.acadsc
 				ORDER BY ac.acadsc
 				";
  
