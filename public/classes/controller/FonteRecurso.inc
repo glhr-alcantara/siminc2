@@ -1,6 +1,6 @@
 <?php
 
-class Public_Controller_Fonte
+class Public_Controller_FonteRecurso
 {
     public function salvar($dados)
     {
@@ -11,7 +11,7 @@ class Public_Controller_Fonte
             $mdfonte->popularDadosObjeto($dados);
             $mdfonte->salvar(null,null);
             $mdfonte->commit();
-            simec_redirecionar($url . '&foncod=' . $mdfonte->foncod, 'success');
+            simec_redirecionar($url . '&fonid=' . $mdfonte->fonid, 'success');
         } catch (Exception $e){
             $mdfonte->rollback();
             simec_redirecionar($url, 'error');
@@ -37,27 +37,24 @@ class Public_Controller_Fonte
     /**
      * Valida se o código da Fonte pode ser alterado ou inserido.
      *
-     * @param array $request
      * @return array
      */
-    function validaFonte($request)
+    function validaFonte()
     {
         $resposta = array();
-        if($request['foncod_chave'] == $request['foncod']){
-            $resposta['type'] = 'success';
-        } else {
-            # Verifica se o código inserido está sendo usado.
-            $mFonte = new Public_Model_FonteRecurso($request['foncod']);
-            $mFonte->carregarPorCodigo();
-            if (!empty($mFonte->foncod)) {
-                $resposta['title'] = NULL;
-                $resposta['text'] = 'O código da Fonte ' . $mFonte->foncod . ' já está sendo usado!';
-                $resposta['type'] = 'error';
-            } else {
-                $resposta['type'] = 'success';
-            }
-        }
 
+        # Verifica se o código inserido está sendo usado.
+        $mFonte = new Public_Model_FonteRecurso();
+        $mFonte->foncod = $_REQUEST['foncod'];
+        $mFonte->fonid = $_REQUEST['fonid'];
+        $verifica = $mFonte->carregarPorCodigo();
+        if (!empty($verifica)) {
+            $resposta['title'] = NULL;
+            $resposta['text'] = 'O código da Fonte ' . $mFonte->foncod . ' já está sendo usado!';
+            $resposta['type'] = 'error';
+        } else {
+            $resposta['type'] = 'success';
+        }
         return simec_json_encode($resposta);
     }
 }

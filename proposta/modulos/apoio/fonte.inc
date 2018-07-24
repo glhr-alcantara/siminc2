@@ -28,6 +28,7 @@ $listaFonte = (new Public_Model_FonteRecurso())->recuperarTodos('*', ["fonstatus
                             <thead>
                             <tr class="text-center">
                                 <th>Ação</th>
+                                <th>Código</th>
                                 <th>Descrição</th>
                             </tr>
                             </thead>
@@ -38,8 +39,9 @@ $listaFonte = (new Public_Model_FonteRecurso())->recuperarTodos('*', ["fonstatus
                                 ?>
                                 <tr>
                                     <td class="text-center">
-                                        <a title="Alterar" href="?modulo=apoio/fonte_form&acao=A&foncod=<?= $dados['foncod']; ?>"><i class="fa fa-pencil"></i></a>
+                                        <a title="Alterar" href="?modulo=apoio/fonte_form&acao=A&fonid=<?= $dados['fonid']; ?>"><i class="fa fa-pencil"></i></a>
                                     </td>
+                                    <td><?php echo $dados['foncod']; ?></td>
                                     <td><?php echo $dados['fondsc']; ?></td>
                                 </tr>
                             <?php } } ?>
