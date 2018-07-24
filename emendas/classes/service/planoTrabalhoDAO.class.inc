@@ -268,7 +268,7 @@ class planoTrabalhoDAO extends cls_banco{
 				    fup.fupdsc, 
 				    vede.gndcod||' - '||gn.gnddsc as gndcod1, 
 				    vede.mapcod||' - '||map.mapdsc as modalidade,
-				    vede.foncod||' - '||fon.fondsc as fonte,
+				    fon.foncod||' - '||fon.fondsc as fonte,
 				    ped.pedvalor
 				FROM emenda.planotrabalho ptr
 				    INNER JOIN emenda.ptemendadetalheentidade  ped
@@ -285,7 +285,7 @@ class planoTrabalhoDAO extends cls_banco{
 				    left join public.modalidadeaplicacao map
 				        on map.mapcod = vede.mapcod
 				    left join public.fonterecurso fon
-				        on fon.foncod = vede.foncod 
+				        on fon.fonid = vede.fonid 
 		                and fon.fonstatus = 'A'
 				WHERE ptr.ptrid = $ptrid
 				    AND vede.edestatus = 'A' " . $filtro;
@@ -596,12 +596,9 @@ class planoTrabalhoDAO extends cls_banco{
 				  ed.emdid,
 				  ed.emeid,
 				  ed.emdimpositiva,
-				  /*ed.gndcod,
-				  ed.foncod,
-				  ed.mapcod,*/
 				  ed.gndcod||' - '||gn.gnddsc as gndcod1, 
-			      ed.mapcod||' - '||map.mapdsc as modalidade,
-			      ed.foncod||' - '||fon.fondsc as fonte,
+                                  ed.mapcod||' - '||map.mapdsc as modalidade,
+                                  fon.foncod||' - '||fon.fondsc as fonte,
 				  ede.edevalor as edevalor,
 				  e.emetipo,
 				  ptede.edeid,
@@ -620,8 +617,8 @@ class planoTrabalhoDAO extends cls_banco{
 														Where ptr.ptrstatus = 'A') ptede
 				  ON (ede.edeid = ptede.edeid)
 			  	left join public.gnd gn on gn.gndcod = ed.gndcod and gn.gndstatus = 'A'
-			    left join public.modalidadeaplicacao map on map.mapcod = ed.mapcod
-			    left join public.fonterecurso fon on fon.foncod = ed.foncod and fon.fonstatus = 'A'
+			        left join public.modalidadeaplicacao map on map.mapcod = ed.mapcod
+			        left join public.fonterecurso fon on fon.fonid = ed.fonid and fon.fonstatus = 'A'
 				WHERE
 				  ed.emeid = $emeid
 				  AND (".(($ptrid) ? "ptede.ptrid = ".$ptrid." OR ptede.ptrid is null" : "ptede.ptrid is null").")
@@ -637,7 +634,7 @@ class planoTrabalhoDAO extends cls_banco{
 		      vede.emdimpositiva,
 		      vede.gndcod||' - '||gn.gnddsc as gndcod1, 
 		      vede.mapcod||' - '||map.mapdsc as modalidade,
-		      vede.foncod||' - '||fon.fondsc as fonte,
+		      fon.foncod||' - '||fon.fondsc as fonte,
 		      vede.edevalor as edevalor,
 		      vede.emetipo,
 		      ptede.edeid,
@@ -655,7 +652,7 @@ class planoTrabalhoDAO extends cls_banco{
 		      ON (vede.edeid = ptede.edeid)
 		      left join public.gnd gn on gn.gndcod = vede.gndcod and gn.gndstatus = 'A'
 		      left join public.modalidadeaplicacao map on map.mapcod = vede.mapcod
-		      left join public.fonterecurso fon on fon.foncod = vede.foncod and fon.fonstatus = 'A'
+		      left join public.fonterecurso fon on fon.fonid = vede.fonid and fon.fonstatus = 'A'
 		    WHERE
 		      vede.emeid = $emeid
 		      AND (".(($ptrid) ? "ptede.ptrid = ".$ptrid." OR ptede.ptrid is null" : "ptede.ptrid is null").")
