@@ -88,9 +88,11 @@ include APPRAIZ . "includes/cabecalho.inc";
     </div>
     <div class="col-lg-8">
         <div style="padding-top: 10px;" class="text-right">
+            <?php if((in_array(PFL_ADMINISTRADOR, $perfis)) || (in_array(PFL_SUPERUSUARIO, $perfis))) { ?>
             <a class="btn btn-success" href="javascript:AtualizarSIOP();">
                 <i class="fa fa-cloud-download"></i> Atualizar SIOP
             </a>
+            <?php } ?>
             <a class="btn btn-success" href="planacomorc.php?modulo=principal/unidade/painel_fnc&acao=A">
                 <i class="fa fa-area-chart"></i> Painel FNC
             </a>
