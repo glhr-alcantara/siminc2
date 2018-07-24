@@ -346,7 +346,7 @@ include APPRAIZ . "includes/cabecalho.inc";
                         closeOnConfirm: true
                     },
                     function(){
-                        window.location.href = "planacomorc.php?modulo=principal/unidade/painel_fnc&acao=C";
+                        window.location.href = "planacomorc.php?modulo=principal/unidade/painel_fnc&acao=A";
                     });
                 }else{
                     swal('Erro!', 'Houve algum erro na importação de dados do SIOP!', 'warning');
