@@ -460,7 +460,7 @@ class Planacomorc_Model_ImportaDadosSiop extends Modelo
             SELECT DISTINCT
                 usu.usucpf,
                 usu.usunome,
-                '70167664115@cultura.gov.br' as usuemail
+                usu.usuemail
             FROM seguranca.perfilusuario pu
                 JOIN seguranca.usuario usu ON(
                     usu.usucpf = pu.usucpf
@@ -471,8 +471,8 @@ class Planacomorc_Model_ImportaDadosSiop extends Modelo
                     AND us.suscod = 'A'
                     AND us.sisid = 157
                 )
-            WHERE usu.usucpf = '70167664115' /*and
-                pu.pflcod IN (" . PFL_ADMINISTRADOR . ", " . PFL_SUPERUSUARIO . ")*/
+            WHERE
+                pu.pflcod IN (" . PFL_ADMINISTRADOR . ", " . PFL_SUPERUSUARIO . ")
             ORDER BY
                 usuemail
         ";
