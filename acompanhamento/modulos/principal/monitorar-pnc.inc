@@ -347,6 +347,7 @@
 ?>
 
 <script>
+    
     $(function(){
         
         var wizard = $("#wizard").steps({
@@ -359,6 +360,27 @@
                 next: "Próximo",
                 previous: "Anterior",
                 loading: "Carregando ..."
+            },
+            onStepChanging: function(event, currentIndex, newIndex){
+                var permitirAvancarPasso = true;
+                switch(currentIndex) {
+                    case 0:
+                        permitirAvancarPasso = verificarPreenchimentoIndicadoresAtual();
+                        if(permitirAvancarPasso === false){
+                            swal('', 'Por favor, preencha pelo menos os indicadors do ano de '+ $('#chosen-exercicio').val()+ '.', 'warning');
+                        }
+                        break;
+                    case 1:
+                        permitirAvancarPasso = verificarPreenchimentoAtividade();
+                        if(permitirAvancarPasso === false){
+                            swal('', 'Por favor, insira pelo menos uma atividade.', 'warning');
+                        }
+                        break;
+                }
+                return permitirAvancarPasso;
+            },
+            onFinished: function(event, currentIndex){
+                alert("Submitted!");
             }
         });
         
@@ -624,6 +646,34 @@
         var url = '?modulo=principal/monitorar-pnc&acao=A&req=listar-anexos-pnc'+ '&acpid='+ acpid;
         $('.div_lista_anexos_pnc').empty();
         $('.div_lista_anexos_pnc').load(url);
+    }
+
+    /**
+     * Verifica se todos os indicadores do ano atual foram preenchidos
+     * 
+     * @returns {Boolean}
+     */
+    function verificarPreenchimentoIndicadoresAtual(){
+        var resultado = false;
+        var indicadoresPreenchidos = $('#hid_indicadores_preenchidos').val();
+        if(indicadoresPreenchidos === "1"){
+            resultado = true;
+        }
+        return resultado;
+    }
+    
+    /**
+     * Verifica se pelo menos uma atividade foi inserida
+     * 
+     * @returns {Boolean}
+     */
+    function verificarPreenchimentoAtividade(){
+        var resultado = false;
+        var atividadePreenchida = $('#hid_atividade_preenchida').val();
+        if(atividadePreenchida === "1"){
+            resultado = true;
+        }
+        return resultado;
     }
 
 </script>

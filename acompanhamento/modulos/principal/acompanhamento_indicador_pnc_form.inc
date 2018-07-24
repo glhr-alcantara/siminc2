@@ -42,7 +42,12 @@
         echo $simec->input('ipndsc', 'Indicador', $indicadorPnc->ipndsc);
         echo $simec->input('prsano', 'Ano', $acompanhamentoIndicadorPnc->prsano);
         $simec->setPodeEditar(1);
-        echo $simec->valor('idpquantidade', 'Quantidade', $acompanhamentoIndicadorPnc->idpquantidade, ['required']);
+        echo $simec->valor(
+            'idpquantidade',
+            'Quantidade',
+            $acompanhamentoIndicadorPnc->idpid && !$acompanhamentoIndicadorPnc->idpquantidade? 0: $acompanhamentoIndicadorPnc->idpquantidade,
+            ['required']
+        );
         echo $simec->data('idpdata', 'Data', $acompanhamentoIndicadorPnc->idpdata, ['required']);
         # Caso o exercicio seja diferente(Na prática anterior ao ano do exercicio selecionado) o sistema exibe o campo de justificativa
         if($acompanhamentoIndicadorPnc->prsano != $_SESSION['exercicio']){

@@ -54,7 +54,7 @@
             <td colspan="4"></td>
             <td style="text-align: right;">
                 <button class="btn btn-success editar_atividade" data-atvid="" data-acpid="<?php echo $acpid; ?>" type="button">
-                    <i class="fa fa-plus-circle"></i>&nbsp;Incluir nova atividade
+                    <i class="fa fa-plus-circle"></i>&nbsp;Inserir nova atividade
                 </button>
             </td>
         </tr>
@@ -68,10 +68,15 @@
                 <td colspan="4"></td>
                 <td style="text-align: right;">
                     <button class="btn btn-success editar_atividade" data-atvid="" data-acpid="<?php echo $acpid; ?>" type="button">
-                        <i class="fa fa-plus-circle"></i>&nbsp;Incluir nova atividade
+                        <i class="fa fa-plus-circle"></i>&nbsp;Inserir nova atividade
                     </button>
                 </td>
             </tr>
         </tfoot>
     <?php endif; ?>
 </table>
+
+<?php
+//ver($listaAtividades);
+    echo '<input id="hid_atividade_preenchida" type="hidden" value="'.($listaAtividades?1:0). '" />';
+?>

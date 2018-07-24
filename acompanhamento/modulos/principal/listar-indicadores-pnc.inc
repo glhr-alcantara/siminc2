@@ -2,6 +2,7 @@
     $acpid = $_REQUEST['acpid'];
     $acompanhamentopnc = new Acompanhamento_Model_Acompanhamentopnc($acpid);
     $listaIndicadorPnc = $acompanhamentopnc->buscarIndicadoresPnc();
+    $qtdIndicadorPreenchido = 0;
     
     # Busca informações da Unidade e Subunidade pra exibir informações extras pra o usuário
     $subunidade = new Public_Model_SubUnidadeOrcamentaria($acompanhamentopnc->suoid);
@@ -34,6 +35,10 @@
                         $acompanhamentoIndicadorPnc->ipncod = $indicador['ipncod'];
                         $acompanhamentoIndicadorPnc->prsano = $ano;
                         $acompanhamentoIndicadorPnc->buscarPorAcompanhamentoPncUnidadeIndicadorAno();
+                        
+                        if($ano == $exercicio && $acompanhamentoIndicadorPnc->idpid){
+                            $qtdIndicadorPreenchido++;
+                        }
                 ?>
                     <td>
                         <?php if(
@@ -43,16 +48,16 @@
                                 || (in_array(PFL_UNIDADE, $listaPerfis) && $ano == $exercicio)
                             ):
                         ?>
-                            <?php if($acompanhamentoIndicadorPnc->idpquantidade): ?>
+                            <?php if($acompanhamentoIndicadorPnc->idpid): ?>
                                 <a href="#" class="editar_indicador link" data-idpid="<?php echo $acompanhamentoIndicadorPnc->idpid; ?>" title="Editar Indicador PNC">
-                                    <?= $acompanhamentoIndicadorPnc->idpquantidade; ?>
+                                    <?= !$acompanhamentoIndicadorPnc->idpquantidade? 0: $acompanhamentoIndicadorPnc->idpquantidade ?>
                                 </a>
                             <?php else: ?>
                                 <span class="editar_indicador fa fa-pencil link" data-idpid="" data-acpid="<?php echo $acpid; ?>" data-unocod="<?php echo $unidadeOrcamentaria->unocod; ?>" data-suocod="<?php echo $subunidade->suocod; ?>" data-ipncod="<?php echo trim($indicador['ipncod']); ?>" data-prsano="<?php echo $ano; ?>" title="Editar Indicador PNC"></span>
                             <?php endif; ?>
                         <?php else: ?>
-                            <?php if($acompanhamentoIndicadorPnc->idpquantidade): ?>
-                                <?= $acompanhamentoIndicadorPnc->idpquantidade; ?>
+                            <?php if($acompanhamentoIndicadorPnc->idpid): ?>
+                                <?= !$acompanhamentoIndicadorPnc->idpquantidade? 0: $acompanhamentoIndicadorPnc->idpquantidade ?>
                             <?php else: ?>
                                 <span class="fa fa-pencil" title="Indicador PNC"></span>
                             <?php endif; ?>
@@ -70,3 +75,8 @@
         </tfoot>
     <?php endif; ?>
 </table>
+
+<?php
+//ver($qtdIndicadorPreenchido, count($listaIndicadorPnc));
+    echo '<input id="hid_indicadores_preenchidos" type="hidden" value="'.($qtdIndicadorPreenchido >= count($listaIndicadorPnc)?1:0). '" />';
+?>
