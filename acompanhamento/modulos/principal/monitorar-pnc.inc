@@ -22,6 +22,10 @@
             $resultado = Acompanhamento_Controller_Acompanhamentopnc::salvarIndicadorPnc(simec_utf8_decode_recursive($_REQUEST));
             echo simec_json_encode($resultado);
         die;
+        case 'enviar-acompanhamento-pnc':
+//            $resultado = Acompanhamento_Controller_Acompanhamentopnc::salvarIndicadorPnc(simec_utf8_decode_recursive($_REQUEST));
+            echo simec_json_encode(array());
+        die;
         case 'salvar-acompanhamento-atividade-pnc':
             $resultado = Acompanhamento_Controller_Acompanhamentopnc::salvarAtividadePnc(simec_utf8_decode_recursive($_REQUEST));
             echo simec_json_encode($resultado);
@@ -356,9 +360,9 @@
                 cancel: "Cancelar",
                 current: "Passo atual:",
                 pagination: "Paginação",
-                finish: "Concluir",
                 next: "Próximo",
                 previous: "Anterior",
+                finish: "Enviar",
                 loading: "Carregando ..."
             },
             onStepChanging: function(event, currentIndex, newIndex){
@@ -380,7 +384,7 @@
                 return permitirAvancarPasso;
             },
             onFinished: function(event, currentIndex){
-                alert("Submitted!");
+                enviarAcompanhamento();
             }
         });
         
@@ -524,7 +528,40 @@
         });
 
     });
-    
+
+    /**
+     * Concluir acompanhamento de Meta PNC.
+     * 
+     * @returns {void}
+     */
+    function enviarAcompanhamento(){
+        swal({
+            title: "Confirmação",
+            text: "Você deseja enviar e concluir todos os dados de indicadores e monitoramento da Meta?",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: '#DD6B55',
+            confirmButtonText: 'Sim, eu quero.',
+            cancelButtonText: "Não, eu não quero!",
+            closeOnConfirm: false,
+            closeOnCancel: false
+        },
+        function(isConfirm){
+            if(isConfirm){
+                $.ajax({
+                    url: '?modulo=principal/monitorar-pnc&acao=A&req=enviar-acompanhamento-pnc&acpid='+ acpid,
+                    type: 'POST',
+                    dataType: 'json',
+                    success: function(response){
+                        swal("", "Dados de monitoramento dos indicadores e da Meta enviados!", "success");
+                    }
+                });
+             } else {
+               swal("Envio Cancelado", "Seus dados permanecem disponíveis pra cadastro :)", "warning");
+             }
+        });
+    }
+
     /**
      * Exclui a atividade selecionada.
      * 
