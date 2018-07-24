@@ -36,7 +36,7 @@ include APPRAIZ . "includes/cabecalho.inc";
                                         ?>
                                         <tr>
                                             <td class="text-center">
-                                                <a title="Alterar" href="?modulo=apoio/iduso_form&acao=A&iducod=<?= $dados['iducod']; ?>"><i class="fa fa-pencil"></i></a>
+                                                <a title="Alterar" href="?modulo=apoio/iduso_form&acao=A&iduid=<?= $dados['iduid']; ?>"><i class="fa fa-pencil"></i></a>
                                             </td>
                                             <td><?php echo $dados['idudsc']; ?></td>
                                         </tr>

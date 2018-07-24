@@ -11,7 +11,7 @@
  */
 
 
-require_once APPRAIZ .'includes/classes/Modelo_PK_Char.class.inc';
+require_once APPRAIZ .'includes/classes/Modelo.class.inc';
 
 
 /**
@@ -24,7 +24,7 @@ require_once APPRAIZ .'includes/classes/Modelo_PK_Char.class.inc';
  * @version  Release: 
  * @link     no link
  */
-class Public_Model_IdentifUso extends Modelo_PK_Char
+class Public_Model_IdentifUso extends Modelo
 {
     /**
      * Nome da tabela especificada
@@ -39,7 +39,7 @@ class Public_Model_IdentifUso extends Modelo_PK_Char
      * @access protected
      */
     protected $arChavePrimaria = array(
-        'iducod',
+        'iduid',
     );
     /**
      * Chaves estrangeiras.
@@ -54,10 +54,10 @@ class Public_Model_IdentifUso extends Modelo_PK_Char
      * @access protected
      */
     protected $arAtributos = array(
+        'iduid' => null,
         'iducod' => null,
         'idudsc' => null,
         'idustatus' => null,
     );
-    
+
 }//end Class
-?>

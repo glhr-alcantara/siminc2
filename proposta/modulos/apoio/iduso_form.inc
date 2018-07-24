@@ -33,7 +33,7 @@ include APPRAIZ . "includes/cabecalho.inc";
                         <input type="hidden" name="req" id="req" value="salvar-iduso" />
                         
                         <?php
-                            echo $simec->input('iducod', 'Código do IDUSO', $mIduso->iducod, ['required','maxlength' => 1, 'class' => 'upper-text']);
+                            echo $simec->input('iducod', 'Código', $mIduso->iducod, ['required', 'maxlength' => 1]);
                             echo $simec->input('idudsc', 'Descrição', $mIduso->idudsc, ['required', 'maxlength' => 100]);
                         ?>
                         
