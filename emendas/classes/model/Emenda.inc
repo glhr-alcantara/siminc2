@@ -284,10 +284,6 @@ class Emendas_Model_Emenda extends Modelo
                 CASE WHEN eme.emeimpositiva = 't' THEN 'Sim' ELSE 'Não' END AS impositiva,
                 eme.emejustificativa,
                 -- DADOS FINANCEIROS
-                /*emed.gndcod,
-                emed.mapcod AS mod_aplic,
-                emed.foncod AS fonte,
-                emed.emdvalor,*/
                 coalesce((select sum(coalesce(emed.emdvalor,0)) from emendas.emendadetalhe emed where emed.emeid = eme.emeid and gndcod<=3),0) as custeio,
                 coalesce((select sum(coalesce(emed.emdvalor,0)) from emendas.emendadetalhe emed where emed.emeid = eme.emeid and gndcod>3),0) as capital,
                 -- BENEFICIARIOS
@@ -302,8 +298,8 @@ class Emendas_Model_Emenda extends Modelo
                 REPLACE(REPLACE(ARRAY(
 			SELECT DISTINCT
 				p.paidescricao
-			FROM emendas.beneficiariolocalizacao bl -- SELECT * FROM emendas.beneficiariolocalizacao
-				JOIN territorios.pais p ON bl.paiid = p.paiid-- SELECT * FROM territorios.pais
+			FROM emendas.beneficiariolocalizacao bl
+				JOIN territorios.pais p ON bl.paiid = p.paiid
 			WHERE
 				p.paidescricao IS NOT NULL
 				AND bl.benid = ben.benid
@@ -311,7 +307,7 @@ class Emendas_Model_Emenda extends Modelo
                 REPLACE(REPLACE(ARRAY(
 			SELECT DISTINCT
 				bl.estuf
-			FROM emendas.beneficiariolocalizacao bl -- SELECT * FROM emendas.beneficiariolocalizacao
+			FROM emendas.beneficiariolocalizacao bl
 			WHERE
 				bl.estuf IS NOT NULL
 				AND bl.benid = ben.benid
@@ -319,13 +315,12 @@ class Emendas_Model_Emenda extends Modelo
                 REPLACE(REPLACE(ARRAY(
 			SELECT DISTINCT
 				m.mundescricao || '-' || m.estuf
-			FROM emendas.beneficiariolocalizacao bl -- SELECT * FROM emendas.beneficiariolocalizacao
-				JOIN territorios.municipio m ON bl.muncod = m.muncod-- SELECT * FROM territorios.municipio
+			FROM emendas.beneficiariolocalizacao bl
+				JOIN territorios.municipio m ON bl.muncod = m.muncod
 			WHERE
 				m.mundescricao IS NOT NULL
 				AND bl.benid = ben.benid
                 )::TEXT, '{', ''), '}', '') AS lista_municipio,
---                TO_CHAR(ben.bennumeroprocesso::bigint, 'FM00000\".\"000000\"/\"0000\"-\"00') AS processo,
 		ben.bennumeroprocesso AS processo,
 		TO_CHAR(ben.beninicio,'dd/mm/YYYY') AS vigencia,
 		pca.capdsc,
@@ -335,8 +330,8 @@ class Emendas_Model_Emenda extends Modelo
                 REPLACE(REPLACE(REPLACE(ARRAY(
 			SELECT DISTINCT
 				alo.alodsc
-			FROM emendas.beneficiarioalteracao ba -- SELECT * FROM emendas.beneficiarioalteracao
-				LEFT JOIN emendas.alteracaoorcamentaria alo ON ba.aloid = alo.aloid -- SELECT alo.alodsc, * FROM emendas.alteracaoorcamentaria
+			FROM emendas.beneficiarioalteracao ba
+				LEFT JOIN emendas.alteracaoorcamentaria alo ON ba.aloid = alo.aloid
 			WHERE
 				alo.alodsc IS NOT NULL
 				AND ba.benid = ben.benid
@@ -384,9 +379,6 @@ class Emendas_Model_Emenda extends Modelo
 			    on bed.emdid = eme.emdid
 			 where bed.benid = ben.benid
 			   AND bed.bedstatus = 'A'),0) as contigenciadocapital,
-		/*bed.bedvalor,
-		bed.bedvalorpriorizado,
-                bed.bedvalor - bed.bedvalorpriorizado AS contigenciado,*/
 		-- DADOS SICONV
 		CASE WHEN prg.prgcodigo IS NOT NULL THEN substr(prg.prgcodigo::TEXT, 1, 6) || ' ' || substr(prg.prgcodigo::TEXT, 6, 4) || ' ' || substr(prg.prgcodigo::TEXT, 10, 4) ELSE NULL END AS numero_programa,
 		prg.prgtitulo AS titulo_programa,
@@ -406,30 +398,27 @@ class Emendas_Model_Emenda extends Modelo
                 -- DADOS DA EMENDA
                 LEFT JOIN public.unidadeorcamentaria uno ON uno.unoid = eme.unoid
                 LEFT JOIN emendas.autor aut ON(aut.autid = eme.autid AND aut.autstatus = 'A')
-                LEFT JOIN emendas.autortipo autip ON aut.atpid = autip.atpid -- SELECT * FROM emendas.autortipo
-                LEFT JOIN emendas.partido p ON aut.parid = p.parid -- SELECT * FROM emendas.partido
+                LEFT JOIN emendas.autortipo autip ON aut.atpid = autip.atpid
+                LEFT JOIN emendas.partido p ON aut.parid = p.parid
                 LEFT JOIN monitora.vw_ptres ptr ON ptr.ptrid = eme.ptrid
-                --LEFT JOIN emendas.emendadetalhe emed ON eme.emeid = emed.emeid -- SELECT * FROM emendas.emendadetalhe
                 -- BENEFICIARIOS
                 LEFT JOIN emendas.beneficiario ben ON ben.emeid = eme.emeid
-                LEFT JOIN emendas.proponente pro ON pro.proid = ben.proid -- SELECT * FROM emendas.proponente
+                LEFT JOIN emendas.proponente pro ON pro.proid = ben.proid
                 LEFT JOIN emendas.siconv sic ON sic.sicid = ben.sicid
                 LEFT JOIN emendas.siconvsituacao sit ON sit.sitid = sic.sitid
-                LEFT JOIN public.vw_subunidadeorcamentaria suo ON ben.suoid = suo.suoid -- SELECT * FROM public.vw_subunidadeorcamentaria
+                LEFT JOIN public.vw_subunidadeorcamentaria suo ON ben.suoid = suo.suoid
                 LEFT JOIN emendas.delegacao ed ON ben.benid = ed.benid
                 LEFT JOIN public.vw_subunidadeorcamentaria suoed ON ed.suoid = suoed.suoid
 		LEFT JOIN territorios.esfera esf ON ben.esfid = esf.esfid
-		LEFT JOIN monitora.pi_categoriaapropriacao pca ON ben.capid = pca.capid -- SELECT * FROM monitora.pi_categoriaapropriacao
+		LEFT JOIN monitora.pi_categoriaapropriacao pca ON ben.capid = pca.capid
 		LEFT JOIN monitora.pi_modalidadeensino mde ON ben.mdeid = mde.mdeid
 		LEFT JOIN monitora.pi_niveletapaensino nee ON ben.neeid = nee.neeid
 		LEFT JOIN emendas.impedimento imp ON ben.impid = imp.impid
-                -- DADOS FINANCEIROS DO BENFICIÁRIO
-                --LEFT JOIN emendas.beneficiariodetalhe bed ON(bed.benid = ben.benid AND emed.emdid = bed.emdid AND bed.bedstatus = 'A')
 		-- DADOS SICONV
-		LEFT JOIN emendas.siconvbeneficiario sib ON(ben.benid = sib.benid) -- sib.sicid
-		LEFT JOIN emendas.siconvprograma sip ON(sib.sicid = sip.sicid) -- SELECT * FROM emendas.siconvprograma
-		LEFT JOIN emendas.programa prg on prg.prgid = sip.prgid -- SELECT * FROM emendas.programa
-                LEFT JOIN emendas.siconv bensic on bensic.sicid = sib.sicid -- SELECT * FROM emendas.siconv
+		LEFT JOIN emendas.siconvbeneficiario sib ON(ben.benid = sib.benid)
+		LEFT JOIN emendas.siconvprograma sip ON(sib.sicid = sip.sicid)
+		LEFT JOIN emendas.programa prg on prg.prgid = sip.prgid
+                LEFT JOIN emendas.siconv bensic on bensic.sicid = sib.sicid
                 LEFT JOIN emendas.siconvsituacao bensit on bensic.sitid = bensit.sitid
                 -- SITUAÇÃO
 		LEFT JOIN workflow.documento doc ON ben.docid = doc.docid
@@ -440,7 +429,7 @@ class Emendas_Model_Emenda extends Modelo
                 eme.emestatus = 'A'
                 AND ben.benstatus = 'A'
                 AND eme.prsano = '". (int)$exercicio. "'
---AND ben.benid = 8670 -- Emenda completa
+            -- Emenda completa
                 $where
             ORDER BY
                 1,
