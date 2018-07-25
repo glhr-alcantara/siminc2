@@ -9,6 +9,9 @@
     $exercicio = (int)$unidadeOrcamentaria->prsano;
     
     $listaPerfis = pegaPerfilGeral();
+    
+    # Verifica se existe pelo menos uma atividade inserida no acompanhamento da Meta PNC
+    $atividadePreenchida = $acompanhamentopnc->verificarPreenchimentoAtividade();
 ?>
 <table class="table table-bordered">
     <thead>
@@ -54,7 +57,7 @@
             <td colspan="4"></td>
             <td style="text-align: right;">
                 <button class="btn btn-success editar_atividade" data-atvid="" data-acpid="<?php echo $acpid; ?>" type="button">
-                    <i class="fa fa-plus-circle"></i>&nbsp;Incluir nova atividade
+                    <i class="fa fa-plus-circle"></i>&nbsp;Inserir nova atividade
                 </button>
             </td>
         </tr>
@@ -68,10 +71,12 @@
                 <td colspan="4"></td>
                 <td style="text-align: right;">
                     <button class="btn btn-success editar_atividade" data-atvid="" data-acpid="<?php echo $acpid; ?>" type="button">
-                        <i class="fa fa-plus-circle"></i>&nbsp;Incluir nova atividade
+                        <i class="fa fa-plus-circle"></i>&nbsp;Inserir nova atividade
                     </button>
                 </td>
             </tr>
         </tfoot>
     <?php endif; ?>
 </table>
+
+<?php echo '<input id="hid_atividade_preenchida" type="hidden" value="'.((int)$atividadePreenchida). '" />'; ?>
