@@ -147,7 +147,13 @@ class Emendas_Model_EmendaDetalhe extends Modelo
     }
     
     public function recuperarTodosPorEmeid(){
-        $sql = "select * from ".$this->stNomeTabela." ed left join public.fonterecurso fon on ed.fonid = fon.fonid where ed.emeid = ".$this->emeid;
+        $sql = "
+            SELECT
+                *
+            FROM ".$this->stNomeTabela." ed
+            LEFT JOIN public.fonterecurso fon ON ed.fonid = fon.fonid
+            WHERE
+                ed.emeid = ". (int)$this->emeid;
         return $this->carregar($sql);
     }
 
