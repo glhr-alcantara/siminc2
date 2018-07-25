@@ -23,7 +23,7 @@
             echo simec_json_encode($resultado);
         die;
         case 'enviar-acompanhamento-pnc':
-//            $resultado = Acompanhamento_Controller_Acompanhamentopnc::salvarIndicadorPnc(simec_utf8_decode_recursive($_REQUEST));
+            $resultado = Acompanhamento_Controller_Acompanhamentopnc::enviar(simec_utf8_decode_recursive($_REQUEST));
             echo simec_json_encode(array());
         die;
         case 'salvar-acompanhamento-atividade-pnc':
@@ -85,11 +85,11 @@
 
     $acompanhamentopnc = new Acompanhamento_Model_Acompanhamentopnc($_REQUEST['acpid']);
 
-    // Recuperando Janela Ativa
+    # Recuperando Janela Ativa
     $janela = (new Acompanhamento_Model_Janela())->recuperarJanelaAtiva(Acompanhamento_Model_Tipo::K_TIPO_INDICADOR_PNC);
     $janid = $acompanhamentopnc->janid = $acompanhamentopnc->janid? $acompanhamentopnc->janid: $janela['janid'];
 
-    // Recuperando SubUnidade
+    # Recuperando SubUnidade
     $suoid = $acompanhamentopnc->suoid? $acompanhamentopnc->suoid: $_REQUEST['suoid'];
     
     if($mpnid){
@@ -139,6 +139,8 @@
         <h2>MONITORAMENTO DAS METAS PNC</h2>
     </div>
 </div>
+
+<?php echo '<input id="acpid" type="hidden" value="'.((int)$acpid). '" />'; ?>
 
 <div class="wrapper wrapper-content animated fadeInRight">
     <div class="row">
@@ -573,7 +575,7 @@
     function enviarAcompanhamento(){
         swal({
             title: "Confirmação",
-            text: "Você deseja enviar e concluir todos os dados de indicadores e monitoramento da Meta?",
+            text: "Você deseja concluir o envio de TODOS os dados de indicadores e monitoramento da Meta PNC?",
             type: "warning",
             showCancelButton: true,
             confirmButtonColor: '#DD6B55',
@@ -585,11 +587,13 @@
         function(isConfirm){
             if(isConfirm){
                 $.ajax({
-                    url: '?modulo=principal/monitorar-pnc&acao=A&req=enviar-acompanhamento-pnc&acpid='+ acpid,
+                    url: '?modulo=principal/monitorar-pnc&acao=A&req=enviar-acompanhamento-pnc&acpid='+ $('#acpid').val(),
                     type: 'POST',
                     dataType: 'json',
                     success: function(response){
-                        swal("", "Dados de monitoramento dos indicadores e da Meta enviados!", "success");
+                        swal("", "Dados de monitoramento dos indicadores e da Meta PNC enviados!", "success");
+                        divCarregando();
+                        window.location.href = window.location.href;
                     }
                 });
              } else {

@@ -40,10 +40,14 @@
                 ?>
                     <td>
                         <?php if(
-                                in_array(PFL_SUPERUSUARIO, $listaPerfis)
-                                || in_array(PFL_ADMINISTRADOR, $listaPerfis)
-                                || in_array(PFL_PNC, $listaPerfis)
-                                || (in_array(PFL_UNIDADE, $listaPerfis) && $ano == $exercicio)
+                                $acompanhamentopnc->acpenviado != 't'
+                                &&
+                                (
+                                    in_array(PFL_SUPERUSUARIO, $listaPerfis)
+                                    || in_array(PFL_ADMINISTRADOR, $listaPerfis)
+                                    || in_array(PFL_PNC, $listaPerfis)
+                                    || (in_array(PFL_UNIDADE, $listaPerfis) && $ano == $exercicio)
+                                )
                             ):
                         ?>
                             <?php if($acompanhamentoIndicadorPnc->idpid): ?>

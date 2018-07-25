@@ -30,6 +30,27 @@ class Acompanhamento_Controller_Acompanhamentopnc
         }
     }
     
+    public static function enviar($dados)
+    {
+        try {
+            $acompanhamentoPnc = new Acompanhamento_Model_Acompanhamentopnc((int)$dados['acpid']);
+            $acompanhamentoPnc->acpenviado = TRUE;
+            $acompanhamentoPnc->salvar();
+            $acompanhamentoPnc->commit();
+
+            return array(
+                'success' => 'Operação realizada com sucesso!',
+                'acpid' => $dados['acpid']
+            );
+        } catch (Exception $e){
+            $acompanhamentoPnc->rollback();
+            return array(
+                'error' => 'Ocorreu um erro ao executar operação!',
+                'acpid' => $dados['acpid']
+            );
+        }
+    }
+    
     public static function salvarAtividadePnc($dados)
     {
         try {
