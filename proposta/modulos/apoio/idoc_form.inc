@@ -34,10 +34,9 @@ include APPRAIZ . "includes/cabecalho.inc";
                         <input name="idoid" id="idoid" type="hidden" value="<?php echo $mIdoc->idoid; ?>">
 
                         <?php
-                        echo $simec->input('idocod', 'Codigo', $mIdoc->idocod, ['class' => 'inteiro', 'required', 'maxlength' => 8]);
-                        echo $simec->input('idodsc', 'Descrição', $mIdoc->idodsc, ['required', 'maxlength' => 255]);
+                            echo $simec->input('idocod', 'Codigo', $mIdoc->idocod, ['class' => 'inteiro', 'required', 'maxlength' => 4]);
+                            echo $simec->input('idodsc', 'Descrição', $mIdoc->idodsc, ['required', 'maxlength' => 200]);
                         ?>
-
                         <div class="form-group">
                             <div class="text-center">
                                 <button class="btn btn-primary" type="submit" id="btn-salvar"><i class="fa fa-check"></i>&nbsp;Salvar</button>
