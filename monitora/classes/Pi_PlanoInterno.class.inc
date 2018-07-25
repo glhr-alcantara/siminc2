@@ -1891,4 +1891,254 @@ class Pi_PlanoInterno extends Modelo
         return $this->carregar($sql);
     }
 
+    public function exportarXlsUnidade(){
+        require_once APPRAIZ . 'includes/php-excel/PHPExcel.php';
+        include_once APPRAIZ . "monitora/classes/Pi_PlanoInterno.class.inc";
+        $exercicio = $_SESSION['exercicio'];
+        $oPlanoInterno = new Pi_PlanoInterno();       
+        $PHPExcel = new PHPExcel();
+
+        // Criando Planilha "Financeiro"
+        $planilhaFinanceiro = $PHPExcel->getActiveSheet();
+        $planilhaFinanceiro->setTitle("Unidades");
+
+
+        $aPadrao = [
+            'Unidade',
+            'Apresentado',
+            'Selecionado',
+            'Aprovado',
+            'Provisionado',
+            'Empenhado',
+            'Liquidado',
+            'Pago',
+        ];
+
+        // Criando cabeçalhos
+        $coluna = 0;
+        foreach($aPadrao as $titulo){
+            $planilhaFinanceiro->setCellValueByColumnAndRow($coluna,1,utf8_encode($titulo));
+            $coluna++;
+        }
+        
+        $aDados = $oPlanoInterno->recuperarDadosFncPorUnidade($_SESSION['exercicio']);
+        $aDadosUnidade = $aDados['unidade'];
+        $aDadosEstado = $aDados['estado'];
+        $aDadosExecucao = $aDados['execucao'];
+        $linha = 2;
+        for ($i=0;$i<count($aDadosUnidade);$i++){
+            $coluna = 0;
+            $dado = $aDadosUnidade[$i]['unocod'] . ' - ' . $aDadosUnidade[$i]['suosigla'] . ' - ' . $aDadosUnidade[$i]['suonome'];
+            $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha, utf8_encode($dado));
+            
+            // VALOR APRESENTADO
+            $valor = $aDadosEstado[$aDadosUnidade[$i]['suoid']][ESD_FNC_PI_EM_ANALISE] +
+                     $aDadosEstado[$aDadosUnidade[$i]['suoid']][ESD_FNC_PI_BANCO_PROJETOS] +
+                     $aDadosEstado[$aDadosUnidade[$i]['suoid']][ESD_FNC_PI_DELIBERACAO_CFNC] +
+                     $aDadosEstado[$aDadosUnidade[$i]['suoid']][ESD_FNC_PI_AGUARDANDO_CORRECAO] +
+                     $aDadosEstado[$aDadosUnidade[$i]['suoid']][ESD_FNC_PI_SELECIONADO_CFNC] +
+                     $aDadosEstado[$aDadosUnidade[$i]['suoid']][ESD_FNC_PI_APROVADO];
+            $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,$valor); 
+            $total['APRESENTADO'] += $valor;
+            
+            // VALOR SELECIONADO
+            $valor = $aDadosEstado[$aDadosUnidade[$i]['suoid']][ESD_FNC_PI_SELECIONADO_CFNC] +
+                     $aDadosEstado[$aDadosUnidade[$i]['suoid']][ESD_FNC_PI_APROVADO];
+            $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,$valor); 
+            $total[ESD_FNC_PI_SELECIONADO_CFNC] += $valor;
+            
+            // VALOR APRESENTADO
+            $valor = !empty($aDadosEstado[$aDadosUnidade[$i]['suoid']][ESD_FNC_PI_APROVADO]) ? $aDadosEstado[$aDadosUnidade[$i]['suoid']][ESD_FNC_PI_APROVADO] : '0';
+            $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,$valor); 
+            $total[ESD_FNC_PI_APROVADO] += $valor;
+            
+            // VALOR EMPENHADO
+            $valor = !empty($aDadosExecucao[$aDadosUnidade[$i]['suoid']]['vlrempenhado']) ? $aDadosEstado[$aDadosUnidade[$i]['suoid']]['vlrempenhado'] : '0';
+            $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,$valor); 
+            $total['vlrempenhado'] += $valor;
+            
+            // VALOR LIQUIDADO
+            $valor = !empty($aDadosExecucao[$aDadosUnidade[$i]['suoid']]['vlrliquidado']) ? $aDadosEstado[$aDadosUnidade[$i]['suoid']]['vlrliquidado'] : '0';            
+            $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,$valor); 
+            $total['vlrliquidado'] += $valor;
+            
+            // VALOR PAGO
+            $valor = !empty($aDadosExecucao[$aDadosUnidade[$i]['suoid']]['vlrpago']) ? $aDadosEstado[$aDadosUnidade[$i]['suoid']]['vlrpago'] : '0';            
+            $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,$valor); 
+            $total['vlrpago'] += $valor;
+            $linha++;
+        }
+        $coluna=0;
+        $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,"TOTAL");
+        $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,$total['APRESENTADO']);
+        $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,$total[ESD_FNC_PI_SELECIONADO_CFNC]);
+        $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,$total[ESD_FNC_PI_APROVADO]);
+        $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,"-");
+        $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,$total['vlrempenhado']);
+        $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,$total['vlrliquidado']);
+        $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,$total['vlrpago']);
+
+
+        // Indicação da criação do ficheiro
+        $objWriter = PHPExcel_IOFactory::createWriter($PHPExcel, 'Excel5');
+
+        // Encaminhar o ficheiro resultante para abrir no browser ou fazer download
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="PlanilhaPainelUnidade.xls"');
+        header('Cache-Control: max-age=0');
+        $objWriter->save('php://output');
+    }
+
+    public function exportarXlsAcao(){
+        require_once APPRAIZ . 'includes/php-excel/PHPExcel.php';
+        include_once APPRAIZ . "monitora/classes/Pi_PlanoInterno.class.inc";
+        $exercicio = $_SESSION['exercicio'];
+        $oPlanoInterno = new Pi_PlanoInterno();       
+        $PHPExcel = new PHPExcel();
+
+        // Criando Planilha "Financeiro"
+        $planilhaFinanceiro = $PHPExcel->getActiveSheet();
+        $planilhaFinanceiro->setTitle("Unidades");
+
+
+        $aPadrao = [
+            'Ação',
+            'Dotação',
+            'Apresentado',
+            'Selecionado',
+            'Aprovado',
+            'Provisionado',
+            'Limite',
+            'Empenhado',
+            'Liquidado',
+            'Pago',
+        ];
+
+        // Criando cabeçalhos
+        $coluna = 0;
+        foreach($aPadrao as $titulo){
+            $planilhaFinanceiro->setCellValueByColumnAndRow($coluna,1,utf8_encode($titulo));
+            $coluna++;
+        }
+        $aDadosPorAcao = $oPlanoInterno->recuperarDadosFncPorAcao($_SESSION['exercicio']);
+        $aValoresEstado = $oPlanoInterno->recuperarValoresPorEstado($_SESSION['exercicio']);
+        $aValoresExecucao = $oPlanoInterno->recuperarValoresPorExecucao($_SESSION['exercicio']);
+        $styleArray = array(
+            'font'  => array(
+                'color' => array('rgb' => 'FF0000')
+            )
+        );
+        $linha = 2;
+        for ($i=0;$i<count($aDadosPorAcao);$i++){
+            $coluna = 0;
+            $dado = $aDadosPorAcao[$i]['funcional'] . ' (' . $aDadosPorAcao[$i]['tipo'] . ') - ' . $aDadosPorAcao[$i]['acatitulo'] . ': ' . $aDadosPorAcao[$i]['plodsc'] . ' (RP ' . $aDadosPorAcao[$i]['irpcod'] . ')';
+            $planilhaFinanceiro->setCellValueExplicitByColumnAndRow($coluna++,$linha, utf8_encode($dado));
+            
+            // VALOR DOTAÇÃO
+            $valor = $aDadosPorAcao[$i]['dotacao'];
+            $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,$valor); 
+            $total['dotacao'][$aDadosPorAcao[$i]['tipo']] += $valor;
+            
+            // VALOR APRESENTADO
+            $valor = $aValoresEstado[$aDadosPorAcao[$i]['ptrid']][ESD_FNC_PI_EM_ANALISE][$aDadosPorAcao[$i]['tipo']] +
+                     $aValoresEstado[$aDadosPorAcao[$i]['ptrid']][ESD_FNC_PI_BANCO_PROJETOS][$aDadosPorAcao[$i]['tipo']] +
+                     $aValoresEstado[$aDadosPorAcao[$i]['ptrid']][ESD_FNC_PI_DELIBERACAO_CFNC][$aDadosPorAcao[$i]['tipo']] +
+                     $aValoresEstado[$aDadosPorAcao[$i]['ptrid']][ESD_FNC_PI_AGUARDANDO_CORRECAO][$aDadosPorAcao[$i]['tipo']] +
+                     $aValoresEstado[$aDadosPorAcao[$i]['ptrid']][ESD_FNC_PI_SELECIONADO_CFNC][$aDadosPorAcao[$i]['tipo']] +
+                     $aValoresEstado[$aDadosPorAcao[$i]['ptrid']][ESD_FNC_PI_APROVADO][$aDadosPorAcao[$i]['tipo']];
+            $total['APRESENTADO'][$aDadosPorAcao[$i]['tipo']] += $valor;
+            $disponivel = $aDadosPorAcao[$i]['dotacao'] - $valor;
+            $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++, $linha, $valor);
+            if ($disponivel<0)
+                $planilhaFinanceiro->getStyle(PHPExcel_Cell::stringFromColumnIndex($coluna-1) . $linha)->applyFromArray($styleArray);
+            
+            // VALOR SELECIONADO
+            $valor = $aValoresEstado[$aDadosPorAcao[$i]['ptrid']][ESD_FNC_PI_SELECIONADO_CFNC][$aDadosPorAcao[$i]['tipo']] +
+                     $aValoresEstado[$aDadosPorAcao[$i]['ptrid']][ESD_FNC_PI_APROVADO][$aDadosPorAcao[$i]['tipo']];
+            $total[ESD_FNC_PI_SELECIONADO_CFNC][$aDadosPorAcao[$i]['tipo']] += $valor;
+            $disponivel = $aDadosPorAcao[$i]['dotacao'] - $valor;
+            $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,$valor);     
+            if ($disponivel<0)
+                $planilhaFinanceiro->getStyle(PHPExcel_Cell::stringFromColumnIndex($coluna) . $linha)->applyFromArray($styleArray);
+            
+            // VALOR APROVADO
+            $valor = !empty($aValoresEstado[$aDadosPorAcao[$i]['ptrid']][ESD_FNC_PI_APROVADO][$aDadosPorAcao[$i]['tipo']]) ? $aValoresEstado[$aDadosPorAcao[$i]['ptrid']][ESD_FNC_PI_APROVADO][$aDadosPorAcao[$i]['tipo']] : '0';
+            $total[ESD_FNC_PI_APROVADO][$aDadosPorAcao[$i]['tipo']] += $valor;
+            $disponivel = $aDadosPorAcao[$i]['dotacao'] - $valor;            
+            $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,$valor); 
+            if ($disponivel<0)
+                $planilhaFinanceiro->getStyle(PHPExcel_Cell::stringFromColumnIndex($coluna) . $linha)->applyFromArray($styleArray);
+            
+            // VALOR PROVISIONADO
+            $valor = '-';
+            $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,$valor); 
+            
+            // VALOR LIMITE
+            $valor = '-';
+            $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,$valor); 
+            
+            // VALOR EMPENHADO
+            $valor = !empty($aValoresExecucao[$aDadosPorAcao[$i]['ptrid']][$aDadosPorAcao[$i]['tipo']]['vlrempenhado']) ? $aValoresEstado[$aDadosPorAcao[$i]['ptrid']][$aDadosPorAcao[$i]['tipo']]['vlrempenhado'] : '0';
+            $total['vlrempenhado'][$aDadosPorAcao[$i]['tipo']] += $valor;
+            $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,$valor); 
+            
+            // VALOR LIQUIDADO
+            $valor = !empty($aValoresExecucao[$aDadosPorAcao[$i]['ptrid']][$aDadosPorAcao[$i]['tipo']]['vlrliquidado']) ? $aValoresEstado[$aDadosPorAcao[$i]['ptrid']][$aDadosPorAcao[$i]['tipo']]['vlrliquidado'] : '0';
+            $total['vlrliquidado'][$aDadosPorAcao[$i]['tipo']] += $valor;
+            $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,$valor); 
+            
+            // VALOR PAGO
+            $valor = !empty($aValoresExecucao[$aDadosPorAcao[$i]['ptrid']][$aDadosPorAcao[$i]['tipo']]['vlrpago']) ? $aValoresEstado[$aDadosPorAcao[$i]['ptrid']][$aDadosPorAcao[$i]['tipo']]['vlrpago'] : '0';
+            $total['vlrpago'][$aDadosPorAcao[$i]['tipo']] += $valor;            
+            $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,$valor); 
+            $linha++;
+            
+        }
+        $coluna=0;
+        $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,"TOTAL CUSTEIO");
+        $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,$total['dotacao']['CUSTEIO']);
+        $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,$total['APRESENTADO']['CUSTEIO']);
+        $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,$total[ESD_FNC_PI_SELECIONADO_CFNC]['CUSTEIO']);
+        $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,$total[ESD_FNC_PI_APROVADO]['CUSTEIO']);
+        $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,"-");
+        $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,"-");
+        $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,$total['vlrempenhado']['CUSTEIO']);
+        $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,$total['vlrliquidado']['CUSTEIO']);
+        $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,$total['vlrpago']['CUSTEIO']);
+
+        $linha++;
+        $coluna=0;
+        $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,"TOTAL CAPITAL");
+        $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,$total['dotacao']['CAPITAL']);
+        $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,$total['APRESENTADO']['CAPITAL']);
+        $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,$total[ESD_FNC_PI_SELECIONADO_CFNC]['CAPITAL']);
+        $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,$total[ESD_FNC_PI_APROVADO]['CAPITAL']);
+        $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,"-");
+        $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,"-");
+        $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,$total['vlrempenhado']['CAPITAL']);
+        $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,$total['vlrliquidado']['CAPITAL']);
+        $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,$total['vlrpago']['CAPITAL']);
+
+        $linha++;
+        $coluna=0;
+        $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,"TOTAL");
+        $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,array_sum($total['dotacao']));
+        $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,array_sum($total['APRESENTADO']));
+        $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,array_sum($total[ESD_FNC_PI_SELECIONADO_CFNC]));
+        $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,array_sum($total[ESD_FNC_PI_APROVADO]));
+        $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,"-");
+        $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,"-");
+        $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,array_sum($total['vlrempenhado']));
+        $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,array_sum($total['vlrliquidado']));
+        $planilhaFinanceiro->setCellValueByColumnAndRow($coluna++,$linha,array_sum($total['vlrpago']));
+        
+        // Indicação da criação do ficheiro
+        $objWriter = PHPExcel_IOFactory::createWriter($PHPExcel, 'Excel5');
+
+        // Encaminhar o ficheiro resultante para abrir no browser ou fazer download
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="PlanilhaPainelAcao.xls"');
+        header('Cache-Control: max-age=0');
+        $objWriter->save('php://output');
+    }
 }
