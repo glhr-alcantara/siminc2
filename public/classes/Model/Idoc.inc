@@ -61,4 +61,3 @@ class Public_Model_Idoc extends Modelo
     );
 
 }//end Class
-?>

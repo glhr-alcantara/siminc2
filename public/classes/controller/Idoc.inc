@@ -9,8 +9,6 @@ class Public_Controller_Idoc
         try {
             $mdidoc = new Public_Model_Idoc($dados['idoid']);
             $mdidoc->popularDadosObjeto($dados);
-//            $mdidoc->ndpano = $mdidoc->ndpano ? $mdidoc->ndpano : $_SESSION['exercicio'];
-//            ver($mdnatDespesa,d);
             $mdidoc->salvar(null,null);
             $mdidoc->commit();
             simec_redirecionar($url . '&idoid=' . $mdidoc->idoid, 'success');
@@ -18,7 +16,7 @@ class Public_Controller_Idoc
             $mdidoc->rollback();
             simec_redirecionar($url, 'error');
         }
-    } //end salvar()
+    }
 
     public function excluir($idoid)
     {
@@ -29,10 +27,10 @@ class Public_Controller_Idoc
             $mdidoc->idostatus = 'I';
             $mdidoc->salvar();
             $mdidoc->commit();
-            simec_redirecionar($url . '&idoid=' . $mdidoc->idoid, 'success');
+            simec_redirecionar($url, 'success');
         } catch (Exception $e){
             $mdidoc->rollback();
             simec_redirecionar($url, 'error');
         }
-    } //end salvar()
+    }
 }
