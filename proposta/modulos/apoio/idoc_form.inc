@@ -8,7 +8,7 @@ switch ($_REQUEST['req']) {
         $cIdoc->salvar($_REQUEST);
         break;
     case 'excluir-idoc':
-        $mIdoc->excluir($_REQUEST['idoid']);
+        $cIdoc->excluir($_REQUEST['idoid']);
         break;
 }
 

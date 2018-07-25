@@ -29,7 +29,7 @@ class Public_Controller_Idoc
             $mdidoc->idostatus = 'I';
             $mdidoc->salvar();
             $mdidoc->commit();
-            simec_redirecionar($url, 'success');
+            simec_redirecionar($url . '&idoid=' . $mdidoc->idoid, 'success');
         } catch (Exception $e){
             $mdidoc->rollback();
             simec_redirecionar($url, 'error');
