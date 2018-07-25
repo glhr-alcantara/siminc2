@@ -33,10 +33,14 @@
                 <td><?php echo $atividade['mundescricao']. '-'. $atividade['estuf']; ?></td>
                 <td>
                     <?php if(
-                            in_array(PFL_SUPERUSUARIO, $listaPerfis)
-                            || in_array(PFL_ADMINISTRADOR, $listaPerfis)
-                            || in_array(PFL_PNC, $listaPerfis)
-                            || (in_array(PFL_UNIDADE, $listaPerfis) && $ano == $exercicio)
+                            $acompanhamentopnc->acpenviado != 't'
+                            &&
+                            (
+                                in_array(PFL_SUPERUSUARIO, $listaPerfis)
+                                || in_array(PFL_ADMINISTRADOR, $listaPerfis)
+                                || in_array(PFL_PNC, $listaPerfis)
+                                || (in_array(PFL_UNIDADE, $listaPerfis) && $ano == $exercicio)
+                            )
                         ):
                     ?>
                         <?= $atividade['atvfonteinformacao']; ?>
@@ -53,20 +57,17 @@
         <?php endforeach; ?>
     </tbody>
     <tfoot>
-        <tr>
-            <td colspan="4"></td>
-            <td style="text-align: right;">
-                <button class="btn btn-success editar_atividade" data-atvid="" data-acpid="<?php echo $acpid; ?>" type="button">
-                    <i class="fa fa-plus-circle"></i>&nbsp;Inserir nova atividade
-                </button>
-            </td>
-        </tr>
-    </tfoot>
-    <?php else: ?>
-        <tfoot>
-            <tr>
-                <td colspan="5">Não existem atividades cadastradas pra essa Meta PNC.</td>
-            </tr>
+        <?php if(
+                $acompanhamentopnc->acpenviado != 't'
+                &&
+                (
+                    in_array(PFL_SUPERUSUARIO, $listaPerfis)
+                    || in_array(PFL_ADMINISTRADOR, $listaPerfis)
+                    || in_array(PFL_PNC, $listaPerfis)
+                    || (in_array(PFL_UNIDADE, $listaPerfis) && $ano == $exercicio)
+                )
+              ):
+        ?>
             <tr>
                 <td colspan="4"></td>
                 <td style="text-align: right;">
@@ -75,6 +76,33 @@
                     </button>
                 </td>
             </tr>
+        <?php endif; ?>
+    </tfoot>
+    <?php else: ?>
+        <tfoot>
+            <tr>
+                <td colspan="5">Não existem atividades cadastradas pra essa Meta PNC.</td>
+            </tr>
+            <?php if(
+                    $acompanhamentopnc->acpenviado != 't'
+                    &&
+                    (
+                        in_array(PFL_SUPERUSUARIO, $listaPerfis)
+                        || in_array(PFL_ADMINISTRADOR, $listaPerfis)
+                        || in_array(PFL_PNC, $listaPerfis)
+                        || (in_array(PFL_UNIDADE, $listaPerfis) && $ano == $exercicio)
+                    )
+                  ):
+            ?>
+                <tr>
+                    <td colspan="4"></td>
+                    <td style="text-align: right;">
+                        <button class="btn btn-success editar_atividade" data-atvid="" data-acpid="<?php echo $acpid; ?>" type="button">
+                            <i class="fa fa-plus-circle"></i>&nbsp;Inserir nova atividade
+                        </button>
+                    </td>
+                </tr>
+            <?php endif; ?>
         </tfoot>
     <?php endif; ?>
 </table>

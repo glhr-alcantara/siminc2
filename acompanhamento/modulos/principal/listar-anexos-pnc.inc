@@ -35,11 +35,15 @@
                     </td>
                     <td style="text-align: left;">
                         <?php if(
-                                  in_array(PFL_SUPERUSUARIO, $listaPerfis)
-                                  || in_array(PFL_ADMINISTRADOR, $listaPerfis)
-                                  || in_array(PFL_PNC, $listaPerfis)
-                                  || (in_array(PFL_UNIDADE, $listaPerfis) && $ano == $exercicio)
-                              ):
+                                $acompanhamentopnc->acpenviado != 't'
+                                &&
+                                (
+                                    in_array(PFL_SUPERUSUARIO, $listaPerfis)
+                                    || in_array(PFL_ADMINISTRADOR, $listaPerfis)
+                                    || in_array(PFL_PNC, $listaPerfis)
+                                    || (in_array(PFL_UNIDADE, $listaPerfis) && $ano == $exercicio)
+                                )
+                            ):
                         ?>
                             <span style="color: red;">
                                 <span class="glyphicon red glyphicon-trash excluir_anexo link" title="Excluir o arquivo <?php echo $anexo['arqnome']. '.'. $anexo['arqextensao']; ?>" data-acpid="<?php echo $acpid; ?>" data-arqid="<?php echo $anexo['arqid']; ?>" data-descricao="<?php echo $anexo['arqnome']. '.'. $anexo['arqextensao']; ?>" />
@@ -50,11 +54,15 @@
             <?php endforeach; ?>
         </tbody>
             <?php if(
-                      in_array(PFL_SUPERUSUARIO, $listaPerfis)
-                      || in_array(PFL_ADMINISTRADOR, $listaPerfis)
-                      || in_array(PFL_PNC, $listaPerfis)
-                      || (in_array(PFL_UNIDADE, $listaPerfis) && $ano == $exercicio)
-                  ):
+                    $acompanhamentopnc->acpenviado != 't'
+                    &&
+                    (
+                        in_array(PFL_SUPERUSUARIO, $listaPerfis)
+                        || in_array(PFL_ADMINISTRADOR, $listaPerfis)
+                        || in_array(PFL_PNC, $listaPerfis)
+                        || (in_array(PFL_UNIDADE, $listaPerfis) && $ano == $exercicio)
+                    )
+                ):
             ?>
                 <tfoot>
                     <tr>
@@ -73,11 +81,15 @@
                 <td colspan="3">Não existem anexos cadastrados pra essa Meta PNC.</td>
             </tr>
                 <?php if(
-                          in_array(PFL_SUPERUSUARIO, $listaPerfis)
-                          || in_array(PFL_ADMINISTRADOR, $listaPerfis)
-                          || in_array(PFL_PNC, $listaPerfis)
-                          || (in_array(PFL_UNIDADE, $listaPerfis) && $ano == $exercicio)
-                      ):
+                        $acompanhamentopnc->acpenviado != 't'
+                        &&
+                        (
+                            in_array(PFL_SUPERUSUARIO, $listaPerfis)
+                            || in_array(PFL_ADMINISTRADOR, $listaPerfis)
+                            || in_array(PFL_PNC, $listaPerfis)
+                            || (in_array(PFL_UNIDADE, $listaPerfis) && $ano == $exercicio)
+                        )
+                    ):
                 ?>
                     <tr>
                         <td colspan="2"></td>
