@@ -46,6 +46,12 @@ switch ($_REQUEST['req']) {
         $cImportaDadosSiop->AtualizarDados();
         $cImportaDadosSiop->AtualizarDotacao();
         die;
+    case 'exportar_xls_unidade':
+        $oPlanoInterno->exportarXlsUnidade();
+        die;                
+    case 'exportar_xls_acao':
+        $oPlanoInterno->exportarXlsAcao();
+        die;         
 }
 
 $filtros = array(
