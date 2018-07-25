@@ -114,6 +114,12 @@
     # Usado no formulário modal de upload de arquivos do acompanhamento da Meta PNC
     $acpid = $acompanhamentopnc->acpid;
     
+    # Verificando se os indicadores do ano atual foi preenchido.
+    $indicadoresPreenchidos = $acompanhamentopnc->verificarPreenchimentoIndicadoresAnoAtual();
+
+    # Verifica se existe pelo menos uma atividade inserida no acompanhamento da Meta PNC
+    $atividadePreenchida = $acompanhamentopnc->verificarPreenchimentoAtividade();
+
     include APPRAIZ . "includes/cabecalho.inc";
 ?>
 
@@ -283,11 +289,13 @@
                             <h1>INDICADORES</h1>
                             <div class="div_lista_indicadores_pnc" data-mode="async" data-url="?modulo=principal/monitorar-pnc&acao=A&req=listar-indicadores-pnc&acpid=<?php echo $acompanhamentopnc->acpid; ?>">
                                 Carregando ...
+                                <?php echo '<input id="hid_indicadores_preenchidos" type="hidden" value="'.((int)$indicadoresPreenchidos). '" />'; ?>
                             </div>
 
                             <h1>ATIVIDADES</h1>
                             <div class="div_lista_atividades_pnc" data-mode="async" data-url="?modulo=principal/monitorar-pnc&acao=A&req=listar-atividades-pnc&acpid=<?php echo $acompanhamentopnc->acpid; ?>">
                                 Carregando ...
+                                <?php echo '<input id="hid_atividade_preenchida" type="hidden" value="'.((int)$atividadePreenchida). '" />'; ?>
                             </div>
 
                             <h1>ANEXOS</h1>
@@ -351,11 +359,16 @@
 ?>
 
 <script>
+
+    const numeroPassoIndicadores = 0;
+    const numeroPassoAtividades = 1;
+    const numeroPassoAnexos = 2;
     
     $(function(){
         
         var wizard = $("#wizard").steps({
             transitionEffect: "slide",
+            startIndex: buscarPassoAtual(),
             labels: {
                 cancel: "Cancelar",
                 current: "Passo atual:",
@@ -368,16 +381,20 @@
             onStepChanging: function(event, currentIndex, newIndex){
                 var permitirAvancarPasso = true;
                 switch(currentIndex) {
-                    case 0:
-                        permitirAvancarPasso = verificarPreenchimentoIndicadoresAtual();
-                        if(permitirAvancarPasso === false){
-                            swal('', 'Por favor, preencha pelo menos os indicadors do ano de '+ $('#chosen-exercicio').val()+ '.', 'warning');
+                    case numeroPassoIndicadores:
+                        if(newIndex === numeroPassoAtividades){
+                            permitirAvancarPasso = verificarPreenchimentoIndicadoresAtual();
+                            if(permitirAvancarPasso === false){
+                                swal('', 'Por favor, preencha pelo menos os indicadores do ano de '+ $('#chosen-exercicio').val()+ '.', 'warning');
+                            }
                         }
                         break;
-                    case 1:
-                        permitirAvancarPasso = verificarPreenchimentoAtividade();
-                        if(permitirAvancarPasso === false){
-                            swal('', 'Por favor, insira pelo menos uma atividade.', 'warning');
+                    case numeroPassoAtividades:
+                        if(newIndex === numeroPassoAnexos){
+                            permitirAvancarPasso = verificarPreenchimentoAtividade();
+                            if(permitirAvancarPasso === false){
+                                swal('', 'Por favor, insira pelo menos uma atividade.', 'warning');
+                            }
                         }
                         break;
                 }
@@ -528,6 +545,25 @@
         });
 
     });
+
+    /**
+     * Retorna o número do passo atual de acordo com quais preenchimentos o usuário já fez até o momento.
+     * 
+     * @returns {integer}
+     */
+    function buscarPassoAtual(){
+        if(verificarPreenchimentoIndicadoresAtual()){
+            passoAtual = numeroPassoAtividades;
+            if(verificarPreenchimentoAtividade()){
+                passoAtual = numeroPassoAnexos;
+            }
+        }
+        else {
+            passoAtual = numeroPassoIndicadores;
+        }
+        
+        return passoAtual;
+    }
 
     /**
      * Concluir acompanhamento de Meta PNC.

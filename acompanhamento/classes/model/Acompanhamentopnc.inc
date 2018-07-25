@@ -199,6 +199,51 @@ class Acompanhamento_Model_Acompanhamentopnc extends Modelo
     }
     
     /**
+     * Verifica se existe pelo menos uma atividade inserida no acompanhamento da Meta PNC
+     * 
+     * @return boolean
+     */
+    public function verificarPreenchimentoAtividade(){
+        $listaAtividades = $this->buscarAtividades();
+        $resultado = $listaAtividades? TRUE: FALSE;
+        return $resultado;
+    }
+    
+    /**
+     * Verifica se os Indicadores do Ano atual foram preenchidos para o acompanhamento da Meta PNC.
+     * 
+     * @return boolean
+     */
+    public function verificarPreenchimentoIndicadoresAnoAtual(){
+        $qtdIndicadorPreenchido = 0;
+        $listaIndicadorPnc = $this->buscarIndicadoresPnc();
+        # Busca informações da Unidade e Subunidade pra exibir informações extras pra o usuário
+        $subunidade = new Public_Model_SubUnidadeOrcamentaria($this->suoid);
+        $unidadeOrcamentaria = new Public_Model_UnidadeOrcamentaria($subunidade->unoid);
+        # Busca o exercicio atual do monitoramento da Unidade\Subunidade
+        $exercicio = (int)$unidadeOrcamentaria->prsano;
+        if($listaIndicadorPnc){
+            foreach($listaIndicadorPnc as $indicador){
+                $acompanhamentoIndicadorPnc = new Acompanhamento_Model_Indicadorpnc();
+                $acompanhamentoIndicadorPnc->acpid = $this->acpid;
+                $acompanhamentoIndicadorPnc->unocod = $unidadeOrcamentaria->unocod;
+                $acompanhamentoIndicadorPnc->suocod = $subunidade->suocod;
+                $acompanhamentoIndicadorPnc->ipncod = $indicador['ipncod'];
+                $acompanhamentoIndicadorPnc->prsano = $exercicio;
+                $acompanhamentoIndicadorPnc->buscarPorAcompanhamentoPncUnidadeIndicadorAno();
+
+                if($acompanhamentoIndicadorPnc->idpid){
+                    $qtdIndicadorPreenchido++;
+                }
+            }
+        }
+        
+        # Verificar se todos os indicadores foram preenchidos para o ano(atual) da Subunidade
+        $resultado = $qtdIndicadorPreenchido >= count($listaIndicadorPnc)? TRUE: FALSE;
+        return $resultado;
+    }
+    
+    /**
      * Busca Indicadores do acompanhamento da Meta PNC.
      * 
      * @return array/boolean

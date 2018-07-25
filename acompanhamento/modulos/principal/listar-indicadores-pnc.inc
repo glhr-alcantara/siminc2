@@ -2,7 +2,6 @@
     $acpid = $_REQUEST['acpid'];
     $acompanhamentopnc = new Acompanhamento_Model_Acompanhamentopnc($acpid);
     $listaIndicadorPnc = $acompanhamentopnc->buscarIndicadoresPnc();
-    $qtdIndicadorPreenchido = 0;
     
     # Busca informações da Unidade e Subunidade pra exibir informações extras pra o usuário
     $subunidade = new Public_Model_SubUnidadeOrcamentaria($acompanhamentopnc->suoid);
@@ -10,6 +9,9 @@
     $exercicio = (int)$unidadeOrcamentaria->prsano;
     
     $listaPerfis = pegaPerfilGeral();
+    
+    # Verificando se os indicadores do ano atual foi preenchido.
+    $indicadoresPreenchidos = $acompanhamentopnc->verificarPreenchimentoIndicadoresAnoAtual();
 ?>
 
 <table class="table table-bordered">
@@ -35,10 +37,6 @@
                         $acompanhamentoIndicadorPnc->ipncod = $indicador['ipncod'];
                         $acompanhamentoIndicadorPnc->prsano = $ano;
                         $acompanhamentoIndicadorPnc->buscarPorAcompanhamentoPncUnidadeIndicadorAno();
-                        
-                        if($ano == $exercicio && $acompanhamentoIndicadorPnc->idpid){
-                            $qtdIndicadorPreenchido++;
-                        }
                 ?>
                     <td>
                         <?php if(
@@ -76,7 +74,4 @@
     <?php endif; ?>
 </table>
 
-<?php
-//ver($qtdIndicadorPreenchido, count($listaIndicadorPnc));
-    echo '<input id="hid_indicadores_preenchidos" type="hidden" value="'.($qtdIndicadorPreenchido >= count($listaIndicadorPnc)?1:0). '" />';
-?>
+<?php echo '<input id="hid_indicadores_preenchidos" type="hidden" value="'.((int)$indicadoresPreenchidos). '" />'; ?>
