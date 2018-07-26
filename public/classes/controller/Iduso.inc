@@ -35,6 +35,11 @@ class Public_Controller_Iduso
 
     }
 
+    /**
+     * Valida se o código do Iduso pode ser alterado ou inserido.
+     *
+     * @return string|array
+     */
     public function validarIduso()
     {
         $resposta = array();

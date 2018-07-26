@@ -39,7 +39,7 @@ include APPRAIZ . "includes/cabecalho.inc";
 
                         <div id="codigo-iduso">
                             <?php
-                                echo $simec->input('iducod', 'Código', $mIduso->iducod, ['required', 'maxlength' => 1]);
+                                echo $simec->input('iducod', 'Código', $mIduso->iducod, ['class' => 'inteiro', 'required', 'maxlength' => 1]);
                             ?>
                         </div>
                         <?php
