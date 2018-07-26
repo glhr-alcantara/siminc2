@@ -59,7 +59,12 @@ class Public_Model_IdentifUso extends Modelo
         'idudsc' => null,
         'idustatus' => null,
     );
-    
+
+    /**
+     * Consulta se o código inserido existe e retorna a primeira coluna do primeiro registro.
+     *
+     * @return array
+     */
     public function carregarPorCodigo()
     {
         $sql = "SELECT
