@@ -141,6 +141,7 @@
 </div>
 
 <?php echo '<input id="acpid" type="hidden" value="'.((int)$acpid). '" />'; ?>
+<?php echo '<input id="acpenviado" type="hidden" value="'.($acompanhamentopnc->acpenviado). '" />'; ?>
 
 <div class="wrapper wrapper-content animated fadeInRight">
     <div class="row">
@@ -384,6 +385,7 @@
         var wizard = $("#wizard").steps({
             transitionEffect: "slide",
             startIndex: buscarPassoAtual(),
+            enableFinishButton: exibirBotaoEnviar(),
             labels: {
                 cancel: "Cancelar",
                 current: "Passo atual:",
@@ -777,6 +779,16 @@
         if(atividadePreenchida === "1"){
             resultado = true;
         }
+        return resultado;
+    }
+    
+    /**
+     * Verifica se o acompanhamento da meta ainda não foi enviado e permite exibir o botão de envio.
+     * 
+     * @returns {Boolean}
+     */
+    function exibirBotaoEnviar(){
+        var resultado = $('#acpenviado').val() == 'f'? true: false;
         return resultado;
     }
 
