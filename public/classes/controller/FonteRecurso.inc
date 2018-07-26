@@ -7,7 +7,7 @@ class Public_Controller_FonteRecurso
         $url = '?modulo=apoio/fonte_form&acao=A';
 
         try {
-            $mdfonte = new Public_Model_FonteRecurso($dados['foncod']);
+            $mdfonte = new Public_Model_FonteRecurso($dados['fonid']);
             $mdfonte->popularDadosObjeto($dados);
             $mdfonte->salvar(null,null);
             $mdfonte->commit();
@@ -18,11 +18,11 @@ class Public_Controller_FonteRecurso
         }
     } //end salvar()
 
-    public function excluir($foncod)
+    public function excluir($fonid)
     {
         $url = '?modulo=apoio/fonte&acao=A';
         try {
-            $mdfonte = new Public_Model_FonteRecurso($foncod);
+            $mdfonte = new Public_Model_FonteRecurso($fonid);
             $mdfonte->fonstatus = 'I';
             $mdfonte->salvar();
             $mdfonte->commit();
@@ -37,7 +37,7 @@ class Public_Controller_FonteRecurso
     /**
      * Valida se o código da Fonte pode ser alterado ou inserido.
      *
-     * @return array
+     * @return string|array
      */
     function validaFonte()
     {
