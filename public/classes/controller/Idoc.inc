@@ -34,6 +34,11 @@ class Public_Controller_Idoc
         }
     }
 
+    /**
+     * Valida se o código do Idoc pode ser alterado ou inserido.
+     *
+     * @return string
+     */
     public function validarIdoc()
     {
         $resposta = array();
