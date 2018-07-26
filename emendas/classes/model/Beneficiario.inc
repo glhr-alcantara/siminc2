@@ -194,7 +194,7 @@ class Emendas_Model_Beneficiario extends Modelo
     public function recuperarTodos($stCampos = '*', $arClausulas = null, $stOrdem = null, array $opcoes = array()) {
 
         $sql = "
-            SELECT
+            SELECT DISTINCT
                 ben.*,
                 REPLACE(to_char(pro.procnpj::numeric, '00:000:000/0000-00'), ':', '.') procnpj,
                 pro.pronome,
@@ -212,35 +212,35 @@ class Emendas_Model_Beneficiario extends Modelo
                     'TED'
                 END formaexecucao,
                 (
-                SELECT
-                    sit.sitdsc
-                FROM emendas.siconvbeneficiario sbe
-                    JOIN emendas.siconv sic ON sic.sicid = sbe.sicid
-                    JOIN emendas.siconvsituacao sit ON sit.sitid = sic.sitid
-                WHERE
-                    sbe.benid = ben.benid
-                ORDER BY
-                    sicsequencial DESC
-                LIMIT 1
+                    SELECT
+                        sit.sitdsc
+                    FROM emendas.siconvbeneficiario sbe
+                        JOIN emendas.siconv sic ON sic.sicid = sbe.sicid
+                        JOIN emendas.siconvsituacao sit ON sit.sitid = sic.sitid
+                    WHERE
+                        sbe.benid = ben.benid
+                    ORDER BY
+                        sicsequencial DESC
+                    LIMIT 1
                 ) AS sitdsc,
                 (
-		        SELECT
-                    sic.sicsequencial || '/' || sic.prsano
-                FROM emendas.siconvbeneficiario sbe
-                    JOIN emendas.siconv sic ON sic.sicid = sbe.sicid
-                    JOIN emendas.siconvsituacao sit ON sit.sitid = sic.sitid
-                WHERE
-			        sbe.benid = ben.benid
-                ORDER BY
-                     sicsequencial DESC
-                LIMIT 1
+                    SELECT
+                        sic.sicsequencial || '/' || sic.prsano
+                    FROM emendas.siconvbeneficiario sbe
+                        JOIN emendas.siconv sic ON sic.sicid = sbe.sicid
+                        JOIN emendas.siconvsituacao sit ON sit.sitid = sic.sitid
+                    WHERE
+                        sbe.benid = ben.benid
+                    ORDER BY
+                        sicsequencial DESC
+                    LIMIT 1
                 ) AS numero_proposta,
                 (
-                SELECT
-                    SUM(bedvalor)
-                FROM emendas.beneficiariodetalhe bd
+                    SELECT
+                        SUM(bedvalor)
+                    FROM emendas.beneficiariodetalhe bd
                         JOIN emendas.emendadetalhe ed ON bd.emdid = ed.emdid
-                WHERE
+                    WHERE
                         bd.bedstatus = 'A'
                         AND bd.benid = ben.benid
                         AND ed.gndcod <= 3
@@ -257,12 +257,12 @@ class Emendas_Model_Beneficiario extends Modelo
                 ) AS capital,
                 pli.empenhado,
                 pli.pago
-            FROM
-                emendas.beneficiario ben
+            FROM emendas.beneficiario ben
                 LEFT JOIN emendas.proponente pro ON pro.proid = ben.proid
                 LEFT JOIN public.vw_subunidadeorcamentaria suo ON suo.suoid = ben.suoid
                 LEFT JOIN territorios.esfera esf ON esf.esfid = ben.esfid
-                LEFT JOIN monitora.vw_planointerno pli ON (ben.pliid = pli.pliid)";
+                LEFT JOIN monitora.vw_planointerno pli ON (ben.pliid = pli.pliid)
+        ";
 
         $sql .= $arClausulas ? " WHERE " . implode(" AND ", $arClausulas) : "";
         $sql .= $stOrdem ? " ORDER BY $stOrdem" : "";
