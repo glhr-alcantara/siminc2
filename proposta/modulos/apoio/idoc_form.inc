@@ -10,6 +10,10 @@ switch ($_REQUEST['req']) {
     case 'excluir-idoc':
         $cIdoc->excluir($_REQUEST['idoid']);
         break;
+    case 'validar-idoc':
+        $resposta = $cIdoc->validarIdoc();
+        echo $resposta;
+        die;
 }
 
 include APPRAIZ . "includes/cabecalho.inc";
@@ -33,8 +37,12 @@ include APPRAIZ . "includes/cabecalho.inc";
                         <input type="hidden" name="req" id="req" value="salvar-idoc" />
                         <input name="idoid" id="idoid" type="hidden" value="<?php echo $mIdoc->idoid; ?>">
 
+                        <div id="codigo-idoc">
                         <?php
                             echo $simec->input('idocod', 'Codigo', $mIdoc->idocod, ['class' => 'inteiro', 'required', 'maxlength' => 4]);
+                        ?>
+                        </div>
+                        <?php
                             echo $simec->input('idodsc', 'Descrição', $mIdoc->idodsc, ['required', 'maxlength' => 200]);
                         ?>
                         <div class="form-group">
@@ -52,3 +60,27 @@ include APPRAIZ . "includes/cabecalho.inc";
         </div>
     </div>
 </div>
+
+<script>
+    $(function () {
+        $('#codigo-idoc').change(function () {
+
+            $.ajax({
+                url: 'proposta.php?modulo=apoio/idoc_form&acao=A&req=validar-idoc&idoid=' + $('#idoid').val() + '&idocod=' + $('#idocod').val(),
+                dataType: 'json',
+                success: function (response) {
+                    if (response.type == 'error') {
+                        swal({
+                            title: response.title,
+                            text: response.text,
+                            type: response.type
+                        });
+                        $('#idocod').val('');
+                    }
+                }
+            });
+        });
+
+    });
+
+</script>

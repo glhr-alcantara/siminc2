@@ -7,13 +7,13 @@ class Public_Controller_Idoc
         $url = '?modulo=apoio/idoc_form&acao=A';
 
         try {
-            $mdidoc = new Public_Model_Idoc($dados['idoid']);
-            $mdidoc->popularDadosObjeto($dados);
-            $mdidoc->salvar(null,null);
-            $mdidoc->commit();
-            simec_redirecionar($url . '&idoid=' . $mdidoc->idoid, 'success');
+            $mdIdoc = new Public_Model_Idoc($dados['idoid']);
+            $mdIdoc->popularDadosObjeto($dados);
+            $mdIdoc->salvar(null,null);
+            $mdIdoc->commit();
+            simec_redirecionar($url . '&idoid=' . $mdIdoc->idoid, 'success');
         } catch (Exception $e){
-            $mdidoc->rollback();
+            $mdIdoc->rollback();
             simec_redirecionar($url, 'error');
         }
     }
@@ -23,14 +23,31 @@ class Public_Controller_Idoc
         $url = '?modulo=apoio/idoc&acao=A';
 
         try {
-            $mdidoc = new Public_Model_Idoc($idoid);
-            $mdidoc->idostatus = 'I';
-            $mdidoc->salvar();
-            $mdidoc->commit();
+            $mdIdoc = new Public_Model_Idoc($idoid);
+            $mdIdoc->idostatus = 'I';
+            $mdIdoc->salvar();
+            $mdIdoc->commit();
             simec_redirecionar($url, 'success');
         } catch (Exception $e){
-            $mdidoc->rollback();
+            $mdIdoc->rollback();
             simec_redirecionar($url, 'error');
         }
+    }
+
+    public function validarIdoc()
+    {
+        $resposta = array();
+        $mdIdoc = new Public_Model_Idoc();
+        $mdIdoc->idocod = $_REQUEST['idocod'];
+        $mdIdoc->idoid = $_REQUEST['idoid'];
+        $verifica = $mdIdoc->carregarPorCodigo();
+        if (!empty($verifica)) {
+            $resposta['title'] = NULL;
+            $resposta['text'] = 'O código do Idoc ' . $mdIdoc->idocod . ' já está sendo usado!';
+            $resposta['type'] = 'error';
+        } else {
+            $resposta['type'] = 'success';
+        }
+        return simec_json_encode($resposta);
     }
 }
