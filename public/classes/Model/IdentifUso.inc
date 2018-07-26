@@ -59,5 +59,19 @@ class Public_Model_IdentifUso extends Modelo
         'idudsc' => null,
         'idustatus' => null,
     );
-
-}//end Class
+    
+    public function carregarPorCodigo()
+    {
+        $sql = "SELECT
+                    iducod,
+                    idudsc
+                FROM
+                    public.identifuso
+                WHERE
+                    idustatus = 'A'
+                    AND iducod = '". $this->iducod ."'
+                    AND iduid <> '". (int)$this->iduid ."'";
+                
+        return $this->pegaLinha($sql);
+    }
+}

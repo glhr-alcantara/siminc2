@@ -18,26 +18,25 @@ include APPRAIZ . "includes/cabecalho.inc";
                     <h5>Dados Gerais</h5>
                 </div>
                 <div class="ibox-content">
-
                     <a class="btn btn-small btn-warning" href="?modulo=apoio/iduso_form&acao=A">Novo</a>
-
                     <div class="table-responsive">
                         <table class="table table-striped table-bordered table-hover dataTables" >
                             <thead>
                                 <tr class="text-center">
                                     <th>Ação</th>
+                                    <th>Código</th>
                                     <th>Descrição</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php
                                 if ($listaIduso) {
-                                    foreach ($listaIduso as $dados) {
-                                        ?>
+                                    foreach ($listaIduso as $dados) { ?>
                                         <tr>
                                             <td class="text-center">
-                                                <a title="Alterar" href="?modulo=apoio/iduso_form&acao=A&iduid=<?= $dados['iduid']; ?>"><i class="fa fa-pencil"></i></a>
+                                                <a title="Alterar" href="?modulo=apoio/iduso_form&acao=A&iduid=<?php echo $dados['iduid']; ?>"><i class="fa fa-pencil"></i></a>
                                             </td>
+                                            <td><?php echo $dados['iducod']?></td>
                                             <td><?php echo $dados['idudsc']; ?></td>
                                         </tr>
                                     <?php } ?>
