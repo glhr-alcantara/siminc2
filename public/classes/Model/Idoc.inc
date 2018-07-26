@@ -60,4 +60,17 @@ class Public_Model_Idoc extends Modelo
         'idostatus' => null,
     );
 
-}//end Class
+    public function carregarPorCodigo()
+    {
+        $sql = "SELECT
+                    idocod,
+                    idodsc
+                FROM public.idoc
+                WHERE
+                    idostatus = 'A'
+                    AND idocod = '" . $this->idocod . "'
+                    AND idoid <> '" . (int)$this->idoid . "'";
+
+        return $this->pegaLinha($sql);
+    }
+}
