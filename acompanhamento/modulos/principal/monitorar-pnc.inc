@@ -189,9 +189,13 @@
                                 'exercicio' => $_SESSION['exercicio']
                             ));
                         
-                            foreach($listaMetas as $meta){
-                                $cor = $meta['acpid']? 'navy-bg': 'red-bg';
-                                $cor = $mpnid == $meta['mpnid']? 'blue-bg': $cor;
+                            foreach($listaMetas as $contador => $meta){
+                                $cor = $meta['acompanhamento']? 'navy-bg': 'red-bg';
+                                if($mpnid == $meta['mpnid']){
+                                    $cor = 'blue-bg';
+                                    $mpnid_proximo = $listaMetas[$contador++]['mpnid']? $listaMetas[$contador++]['mpnid']: '';
+                                }
+                                
                                 $urlAcompanhamento = $meta['acpid']? "?modulo=principal/monitorar-pnc&acao=A&acpid={$meta['acpid']}": "?modulo=principal/monitorar-pnc&acao=A&mpnid={$meta['mpnid']}&suoid={$suoid}";
                             ?>
                                 <a class="selecionar-meta-pnc" href="<?php echo $urlAcompanhamento; ?>">
@@ -215,6 +219,7 @@
                                 $valoresOrcamentarios = (new Pi_PlanoInterno())->recuperarValoresPiMetaPncESubunidade($mpnid, $suoid);
                             ?>
                             <input type="hidden" id="mpnid" value="<?php echo $mpnid; ?>" />
+                            <input type="hidden" id="mpnid_proximo" value="<?php echo $mpnid_proximo; ?>" />
                             <hr />
                             
                             <div class="col-sm-12">
@@ -277,7 +282,7 @@
                     <div class="ibox-title">
                         <div class="row">
                             <div class="col-sm-1" style="text-align: center;">
-                               <h1><?php echo $meta->mpncod; ?></h1>
+                                <h1 class="h1_codigo_meta"><?php echo $meta->mpncod; ?></h1>
                             </div>
                             <div class="col-sm-11">
                                 <h2><?php echo $meta->mpndsc; ?></h2>
@@ -592,7 +597,7 @@
     function enviarAcompanhamento(){
         swal({
             title: "Confirmação",
-            text: "Você deseja concluir o envio de TODOS os dados de indicadores e monitoramento da Meta PNC?",
+            text: "Você deseja concluir e enviar O PREECHIMENTO de TODOS os Indicadores e da Meta PNC "+ $('.h1_codigo_meta').text()+ '?',
             type: "warning",
             showCancelButton: true,
             confirmButtonColor: '#DD6B55',
@@ -610,7 +615,12 @@
                     success: function(response){
                         swal("", "Dados de monitoramento dos indicadores e da Meta PNC enviados!", "success");
                         divCarregando();
-                        window.location.href = window.location.href;
+                        var mpnidProximo = $('#mpnid_proximo').val();
+                        if(mpnidProximo != ''){
+                            window.location.href = '?modulo=principal/monitorar-pnc&acao=A&suoid='+ $('#suoid').val()+ '&mpnid='+ mpnidProximo;
+                        } else {
+                            window.location.href = '?modulo=inicio&acao=C&suoid='+ $('#suoid').val();
+                        }
                     }
                 });
              } else {
