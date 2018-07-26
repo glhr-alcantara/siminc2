@@ -38,7 +38,7 @@ include APPRAIZ . "includes/cabecalho.inc";
                         <input name="fonid" id="fonid" type="hidden" value="<?= $mFonte->fonid; ?>">
 
                         <div id="codigo-fonte">
-                            <?php echo $simec->input('foncod', 'Código', $mFonte->foncod, ['required', 'maxlength' => 3]); ?>
+                            <?php echo $simec->input('foncod', 'Código', $mFonte->foncod, ['class' => 'inteiro' ,'required', 'maxlength' => 3]); ?>
                         </div>
                         <?php
                             echo $simec->input('fondsc', 'Descrição', $mFonte->fondsc, ['required' ,'maxlength' => 150]);
