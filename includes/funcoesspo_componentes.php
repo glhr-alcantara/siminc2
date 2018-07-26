@@ -747,7 +747,7 @@ HTML;
  * @param string $id
  * @param string $content Conteúdo HTML do arquivou ou caminho absoluto do arquivo de template Ex: /var/www/html/siminc2/modulo/principal/modal-x.inc
  * @param array $botoes Ex: array('cancelar', 'confirmar', 'salvar', 'fechar')
- * @param array $opcoes Configurações extras do visual da janela. Por enquanto apenas é suportado alterar o tamanho. Ex: array('tamanho' => 'lg')
+ * @param array $opcoes Configurações extras do visual da janela. Por enquanto apenas é suportado alterar o tamanho. Ex: array('tamanho' => 'lg') Tamanhos: xs, sm, md, lg, xl
  */
 function bootstrapPopup($titulo, $id, $content, array $botoes = array(), array $opcoes = array())
 {

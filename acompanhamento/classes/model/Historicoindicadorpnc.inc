@@ -3,8 +3,6 @@
  * Classe de mapeamento da entidade acompanhamento.historicopnc
  *
  */
-
-
 require_once APPRAIZ .'includes/classes/Modelo.class.inc';
 
 
@@ -18,14 +16,14 @@ require_once APPRAIZ .'includes/classes/Modelo.class.inc';
  * @version  Release: 
  * @link     no link
  */
-class Acompanhamento_Model_Historicopnc extends Modelo
+class Acompanhamento_Model_Historicoindicadorpnc extends Modelo
 {
     /**
      * Nome da tabela especificada
      * @var string
      * @access protected
      */
-    protected $stNomeTabela = 'acompanhamento.historicopnc';
+    protected $stNomeTabela = 'acompanhamento.historicoindicadorpnc';
 
     /**
      * Chave primaria.
@@ -33,7 +31,7 @@ class Acompanhamento_Model_Historicopnc extends Modelo
      * @access protected
      */
     protected $arChavePrimaria = array(
-        'hisid',
+        'hipid',
     );
     /**
      * Chaves estrangeiras.
@@ -41,7 +39,7 @@ class Acompanhamento_Model_Historicopnc extends Modelo
      */
     protected $arChaveEstrangeira = array(
         'usucpf' => array('tabela' => 'usuario', 'pk' => 'usucpf'),
-        'acpid' => array('tabela' => 'acompanhamento.acompanhamento_pnc', 'pk' => 'acpid'),
+        'idpid' => array('tabela' => 'acompanhamento.indicador_pnc', 'pk' => 'idpid'),
     );
 
     /**
@@ -50,29 +48,33 @@ class Acompanhamento_Model_Historicopnc extends Modelo
      * @access protected
      */
     protected $arAtributos = array(
-        'hisid' => null,
-        'acpid' => null,
+        'hipid' => null,
+        'idpid' => null,
         'usucpf' => null,
-        'hisdata' => null,
+        'hipdata' => null,
+        'hipquantidadeantigo' => null,
+        'hipquantidadenovo' => null,
     );
 
-    public function recuperarHistorico($acpid)
+    public function buscarPorIndicador()
     {
         $sql = "
-            select
+            SELECT
                 his.*,
                 usu.usunome,
-                to_char(hisdata, 'DD/MM/YYYY HH24:MI:SS') hisdata
-            from acompanhamento.historico his
-                join seguranca.usuario usu on usu.usucpf = his.usucpf
-            where
-                his.acpid = " . (int)$acpid . "
-            order by
-                his.hisdata desc
+		usu.usuemail,
+		usu.usufoneddd,
+		usu.usufonenum,
+                to_char(hipdata, 'DD/MM/YYYY HH24:MI:SS') AS hipdata
+            FROM acompanhamento.historicoindicadorpnc his
+                JOIN seguranca.usuario usu ON usu.usucpf = his.usucpf
+            WHERE
+                his.idpid = ". (int)$this->idpid. "
+            ORDER BY
+                his.hipdata DESC
         ";
 
         return $this->carregar($sql);
     }
 
-}//end Class
-?>
+}

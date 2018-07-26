@@ -10,13 +10,13 @@
     
     switch ($_REQUEST['req']) {
         case 'acompanhamento-indicador-pnc-form':
-            include_once APPRAIZ. 'acompanhamento/modulos/principal/acompanhamento_indicador_pnc_form.inc';
+            include APPRAIZ. 'acompanhamento/modulos/principal/acompanhamento_indicador_pnc_form.inc';
         die;
         case 'acompanhamento-atividade-pnc-form':
-            include_once APPRAIZ. 'acompanhamento/modulos/principal/acompanhamento_atividade_pnc_form.inc';
+            include APPRAIZ. 'acompanhamento/modulos/principal/acompanhamento_atividade_pnc_form.inc';
         die;
         case 'acompanhamento-anexo-pnc-form':
-            include_once APPRAIZ. 'acompanhamento/modulos/principal/acompanhamento_anexo_pnc_form.inc';
+            include APPRAIZ. 'acompanhamento/modulos/principal/acompanhamento_anexo_pnc_form.inc';
         die;
         case 'salvar-acompanhamento-indicador-pnc':
             $resultado = Acompanhamento_Controller_Acompanhamentopnc::salvarIndicadorPnc(simec_utf8_decode_recursive($_REQUEST));
@@ -48,14 +48,14 @@
             include APPRAIZ. 'acompanhamento/modulos/principal/listar-anexos-pnc.inc';
         die;
         case 'detalhe-pi':
-            include_once APPRAIZ . 'acompanhamento/modulos/principal/detalhe-pi.inc';
+            include APPRAIZ . 'acompanhamento/modulos/principal/detalhe-pi.inc';
         die;
         case 'exibir-grafico':
-            include_once APPRAIZ. 'acompanhamento/modulos/principal/modal-grafico-pnc.inc';
+            include APPRAIZ. 'acompanhamento/modulos/principal/modal-grafico-pnc.inc';
         die;
-        case 'ver-historico':
-//            $cAcompanhamentopnc->recuperarHistorico($_REQUEST['acpid']);
-//            die;
+        case 'listar-historico-indicador-pnc':
+            include APPRAIZ. "acompanhamento/modulos/principal/listar-historico-indicador-pnc.inc";
+        die;
         case 'anexar-arquivos-monitoramento-Pnc':
             $acpid = $_REQUEST['acpid'];
             $file = new FilesSimec();
@@ -189,9 +189,13 @@
                                 'exercicio' => $_SESSION['exercicio']
                             ));
                         
-                            foreach($listaMetas as $meta){
-                                $cor = $meta['acpid']? 'navy-bg': 'red-bg';
-                                $cor = $mpnid == $meta['mpnid']? 'blue-bg': $cor;
+                            foreach($listaMetas as $contador => $meta){
+                                $cor = $meta['acompanhamento']? 'navy-bg': 'red-bg';
+                                if($mpnid == $meta['mpnid']){
+                                    $cor = 'blue-bg';
+                                    $mpnid_proximo = $listaMetas[$contador++]['mpnid']? $listaMetas[$contador++]['mpnid']: '';
+                                }
+                                
                                 $urlAcompanhamento = $meta['acpid']? "?modulo=principal/monitorar-pnc&acao=A&acpid={$meta['acpid']}": "?modulo=principal/monitorar-pnc&acao=A&mpnid={$meta['mpnid']}&suoid={$suoid}";
                             ?>
                                 <a class="selecionar-meta-pnc" href="<?php echo $urlAcompanhamento; ?>">
@@ -215,6 +219,7 @@
                                 $valoresOrcamentarios = (new Pi_PlanoInterno())->recuperarValoresPiMetaPncESubunidade($mpnid, $suoid);
                             ?>
                             <input type="hidden" id="mpnid" value="<?php echo $mpnid; ?>" />
+                            <input type="hidden" id="mpnid_proximo" value="<?php echo $mpnid_proximo; ?>" />
                             <hr />
                             
                             <div class="col-sm-12">
@@ -277,7 +282,7 @@
                     <div class="ibox-title">
                         <div class="row">
                             <div class="col-sm-1" style="text-align: center;">
-                               <h1><?php echo $meta->mpncod; ?></h1>
+                                <h1 class="h1_codigo_meta"><?php echo $meta->mpncod; ?></h1>
                             </div>
                             <div class="col-sm-11">
                                 <h2><?php echo $meta->mpndsc; ?></h2>
@@ -333,7 +338,7 @@
     );
     
     bootstrapPopup(
-        "Cadastro de acompanhamento do Indicador PNC",
+        "Cadastro de acompanhamento do Indicador PNC ". '<a style="margin-left: 10px;" class="fa fa-history modal-historico-indicador-pnc" title="Histórico de alterações do indicador"></a>',
         'div_modal_acompanhamento_indicador',
         '',
         array('salvar', 'fechar'),
@@ -357,6 +362,14 @@
             'tamanho' => 'xl',
             'acpid' => $acpid
         )
+    );
+    
+    bootstrapPopup(
+        "Histórico de Alterações do Indicador PNC",
+        'div_modal_lista_historico_indicador_pnc',
+        '',
+        array('fechar'),
+        array('tamanho' => 'lg')
     );
 ?>
 
@@ -473,6 +486,15 @@
             exibirGrafico();
             return false;
         });
+        
+        $('.modal-historico-indicador-pnc').click(function(){
+            var url = '?modulo=principal/monitorar-pnc&acao=A'+
+                '&req=listar-historico-indicador-pnc'+
+                '&idpid='+ $('input[name=idpid]').val();
+            $('#div_modal_lista_historico_indicador_pnc .modal-body').load(url);
+            $('#div_modal_lista_historico_indicador_pnc').modal();
+            return false;
+        });
 
         // Eventos do ícone(ou número) de edição da lista de indicadores PNC
         $('.div_lista_indicadores_pnc').on('click', '.editar_indicador', function(){
@@ -575,7 +597,7 @@
     function enviarAcompanhamento(){
         swal({
             title: "Confirmação",
-            text: "Você deseja concluir o envio de TODOS os dados de indicadores e monitoramento da Meta PNC?",
+            text: "Você deseja concluir e enviar O PREECHIMENTO de TODOS os Indicadores e da Meta PNC "+ $('.h1_codigo_meta').text()+ '?',
             type: "warning",
             showCancelButton: true,
             confirmButtonColor: '#DD6B55',
@@ -593,7 +615,12 @@
                     success: function(response){
                         swal("", "Dados de monitoramento dos indicadores e da Meta PNC enviados!", "success");
                         divCarregando();
-                        window.location.href = window.location.href;
+                        var mpnidProximo = $('#mpnid_proximo').val();
+                        if(mpnidProximo != ''){
+                            window.location.href = '?modulo=principal/monitorar-pnc&acao=A&suoid='+ $('#suoid').val()+ '&mpnid='+ mpnidProximo;
+                        } else {
+                            window.location.href = '?modulo=inicio&acao=C&suoid='+ $('#suoid').val();
+                        }
                     }
                 });
              } else {
