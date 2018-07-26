@@ -22,7 +22,7 @@ class EmendaImpositivo{
 				vfun.fupdsc,
 				vede.gndcod||' - '||gn.gnddsc as gndcod1, 
 	            vede.mapcod||' - '||map.mapdsc as modalidade,
-	            vede.foncod||' - '||fon.fondsc as fonte,
+	            fon.foncod||' - '||fon.fondsc as fonte,
 				sum(vede.edevalor) - coalesce(ei.edivalor, 0) as valor
 				--(select ptrid from emenda.ptemendadetalheentidade where edeid = vede.edeid limit 1) as pta
 			FROM
@@ -33,7 +33,7 @@ class EmendaImpositivo{
 				inner join emenda.entidadebeneficiada enb on enb.enbid = vede.entid
 				left join public.gnd gn on gn.gndcod = vede.gndcod and gn.gndstatus = 'A'
 	            left join public.modalidadeaplicacao map on map.mapcod = vede.mapcod
-	            left join public.fonterecurso fon on fon.foncod = vede.foncod and fon.fonstatus = 'A'
+	            left join public.fonterecurso fon on fon.fonid = vede.fonid and fon.fonstatus = 'A'
 	            left join emenda.emendadetalheimpedimento ei on ei.emdid = vede.emdid  $filtroImped
 			WHERE
 				vede.edestatus = 'A'
@@ -44,7 +44,7 @@ class EmendaImpositivo{
 				and vede.edeid in ( select edeid from emenda.emendapariniciativa )
 			GROUP BY
 	          vede.emecod, a.autnome, vfun.fupfuncionalprogramatica, vfun.fupdsc,
-	          vede.emedescentraliza, vede.emdid, vede.edevalor, vede.foncod, vede.gndcod,
+	          vede.emedescentraliza, vede.emdid, vede.edevalor, fon.foncod, vede.gndcod,
 	          vede.mapcod, gn.gnddsc, map.mapdsc, fon.fondsc,vede.emetipo, ei.edivalor, vede.emerelator";
 		
 	     return $sql;   

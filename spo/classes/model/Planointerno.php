@@ -165,10 +165,30 @@ class Spo_Model_Planointerno extends Modelo
 		ed.esddsc AS situacao,
 		pc.picvalorcusteio AS custeio,
 		pc.picvalorcapital AS capital,
-                COALESCE(vpi.autorizado, 0.00) AS autorizado,
-                COALESCE(vpi.empenhado, 0.00) AS empenhado,
-                COALESCE(vpi.liquidado, 0.00) AS liquidado,
-		COALESCE(vpi.pago, 0.00) AS pago,
+		coalesce((SELECT 
+			sum(coalesce(se.vlrautorizado,0::numeric)) AS vlrautorizado
+		   FROM spo.siopexecucao se
+		  where se.plicod = pli.plicod
+		    and se.exercicio = pli.pliano
+		    ),0.00) as autorizado,
+		coalesce((SELECT 
+			sum(coalesce(se.vlrempenhado,0::numeric)) AS vlrempenhado
+		   FROM spo.siopexecucao se
+		  where se.plicod = pli.plicod
+		    and se.exercicio = pli.pliano
+		    ),0.00) as empenhado,
+		coalesce((SELECT 
+			sum(coalesce(se.vlrliquidado,0::numeric)) AS vlrliquidado
+		   FROM spo.siopexecucao se
+		  where se.plicod = pli.plicod
+		    and se.exercicio = pli.pliano
+		    ),0.00) as liquidado,		    
+		coalesce((SELECT 
+			sum(coalesce(se.vlrpago,0::numeric)) AS vlrpago
+		   FROM spo.siopexecucao se
+		  where se.plicod = pli.plicod
+		    and se.exercicio = pli.pliano
+		    ),0.00) as pago,
                 pli.plistatus
             FROM monitora.pi_planointerno pli
 		JOIN planacomorc.pi_complemento pc USING(pliid)
@@ -183,7 +203,6 @@ class Spo_Model_Planointerno extends Modelo
                     ppt.ptrid = ptr.ptrid
                     AND pli.pliano = ptr.ptrano)
 	        LEFT JOIN monitora.acao aca on ptr.acaid = aca.acaid
-                LEFT JOIN monitora.vw_planointerno vpi ON pli.pliid = vpi.pliid
 		LEFT JOIN workflow.documento wd ON(pli.docid = wd.docid)
 		LEFT JOIN workflow.estadodocumento ed ON(wd.esdid = ed.esdid)
 		LEFT JOIN planacomorc.pi_delegacao pd ON(pli.pliid = pd.pliid)
@@ -196,7 +215,6 @@ class Spo_Model_Planointerno extends Modelo
             ORDER BY
                 codigo_pi
         ";
-//ver($sql, d);
         return $sql;
     }
     

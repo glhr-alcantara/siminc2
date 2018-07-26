@@ -82,7 +82,7 @@ class PagamentoFNDE extends Modelo{
 		$sql = "SELECT distinct
 					vede.acaid, fup.fupfuncionalprogramatica, vede.emecod,
 					case when vede.emerelator = 'S' then aut.autnome||' - Relator Geral' else aut.autnome end as autnome,
-					vede.gndcod, vede.mapcod, vede.foncod,
+					vede.gndcod, vede.mapcod, fr.foncod,
 					(CASE WHEN vede.emetipo = 'E' THEN 'Emenda'
 				       ELSE 'Complemento' END) as tipoemenda,
 					per.pedid, tpe.tpedsc, sum(per.pervalor) as pervalor, pli.plicod, pli.plititulo, pt.ptres as pliptres, esf.esfcod, esf.esfdsc,
@@ -110,6 +110,7 @@ class PagamentoFNDE extends Modelo{
 					inner join monitora.pi_planointernoptres plpt on pli.pliid = plpt.pliid
 					inner join monitora.ptres pt on pt.ptrid = plpt.ptrid and pt.acaid = fup.acaid and pt.ptres = exf.ptres
 					inner join public.esfera esf on fup.esfcod = esf.esfcod 
+                                        left join public.fonterecurso fr on vede.fonid = fr.fonid
 	                left join financeiro.unidadeptresfonte upf on upf.fontesiafi = exf.exfcodfontesiafi
 	                /*left join emenda.ordembancaria orb
 	                	left join emenda.situacaopagamento sip on sip.spgcodigo = orb.spgcodigo
@@ -118,13 +119,13 @@ class PagamentoFNDE extends Modelo{
 					pti.ptrid = ".$this->ptrid." 
 	                and exf.exfstatus = 'A'	                
 				GROUP BY 
-					per.pedid, tpe.tpedsc, vede.emecod, aut.autnome, vede.gndcod, vede.mapcod, vede.foncod, vede.emerelator,
+					per.pedid, tpe.tpedsc, vede.emecod, aut.autnome, vede.gndcod, vede.mapcod, fr.foncod, vede.emerelator,
 					tipoemenda, fup.fupfuncionalprogramatica, vede.acaid, pli.plicod, pli.plititulo, pt.ptres, 
 					esf.esfcod, esf.esfdsc, exf.exfid, exf.exfcodfontesiafi, exf.exfnumsolempenho, exf.exfnumempenhooriginal,
 					exf.exfvalor, upf.fondsc --, sip.spgdescricao, sip.spgcodigo
 				ORDER BY
 					exf.exfid, per.pedid, tpe.tpedsc, vede.emecod, vede.gndcod, vede.mapcod, 
-					vede.foncod, fup.fupfuncionalprogramatica, vede.acaid";
+					fr.foncod, fup.fupfuncionalprogramatica, vede.acaid";
 		
 		$arDados = $this->carregar($sql);
 		$arDados = $arDados ? $arDados : array();

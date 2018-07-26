@@ -22,8 +22,8 @@ function montarSqlRelatorioGeralProposta(stdClass $filtros){
             pro.projustificativa,
 	    pro.projustificativaexpansao,
 	    prd.ndpid,
-	    prd.iducod,
-	    prd.foncod,
+	    idu.iducod,
+	    fr.foncod,
 	    prd.idoid,
 	    prd.prdvalor,
 	    prd.prdvalorexpansao
@@ -31,8 +31,10 @@ function montarSqlRelatorioGeralProposta(stdClass $filtros){
             JOIN monitora.vw_ptres ptr ON pro.ptrid = ptr.ptrid
 	    JOIN monitora.acao aca ON ptr.acaid = aca.acaid
             JOIN public.vw_subunidadeorcamentaria suo ON suo.suoid = pro.suoid
-            JOIN monitora.pi_enquadramentodespesa eqd ON eqd.eqdid = pro.eqdid -- SELECT eqddsc,* FROM monitora.pi_enquadramentodespesa
-            LEFT JOIN proposta.propostadetalhe prd ON prd.proid = pro.proid -- SELECT * FROM proposta.propostadetalhe
+            JOIN monitora.pi_enquadramentodespesa eqd ON eqd.eqdid = pro.eqdid
+            LEFT JOIN proposta.propostadetalhe prd ON prd.proid = pro.proid
+            left join public.fonterecurso fr on prd.fonid = fr.fonid
+            left join public.identifuso idu on prd.iduid = idu.iduid
         WHERE
             pro.prsano = '". (int)$filtros->exercicio. "'
             AND prostatus = 'A'

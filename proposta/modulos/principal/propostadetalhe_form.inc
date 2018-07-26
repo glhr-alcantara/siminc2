@@ -20,8 +20,8 @@
     
     <?php
         echo $simec->select('ndpid', 'Natureza Despesa', $mPropostaDetalhe->ndpid, (new Public_Model_NaturezaDespesa())->recuperarSqlCombo(['ndpcod', 'ndpdsc']), ['required']);
-        echo $simec->select('iducod', 'IDUSO', ($mPropostaDetalhe->iducod ? $mPropostaDetalhe->iducod : 0), (new Public_Model_IdentifUso())->recuperarSqlCombo(['iducod', 'idudsc']), ['required']);
-        echo $simec->select('foncod', 'Fonte', ($mPropostaDetalhe->foncod ? $mPropostaDetalhe->foncod : 105), (new Public_Model_FonteRecurso())->recuperarSqlCombo(['foncod', 'fondsc'], ['grfid = 1']), ['required']);
+        echo $simec->select('iduid', 'IDUSO', ($mPropostaDetalhe->iduid ? $mPropostaDetalhe->iduid : 0), (new Public_Model_IdentifUso())->recuperarSqlCombo(['iducod', 'idudsc']), ['required']);
+        echo $simec->select('fonid', 'Fonte', ($mPropostaDetalhe->fonid ? $mPropostaDetalhe->fonid : 105), (new Public_Model_FonteRecurso())->recuperarSqlCombo(['foncod', 'fondsc'], ['grfid = 1']), ['required']);
         echo $simec->select('idoid', 'IDOC', ($mPropostaDetalhe->idoid ? $mPropostaDetalhe->idoid : 1), (new Public_Model_Idoc())->recuperarSqlCombo(['idocod', 'idodsc']), ['required']);
         echo $simec->moedaInteiro('prdvalor', 'Valor', $mPropostaDetalhe->prdvalor, ['required']);
         echo $simec->moedaInteiro('prdvalorexpansao', 'Valor Expansão', $mPropostaDetalhe->prdvalorexpansao);
@@ -101,14 +101,14 @@
             swal({title: "Atenção!",text: "O campo Natureza Despesa está em branco!",type: "warning"},function(){$('#ndpid').focus();});
             return false;
         }
-        var IDUSO = $('#iducod option:selected').text();
+        var IDUSO = $('#iduid option:selected').text();
         if(IDUSO === ""){
-            swal({title: "Atenção!",text: "O campo IDUSO está em branco!",type: "warning"},function(){$('#iducod').focus();});
+            swal({title: "Atenção!",text: "O campo IDUSO está em branco!",type: "warning"},function(){$('#iduid').focus();});
             return false;
         }
-        var foncod = $('#foncod option:selected').text();
+        var foncod = $('#fonid option:selected').text();
         if(foncod === ""){
-            swal({title: "Atenção!",text: "O campo Fonte está em branco!",type: "warning"},function(){$('#foncod').focus();});
+            swal({title: "Atenção!",text: "O campo Fonte está em branco!",type: "warning"},function(){$('#fonid').focus();});
             return false;
         }
         var idoid = $('#idoid option:selected').text();
