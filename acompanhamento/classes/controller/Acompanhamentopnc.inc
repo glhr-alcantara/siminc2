@@ -7,6 +7,14 @@ class Acompanhamento_Controller_Acompanhamentopnc
         try {
             if($dados['idpid']){
                 $acompanhamentoIndicadorPnc = new Acompanhamento_Model_Indicadorpnc($dados['idpid']);
+                
+                # Gravando histórico de alteração do acompanhamento
+                $acompanhamentoHistoricoIdicadorPnc = new Acompanhamento_Model_Historicoindicadorpnc();
+                $acompanhamentoHistoricoIdicadorPnc->idpid = $acompanhamentoIndicadorPnc->idpid;
+                $acompanhamentoHistoricoIdicadorPnc->usucpf = $_SESSION['usucpf'];
+                $acompanhamentoHistoricoIdicadorPnc->hipquantidadeantigo = $acompanhamentoIndicadorPnc->idpquantidade;
+                $acompanhamentoHistoricoIdicadorPnc->hipquantidadenovo = desformata_valor($dados['idpquantidade']);
+                $acompanhamentoHistoricoIdicadorPnc->salvar();
             } else {
                 $acompanhamentoIndicadorPnc = new Acompanhamento_Model_Indicadorpnc();
             }

@@ -10,13 +10,13 @@
     
     switch ($_REQUEST['req']) {
         case 'acompanhamento-indicador-pnc-form':
-            include_once APPRAIZ. 'acompanhamento/modulos/principal/acompanhamento_indicador_pnc_form.inc';
+            include APPRAIZ. 'acompanhamento/modulos/principal/acompanhamento_indicador_pnc_form.inc';
         die;
         case 'acompanhamento-atividade-pnc-form':
-            include_once APPRAIZ. 'acompanhamento/modulos/principal/acompanhamento_atividade_pnc_form.inc';
+            include APPRAIZ. 'acompanhamento/modulos/principal/acompanhamento_atividade_pnc_form.inc';
         die;
         case 'acompanhamento-anexo-pnc-form':
-            include_once APPRAIZ. 'acompanhamento/modulos/principal/acompanhamento_anexo_pnc_form.inc';
+            include APPRAIZ. 'acompanhamento/modulos/principal/acompanhamento_anexo_pnc_form.inc';
         die;
         case 'salvar-acompanhamento-indicador-pnc':
             $resultado = Acompanhamento_Controller_Acompanhamentopnc::salvarIndicadorPnc(simec_utf8_decode_recursive($_REQUEST));
@@ -48,14 +48,14 @@
             include APPRAIZ. 'acompanhamento/modulos/principal/listar-anexos-pnc.inc';
         die;
         case 'detalhe-pi':
-            include_once APPRAIZ . 'acompanhamento/modulos/principal/detalhe-pi.inc';
+            include APPRAIZ . 'acompanhamento/modulos/principal/detalhe-pi.inc';
         die;
         case 'exibir-grafico':
-            include_once APPRAIZ. 'acompanhamento/modulos/principal/modal-grafico-pnc.inc';
+            include APPRAIZ. 'acompanhamento/modulos/principal/modal-grafico-pnc.inc';
         die;
-        case 'ver-historico':
-//            $cAcompanhamentopnc->recuperarHistorico($_REQUEST['acpid']);
-//            die;
+        case 'listar-historico-indicador-pnc':
+            include APPRAIZ. "acompanhamento/modulos/principal/listar-historico-indicador-pnc.inc";
+        die;
         case 'anexar-arquivos-monitoramento-Pnc':
             $acpid = $_REQUEST['acpid'];
             $file = new FilesSimec();
@@ -333,7 +333,7 @@
     );
     
     bootstrapPopup(
-        "Cadastro de acompanhamento do Indicador PNC",
+        "Cadastro de acompanhamento do Indicador PNC ". '<a style="margin-left: 10px;" class="fa fa-history modal-historico-indicador-pnc" title="Histórico de alterações do indicador"></a>',
         'div_modal_acompanhamento_indicador',
         '',
         array('salvar', 'fechar'),
@@ -357,6 +357,14 @@
             'tamanho' => 'xl',
             'acpid' => $acpid
         )
+    );
+    
+    bootstrapPopup(
+        "Histórico de Alterações do Indicador PNC",
+        'div_modal_lista_historico_indicador_pnc',
+        '',
+        array('fechar'),
+        array('tamanho' => 'lg')
     );
 ?>
 
@@ -471,6 +479,15 @@
 
         $('.a_grafico').click(function(){
             exibirGrafico();
+            return false;
+        });
+        
+        $('.modal-historico-indicador-pnc').click(function(){
+            var url = '?modulo=principal/monitorar-pnc&acao=A'+
+                '&req=listar-historico-indicador-pnc'+
+                '&idpid='+ $('input[name=idpid]').val();
+            $('#div_modal_lista_historico_indicador_pnc .modal-body').load(url);
+            $('#div_modal_lista_historico_indicador_pnc').modal();
             return false;
         });
 
