@@ -10,6 +10,11 @@
             $('#historico-pi .modal-body').load(urlPagina+'&req=historico-pi&pliid='+ $('#pliid').val());
             $('#historico-pi').modal();
         });
+        
+        $('#modal-historico-pi-usuario').click(function(){
+            $('#historico-pi-usuario .modal-body').load(urlPagina+'&req=historico-pi-usuario&pliid='+ $('#pliid').val());
+            $('#historico-pi-usuario').modal();
+        });
 
         $('#btnApagar').click(function(){
             window.location.href = urlPagina+ '&confirmar-apagar=1&pliid='+ $('#pliid').val();

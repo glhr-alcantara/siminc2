@@ -41,6 +41,17 @@ switch ($_REQUEST['req']) {
     case 'carregarGraficoCgconCogep':
         carregarGraficoCgconCogep($colors, true);
         die;
+    case 'exportar_xls_unidade':
+        $oPlanoInterno->exportarXlsUnidade();
+        die;                
+    case 'exportar_xls_acao':
+        $oPlanoInterno->exportarXlsAcao();
+        die;         
+    case 'atualizarSIOP':
+        $cImportaDadosSiop = new Planacomorc_Controller_ImportaDadosSiop();
+        $cImportaDadosSiop->AtualizarDados();
+        $cImportaDadosSiop->AtualizarDotacao();
+        die;
 }
 
 $filtros = array(
@@ -83,6 +94,11 @@ include APPRAIZ . "includes/cabecalho.inc";
     </div>
     <div class="col-lg-8">
         <div style="padding-top: 10px;" class="text-right">
+            <?php if((in_array(PFL_ADMINISTRADOR, $perfis)) || (in_array(PFL_SUPERUSUARIO, $perfis))) { ?>
+            <a class="btn btn-success" href="javascript:AtualizarSIOP();">
+                <i class="fa fa-cloud-download"></i> Atualizar SIOP
+            </a>
+            <?php } ?>
             <a class="btn btn-success" href="planacomorc.php?modulo=principal/unidade/painel_fnc&acao=A">
                 <i class="fa fa-area-chart"></i> Painel FNC
             </a>
@@ -345,6 +361,29 @@ bootstrapPopup("Detalhe da Unidade", 'detalhe-grafico', '', array('fechar'), arr
             $('#detalhe-grafico').modal();
         }
     }
-
+    
+    function AtualizarSIOP(){
+        divCarregando();
+        $.post("planacomorc.php?modulo=inicio&acao=C&req=atualizarSIOP",
+            function(data){
+                 divCarregado();
+                 if (data==''){
+                    swal({
+                        title: "",
+                        text: "Dados Atualizados!",
+                        type: "success",
+                        showCancelButton: false,
+                        confirmButtonText: "OK",
+                        closeOnConfirm: true
+                    },
+                    function(){
+                        window.location.href = "planacomorc.php?modulo=inicio&acao=C";
+                    });
+                }else{
+                    swal('Erro!', 'Houve algum erro na importação de dados do SIOP!', 'warning');
+                }
+            }
+        );
+    }
 
 </script>

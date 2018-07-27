@@ -1223,7 +1223,10 @@ DML;
             $stmt = sprintf(
                     $sql, $dados['mdeid'], $dados['eqdid'], $dados['neeid'], $dados['capid'], $dados['sbaid'], str_replace(array("'"), ' ', $dados['plititulo']), $subacao, $plicod, $dados['plilivre'], str_replace(array("'"), ' ', $dados['plidsc']), $_SESSION['usucpf'], $unicod, $dados['ungcod'], $_SESSION['exercicio'], ($criarComoAprovado ? 'A' : 'H'), $cadastroSIAF);
             $pliid = $db->pegaUm($stmt);
-
+            
+            //Grava usuário que salvou por último
+            gravarUsuarioAlteracao($pliid);
+            
             // Grava informações complementares
             salvarPiComplemento($pliid, $dados);
 
@@ -1307,6 +1310,10 @@ DML;
 
         // Grava informações complementares
         $pliid = $dados['pliid'];
+        
+        //Grava usuário que salvou por último
+        gravarUsuarioAlteracao($pliid);
+        
         salvarPiComplemento($pliid, $dados);
 
         if($dados['ptrid']){
@@ -1339,6 +1346,13 @@ DML;
     }
 
     return $pliid;
+}
+
+function gravarUsuarioAlteracao($pliid){
+    $historicoPiUsuario = new Planacomorc_Model_HistoricoPiUsuario();
+    $historicoPiUsuario->pliid = $pliid;
+    $historicoPiUsuario->usucpf = $_SESSION['usucpf'];
+    $historicoPiUsuario->salvar();
 }
 
 function salvarPiComplemento($pliid, $dados)

@@ -47,8 +47,8 @@ class Proposta_Model_PropostaDetalhe extends Modelo
      */
     protected $arChaveEstrangeira = array(
         'idoid' => array('tabela' => 'idoc', 'pk' => 'idoid'),
-        'foncod' => array('tabela' => 'fonterecurso', 'pk' => 'foncod'),
-        'iducod' => array('tabela' => 'identifuso', 'pk' => 'iducod'),
+        'fonid' => array('tabela' => 'fonterecurso', 'pk' => 'fonid'),
+        'iduid' => array('tabela' => 'identifuso', 'pk' => 'iduid'),
         'ndpid' => array('tabela' => 'naturezadespesa', 'pk' => 'ndpid'),
     );
 
@@ -60,8 +60,8 @@ class Proposta_Model_PropostaDetalhe extends Modelo
     protected $arAtributos = array(
         'prdid' => null,
         'ndpid' => null,
-        'iducod' => null,
-        'foncod' => null,
+        'iduid' => null,
+        'fonid' => null,
         'idoid' => null,
         'prdvalor' => null,
         'prdvalorexpansao' => null,
@@ -88,8 +88,8 @@ class Proposta_Model_PropostaDetalhe extends Modelo
                 prd.ndpid,
                 ndp.ndpcod,
                 ndp.gndcod,
-                prd.iducod,
-                prd.foncod,
+                idu.iducod,
+                fr.foncod,
                 ido.idocod,
                 prd.prdvalor,
                 prd.prdvalorexpansao,
@@ -98,6 +98,8 @@ class Proposta_Model_PropostaDetalhe extends Modelo
             FROM proposta.propostadetalhe prd
                 JOIN public.naturezadespesa ndp ON prd.ndpid = ndp.ndpid
                 JOIN public.idoc ido ON prd.idoid = ido.idoid
+                left join public.fonterecurso fr on prd.fonid = fr.fonid
+                left join public.identifuso idu on prd.iduid = idu.iduid
             WHERE
                 prd.prdstatus = 'A'
                 AND prd.proid = ". (int)$filtro->proid. "

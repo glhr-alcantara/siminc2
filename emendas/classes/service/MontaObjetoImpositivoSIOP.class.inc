@@ -329,7 +329,7 @@ class MontaObjetoImpositivoSIOP{
 				    vf.sfucod,
 				    vf.acacod,
 				    vf.loccod,
-				    ed.foncod,
+				    fr.foncod,
 				    a.autcod,
 				    e.emecod,
 				    p.parsigla,
@@ -341,6 +341,7 @@ class MontaObjetoImpositivoSIOP{
 				from
 				    emenda.emenda e
 				    inner join emenda.emendadetalhe ed on ed.emeid = e.emeid
+                                    left join public.fonterecurso fr on ed.fonid = fr.fonid
 				    $joinImp
 				    inner join emenda.autor a on a.autid = e.autid
 				    inner join emenda.partido p on p.parid = a.parid

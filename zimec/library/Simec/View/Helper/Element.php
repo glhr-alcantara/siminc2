@@ -15,7 +15,24 @@ class Simec_View_Helper_Element extends Zend_View_Helper_FormElement
         $date = !empty($config['date']) ? " {$config['date']} " : '';
         $labelSize = !empty($config['label-size']) ? $config['label-size'] : 3;
         $inputSize = !empty($config['input-size']) ? $config['input-size'] : (12 - $labelSize);
-        
+        if ($attribs['type']=='password'){
+            $passtype = '<div title="Clique aqui para visualizar a senha." class="fa link fa-eye eye-slash col-sm-1 col-md-1 col-lg-1" id="eye-slash'.$attribs['id'].'" style="font-size:3em; color: #1c84c6" data-target="#'.$attribs['id'].'"></div>';
+            $passtype .= '<script>';
+            $passtype .= '   $("#eye-slash'.$attribs['id'].'").click(function () {
+                                var id = $(this).data("target");
+                                if($(id).attr("type") == "text"){
+                                    $(id).attr("type", "password");
+                                    $(this).removeClass("fa-eye-slash");
+                                    $(this).addClass("fa-eye");
+                                } else{
+                                    $(id).attr("type", "text");
+                                    $(this).removeClass("fa-eye");
+                                    $(this).addClass("fa-eye-slash");
+                                }
+                              });';
+            $passtype .= '</script>';
+            $inputSize--;
+        }
         $labelErros = (is_array($config['errorValidate']) && count($config['errorValidate'])) ?  '<label id="-error" class="error">' .implode('</label><br /><label id="-error" class="error">', $config['errorValidate']) . '</label>' : '';
         $classErro  = $labelErros ? ' has-error ' : '';
         $classGroup = '';
@@ -44,7 +61,8 @@ class Simec_View_Helper_Element extends Zend_View_Helper_FormElement
         if (isset($config['visible']) && $config['visible'] == false) {
         	$classGroup.= ' hidden ';
        	}
-        
+
+
         if ($label) {
             $required = is_array($attribs) && in_array('required', $attribs) ? '<span class="campo-obrigatorio" title="Campo obrigatório">*</span>' : '';
 
@@ -61,6 +79,7 @@ class Simec_View_Helper_Element extends Zend_View_Helper_FormElement
                         '. $xhtml .'
                         '. $labelErros .'
                     </div>
+                    '.$passtype.'
                     <div style="clear:both"></div>
                 </div>
             ';

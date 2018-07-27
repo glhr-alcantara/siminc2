@@ -39,7 +39,7 @@ class Public_Model_IdentifUso extends Modelo
      * @access protected
      */
     protected $arChavePrimaria = array(
-        'iducod',
+        'iduid',
     );
     /**
      * Chaves estrangeiras.
@@ -54,10 +54,29 @@ class Public_Model_IdentifUso extends Modelo
      * @access protected
      */
     protected $arAtributos = array(
+        'iduid' => null,
         'iducod' => null,
         'idudsc' => null,
         'idustatus' => null,
     );
 
-}//end Class
-?>
+    /**
+     * Consulta se o código inserido existe e retorna a primeira coluna do primeiro registro.
+     *
+     * @return array
+     */
+    public function carregarPorCodigo()
+    {
+        $sql = "SELECT
+                    iducod,
+                    idudsc
+                FROM
+                    public.identifuso
+                WHERE
+                    idustatus = 'A'
+                    AND iducod = '". $this->iducod ."'
+                    AND iduid <> '". (int)$this->iduid ."'";
+                
+        return $this->pegaLinha($sql);
+    }
+}

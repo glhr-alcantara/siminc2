@@ -119,7 +119,7 @@ class ValidacaoPlanoTrabalho {
 					,fup.fupfuncionalprogramatica
 					,vede.gndcod as gnd
 					,vede.mapcod as mod
-					,vede.foncod as fonte
+					,fr.foncod as fonte
 					,pde2.pedvalor as valor
 				FROM
 					emenda.planotrabalho ptr2
@@ -131,6 +131,7 @@ class ValidacaoPlanoTrabalho {
 					emenda.v_funcionalprogramatica fup ON fup.acaid = vede.acaid
 				INNER JOIN
 					emenda.autor aut ON aut.autid = vede.autid
+                                LEFT JOIN public.fonterecurso fr on vede.fonid = fr.fonid
 				WHERE
 					pde2.edeid in (
 						SELECT
