@@ -48,10 +48,10 @@ switch ($_REQUEST['req']) {
         die;
     case 'exportar_xls_unidade':
         $oPlanoInterno->exportarXlsUnidade();
-        die;                
+        die;
     case 'exportar_xls_acao':
         $oPlanoInterno->exportarXlsAcao();
-        die;         
+        die;
 }
 
 $filtros = array(
