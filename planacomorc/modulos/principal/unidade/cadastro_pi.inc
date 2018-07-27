@@ -459,7 +459,7 @@ include APPRAIZ . "includes/cabecalho.inc";
                             </div>
 
                             <div class="col-md-1">
-                                <a style="margin-left: 15px; height:13px; zoom: 200%;" class="fa fa-history" id="modal-historico-pi-usuario" title="Último usuário que salvou"></a>
+                                <a style="margin-left:0.8em; height:0.8em; padding-bottom:1.2em; font-size:3em;" class="fa fa-history" id="modal-historico-pi-usuario" title="Último usuário que salvou"></a>
                                 <?php wf_desenhaBarraNavegacao($dadosPI['docid'], array('pliid' => $dadosPI['pliid'])); ?>
                                 <div id="div_comentario_estado_atual" style="display: none;"><?php echo wf_pegarComentarioEstadoAtual($dadosPI['docid']); ?></div>
                             </div>
