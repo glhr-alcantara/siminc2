@@ -2,8 +2,7 @@
     $acpid = $_REQUEST['acpid'];
     $acompanhamentopnc = new Acompanhamento_Model_Acompanhamentopnc($acpid);
     $listaDeAnexos = $acompanhamentopnc->buscarAnexos();
-    
-    $listaPerfis = pegaPerfilGeral();
+
 ?>
 
 <div class="row">
@@ -34,17 +33,7 @@
                         <?php echo $anexo['arqdescricao']; ?>
                     </td>
                     <td style="text-align: left;">
-                        <?php if(
-                                $acompanhamentopnc->acpenviado != 't'
-                                &&
-                                (
-                                    in_array(PFL_SUPERUSUARIO, $listaPerfis)
-                                    || in_array(PFL_ADMINISTRADOR, $listaPerfis)
-                                    || in_array(PFL_PNC, $listaPerfis)
-                                    || (in_array(PFL_UNIDADE, $listaPerfis) && $ano == $exercicio)
-                                )
-                            ):
-                        ?>
+                        <?php if(Acompanhamento_Controller_Acompanhamentopnc::verificarPermissaoEditar($acpid)): ?>
                             <span style="color: red;">
                                 <span class="glyphicon red glyphicon-trash excluir_anexo link" title="Excluir o arquivo <?php echo $anexo['arqnome']. '.'. $anexo['arqextensao']; ?>" data-acpid="<?php echo $acpid; ?>" data-arqid="<?php echo $anexo['arqid']; ?>" data-descricao="<?php echo $anexo['arqnome']. '.'. $anexo['arqextensao']; ?>" />
                             </span>
@@ -53,17 +42,7 @@
                 </tr>
             <?php endforeach; ?>
         </tbody>
-            <?php if(
-                    $acompanhamentopnc->acpenviado != 't'
-                    &&
-                    (
-                        in_array(PFL_SUPERUSUARIO, $listaPerfis)
-                        || in_array(PFL_ADMINISTRADOR, $listaPerfis)
-                        || in_array(PFL_PNC, $listaPerfis)
-                        || (in_array(PFL_UNIDADE, $listaPerfis) && $ano == $exercicio)
-                    )
-                ):
-            ?>
+            <?php if(Acompanhamento_Controller_Acompanhamentopnc::verificarPermissaoEditar($acpid)): ?>
                 <tfoot>
                     <tr>
                         <td colspan="2"></td>
@@ -80,17 +59,7 @@
             <tr>
                 <td colspan="3">Não existem anexos cadastrados pra essa Meta PNC.</td>
             </tr>
-                <?php if(
-                        $acompanhamentopnc->acpenviado != 't'
-                        &&
-                        (
-                            in_array(PFL_SUPERUSUARIO, $listaPerfis)
-                            || in_array(PFL_ADMINISTRADOR, $listaPerfis)
-                            || in_array(PFL_PNC, $listaPerfis)
-                            || (in_array(PFL_UNIDADE, $listaPerfis) && $ano == $exercicio)
-                        )
-                    ):
-                ?>
+                <?php if(Acompanhamento_Controller_Acompanhamentopnc::verificarPermissaoEditar($acpid)): ?>
                     <tr>
                         <td colspan="2"></td>
                         <td style="text-align: right;">

@@ -120,7 +120,11 @@
     # Verifica se existe pelo menos uma atividade inserida no acompanhamento da Meta PNC
     $atividadePreenchida = $acompanhamentopnc->verificarPreenchimentoAtividade();
 
+    # Verifica se o usuário pode modificar o acompanhamento de acordo com o perfil e estado do acompanhamento
+    $podeEditar = Acompanhamento_Controller_Acompanhamentopnc::verificarPermissaoEditar($acpid);
+    
     include APPRAIZ . "includes/cabecalho.inc";
+
 ?>
 
 <script src="js/principal/acompanhamento.js?v=1"></script>
@@ -141,7 +145,7 @@
 </div>
 
 <?php echo '<input id="acpid" type="hidden" value="'.((int)$acpid). '" />'; ?>
-<?php echo '<input id="acpenviado" type="hidden" value="'.($acompanhamentopnc->acpenviado). '" />'; ?>
+<?php echo '<input id="pode_editar" type="hidden" value="'.((int)$podeEditar). '" />'; ?>
 
 <div class="wrapper wrapper-content animated fadeInRight">
     <div class="row">
@@ -788,7 +792,7 @@
      * @returns {Boolean}
      */
     function exibirBotaoEnviar(){
-        var resultado = $('#acpenviado').val() == 'f'? true: false;
+        var resultado = $('#pode_editar').val() == '1'? true: false;
         return resultado;
     }
 
