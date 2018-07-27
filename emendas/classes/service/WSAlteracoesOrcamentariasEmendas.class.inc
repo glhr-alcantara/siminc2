@@ -274,10 +274,11 @@ class WSAlteracoesOrcamentariasEmendas{
 				    ed.emdid
 				from emenda.emenda e
 					inner join emenda.emendadetalhe ed on ed.emeid = e.emeid
+                                        left join public.fonterecurso fr on ed.fonid = fr.fonid
 				where
 					e.emecod = '{$emecod}'
 					and ed.gndcod = '{$gnd}' 
-					and ed.foncod = '{$fonte}'
+					and fr.foncod = '{$fonte}'
 				    and e.emeano = '".date('Y')."'";
 		echo '<pre>';
 		echo($sql);

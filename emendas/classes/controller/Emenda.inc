@@ -78,8 +78,9 @@ class Emendas_Controller_Emenda
     {
         $perfis = pegaPerfilGeral();
         $podeEditar = !in_array(PFL_SUBUNIDADE, $perfis)? TRUE: FALSE;
-        
-        $aEmendadetalhe = (new Emendas_Model_EmendaDetalhe)->recuperarTodos('*', ['emeid = ' . (int)$emeid]);
+        $mEmendaDetalhe = new Emendas_Model_EmendaDetalhe();
+        $mEmendaDetalhe->emeid = $emeid;
+        $aEmendadetalhe = $mEmendaDetalhe->recuperarTodosPorEmeid();
         include_once APPRAIZ . 'emendas/modulos/principal/emendadetalhe.inc';
     }
 

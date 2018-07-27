@@ -39,7 +39,7 @@ class WSEmpenho {
 						vede.emecod, 
 						vede.gndcod, 
 						vede.mapcod, 
-						vede.foncod, 
+						fr.foncod, 
 						per.pedid, 
 						sum(per.pervalor) as pervalor, 
 						pli.pliid, 
@@ -82,6 +82,7 @@ class WSEmpenho {
 					inner join public.esfera esf on fup.esfcod = esf.esfcod  
 					inner join emenda.entidadebeneficiada ende on vede.entid = ende.enbid
 					inner join territorios.municipio mun on ende.muncod = mun.muncod  
+                                        left join public.fonterecurso fr on vede.fonid = fr.fonid
 					where exf.ptrid = $ptrid 
 					--AND vede.emeano = {$_SESSION['exercicio']}	
 						$where
@@ -92,7 +93,7 @@ class WSEmpenho {
 						vede.emecod, 
 						vede.gndcod,
 						vede.mapcod, 
-						vede.foncod, 
+						fr.foncod, 
 						vede.acaid, 
 						ptr.ptrnumprocessoempenho,
 						per.pedid, 
@@ -115,7 +116,7 @@ class WSEmpenho {
 						vede.emecod, 
 						vede.gndcod, 
 						vede.mapcod, 
-						vede.foncod, 
+						fr.foncod, 
 						fup.fupfuncionalprogramatica, 
 						vede.acaid";
 			

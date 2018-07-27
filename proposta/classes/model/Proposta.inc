@@ -152,7 +152,7 @@ class Proposta_Model_Proposta extends Modelo
 //                ";
 
         $sql = "select  distinct a.identificadorunico identificadorunicoacao, 0 tpdcodigo, a.codigoesfera, aca.unicod, aca.prgcod, a.codigofuncao, a.codigosubfuncao, aca.acaid, aca.acacod, aca.loccod, 
-                        ptr.plocod, ndp.ndpcod, prd.foncod, prd.iducod, idoc.idocod, prdvalor, pro.proquantidade, po.identificadorunico identificadorunicopo,
+                        ptr.plocod, ndp.ndpcod, fr.foncod, idu.iducod, idoc.idocod, prdvalor, pro.proquantidade, po.identificadorunico identificadorunicopo,
                         pro.projustificativa, pro.proquantidadeexpansao, pro.projustificativaexpansao, prd.prdvalorexpansao
                 from proposta.proposta pro
                         inner join proposta.propostadetalhe prd on prd.proid = pro.proid
@@ -162,6 +162,8 @@ class Proposta_Model_Proposta extends Modelo
                         inner join monitora.acao aca on aca.acaid = ptr.acaid
                         inner join wssof.ws_acoesdto a on a.exercicio = pro.prsano::int  and a.codigomomento = $momento and a.codigoorgao = aca.unicod and a.codigoacao = aca.acacod and a.codigoprograma = aca.prgcod
                         left join wssof.ws_planosorcamentariosdto po on po.identificadorunicoacao = a.identificadorunico and po.exercicio = pro.prsano::int and po.planoorcamentario = ptr.plocod
+                        left join public.fonterecurso fr on prd.fonid = fr.fonid
+                        left join public.identifuso idu on prd.iduid = idu.iduid
                 where pro.prsano = '$exercicio'
                 and pro.prostatus = 'A'";
 

@@ -66,12 +66,11 @@ if ($_SESSION ['logincadastro']) {
                             if($_SESSION['logincadastro']):
                                 echo '<input type=hidden name="senhaatual" value="OK">';
                             else:
-                                echo $simec->input('senhaatual', 'Senha atual', $filtropi['senhaatual'], ['type' => 'password', 'size' => 20]);
-                            endif;
-
-                            echo $simec->input('novasenha', 'Nova senha', $filtropi['novasenha'], ['type' => 'password', 'size' => 20]);
-                            echo $simec->input('confsenha', 'Confirma nova senha', $filtropi['confsenha'], ['type' => 'password', 'size' => 20]);
-                        ?>
+                                echo $simec->input('senhaatual', 'Senha atual', $filtropi['senhaatual'], ['type' => 'password'], ['input-size' => 4]);
+                                endif;
+                                echo $simec->input('novasenha', 'Nova senha', $filtropi['novasenha'], ['type' => 'password'], ['input-size' => 4]);
+                                echo $simec->input('confsenha', 'Confirma nova senha', $filtropi['confsenha'], ['type' => 'password'], ['input-size' => 4]);
+                            ?>
                         <div class="form-group">
                             <div class="text-center">
                                 <button class="btn btn-primary" type="submit" onclick="validar_cadastro(); return false;">
@@ -134,9 +133,24 @@ if ($_SESSION ['logincadastro']) {
         }
     }
 
-    $(document).ready(function() {
- 
-	$("#senhaatual").bind({
+    $(document).ready(function () {
+
+        $("#senhaatual").bind({
+            /*copy : function(){
+                alert('Ao recuperar a senha, não copie e cole no navegador.');
+                return false;
+            },*/
+            /*paste: function () {
+                alert('Ao recuperar a senha, não copie e cole no navegador.');
+                return false;
+            },*/
+            cut: function () {
+                alert('Ao recuperar a senha, não copie e cole no navegador.');
+                return false;
+            }
+        });
+
+        $("#novasenha").bind({
             copy : function(){
                 alert('Ao recuperar a senha, não copie e cole no navegador.');
                 return false;
@@ -145,13 +159,13 @@ if ($_SESSION ['logincadastro']) {
                 alert('Ao recuperar a senha, não copie e cole no navegador.');
                 return false;
             },
-            cut : function(){
+            cut: function () {
                 alert('Ao recuperar a senha, não copie e cole no navegador.');
                 return false;
             }
-	});
-	
-	$("#novasenha").bind({
+        });
+
+        $("#confsenha").bind({
             copy : function(){
                 alert('Ao recuperar a senha, não copie e cole no navegador.');
                 return false;
@@ -160,27 +174,14 @@ if ($_SESSION ['logincadastro']) {
                 alert('Ao recuperar a senha, não copie e cole no navegador.');
                 return false;
             },
-            cut : function(){
+            cut: function () {
                 alert('Ao recuperar a senha, não copie e cole no navegador.');
                 return false;
             }
-	});
-	
-	$("#confsenha").bind({
-            copy : function(){
-                alert('Ao recuperar a senha, não copie e cole no navegador.');
-                return false;
-            },
-            paste : function(){
-                alert('Ao recuperar a senha, não copie e cole no navegador.');
-                return false;
-            },
-            cut : function(){
-                alert('Ao recuperar a senha, não copie e cole no navegador.');
-                return false;
-            }
-	});
- 
-    });
+        });
+
+
+
+     });
 </script>
 

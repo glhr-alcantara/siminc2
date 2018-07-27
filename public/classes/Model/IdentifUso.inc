@@ -39,7 +39,7 @@ class Public_Model_IdentifUso extends Modelo
      * @access protected
      */
     protected $arChavePrimaria = array(
-        'iducod',
+        'iduid',
     );
     /**
      * Chaves estrangeiras.
@@ -54,6 +54,7 @@ class Public_Model_IdentifUso extends Modelo
      * @access protected
      */
     protected $arAtributos = array(
+        'iduid' => null,
         'iducod' => null,
         'idudsc' => null,
         'idustatus' => null,

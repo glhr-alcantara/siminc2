@@ -54,7 +54,7 @@ class Emendas_Model_EmendaDetalhe extends Modelo
      * @var array
      */
     protected $arChaveEstrangeira = array(
-        'foncod' => array('tabela' => 'public.fonterecurso', 'pk' => 'foncod'),
+        'fonid' => array('tabela' => 'public.fonterecurso', 'pk' => 'fonid'),
         'mapcod' => array('tabela' => 'modalidadeaplicacao', 'pk' => 'mapcod'),
         'gndcod' => array('tabela' => 'gnd', 'pk' => 'gndcod'),
     );
@@ -69,7 +69,7 @@ class Emendas_Model_EmendaDetalhe extends Modelo
         'emeid' => null,
         'gndcod' => null,
         'mapcod' => null,
-        'foncod' => null,
+        'fonid' => null,
         'emdvalor' => null,
     );
 
@@ -144,6 +144,17 @@ class Emendas_Model_EmendaDetalhe extends Modelo
         $dados = $this->carregar($sql);
 
         return $dados ? $dados : [];
+    }
+    
+    public function recuperarTodosPorEmeid(){
+        $sql = "
+            SELECT
+                *
+            FROM ".$this->stNomeTabela." ed
+            LEFT JOIN public.fonterecurso fon ON ed.fonid = fon.fonid
+            WHERE
+                ed.emeid = ". (int)$this->emeid;
+        return $this->carregar($sql);
     }
 
 }//end Class

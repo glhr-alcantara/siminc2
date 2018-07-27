@@ -33,8 +33,7 @@ class Simec_View_Helper_Input extends Simec_View_Helper_Element
         if ($help) {
         	$help = "<span class='help-block m-b-none'><i class='fa fa-question-circle' style='color: #1c84c6;'></i> {$attribs['help']}</span>";
         }
-        
-        unset($attribs['id'], $attribs['type'], $attribs['class'], $attribs['help'], $attribs['']);
+//        unset($attribs['id'], $attribs['class'], $attribs['help'], $attribs['']);
 
         $podeEditar = isset($config['pode-editar']) ? $config['pode-editar'] : true;
         if(!$podeEditar || $podeEditar==='N'){
@@ -49,10 +48,9 @@ class Simec_View_Helper_Input extends Simec_View_Helper_Element
                     . ' class="' . $class . '"'
                     . $this->_htmlAttribs($attribs)
                     . ' />';
-
             $xhtml.= $help;
         }
-
+        $attribs['id']=$id;
         return $this->buildField($xhtml, $label, $attribs, $config);
     }
 }
