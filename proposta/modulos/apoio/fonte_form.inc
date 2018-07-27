@@ -42,6 +42,7 @@ include APPRAIZ . "includes/cabecalho.inc";
                         </div>
                         <?php
                             echo $simec->input('fondsc', 'Descrição', $mFonte->fondsc, ['required' ,'maxlength' => 150]);
+                            echo $simec->select('grfid', 'Grupo Fonte', $mFonte->grfid, (new Public_Model_GrupoFonte())->recuperarlistaGrupoFonte(), ['required']);
                         ?>
 
                         <div class="form-group">
