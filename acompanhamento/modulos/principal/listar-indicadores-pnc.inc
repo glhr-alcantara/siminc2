@@ -8,8 +8,6 @@
     $unidadeOrcamentaria = new Public_Model_UnidadeOrcamentaria($subunidade->unoid);
     $exercicio = (int)$unidadeOrcamentaria->prsano;
     
-    $listaPerfis = pegaPerfilGeral();
-    
     # Verificando se os indicadores do ano atual foi preenchido.
     $indicadoresPreenchidos = $acompanhamentopnc->verificarPreenchimentoIndicadoresAnoAtual();
 ?>
@@ -39,17 +37,7 @@
                         $acompanhamentoIndicadorPnc->buscarPorAcompanhamentoPncUnidadeIndicadorAno();
                 ?>
                     <td>
-                        <?php if(
-                                $acompanhamentopnc->acpenviado != 't'
-                                &&
-                                (
-                                    in_array(PFL_SUPERUSUARIO, $listaPerfis)
-                                    || in_array(PFL_ADMINISTRADOR, $listaPerfis)
-                                    || in_array(PFL_PNC, $listaPerfis)
-                                    || (in_array(PFL_UNIDADE, $listaPerfis) && $ano == $exercicio)
-                                )
-                            ):
-                        ?>
+                        <?php if(Acompanhamento_Controller_Acompanhamentopnc::verificarPermissaoEditar($acpid, $ano, $exercicio)): ?>
                             <?php if($acompanhamentoIndicadorPnc->idpid): ?>
                                 <a href="#" class="editar_indicador link" data-idpid="<?php echo $acompanhamentoIndicadorPnc->idpid; ?>" title="Editar Indicador PNC">
                                     <?= !$acompanhamentoIndicadorPnc->idpquantidade? 0: $acompanhamentoIndicadorPnc->idpquantidade ?>

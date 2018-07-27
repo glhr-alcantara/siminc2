@@ -3,15 +3,9 @@
     $acompanhamentopnc = new Acompanhamento_Model_Acompanhamentopnc($acpid);
     $listaAtividades = $acompanhamentopnc->buscarAtividades();
     
-    # Busca informações da Unidade e Subunidade pra exibir informações extras pra o usuário
-    $subunidade = new Public_Model_SubUnidadeOrcamentaria($acompanhamentopnc->suoid);
-    $unidadeOrcamentaria = new Public_Model_UnidadeOrcamentaria($subunidade->unoid);
-    $exercicio = (int)$unidadeOrcamentaria->prsano;
-    
-    $listaPerfis = pegaPerfilGeral();
-    
     # Verifica se existe pelo menos uma atividade inserida no acompanhamento da Meta PNC
     $atividadePreenchida = $acompanhamentopnc->verificarPreenchimentoAtividade();
+
 ?>
 <table class="table table-bordered">
     <thead>
@@ -32,17 +26,7 @@
                 <td><?= number_format($atividade['atvprodutoqtd'], 2, ',', '.'); ?></td>
                 <td><?php echo $atividade['mundescricao']. '-'. $atividade['estuf']; ?></td>
                 <td>
-                    <?php if(
-                            $acompanhamentopnc->acpenviado != 't'
-                            &&
-                            (
-                                in_array(PFL_SUPERUSUARIO, $listaPerfis)
-                                || in_array(PFL_ADMINISTRADOR, $listaPerfis)
-                                || in_array(PFL_PNC, $listaPerfis)
-                                || (in_array(PFL_UNIDADE, $listaPerfis) && $ano == $exercicio)
-                            )
-                        ):
-                    ?>
+                    <?php if(Acompanhamento_Controller_Acompanhamentopnc::verificarPermissaoEditar($acpid)): ?>
                         <?= $atividade['atvfonteinformacao']; ?>
                         &nbsp;
                         <span class="editar_atividade fa fa-pencil link" data-atvid="<?php echo $atividade['atvid']; ?>" data-acpid="<?php echo $acpid; ?>" title="Editar Atividade"></span>
@@ -57,17 +41,7 @@
         <?php endforeach; ?>
     </tbody>
     <tfoot>
-        <?php if(
-                $acompanhamentopnc->acpenviado != 't'
-                &&
-                (
-                    in_array(PFL_SUPERUSUARIO, $listaPerfis)
-                    || in_array(PFL_ADMINISTRADOR, $listaPerfis)
-                    || in_array(PFL_PNC, $listaPerfis)
-                    || (in_array(PFL_UNIDADE, $listaPerfis) && $ano == $exercicio)
-                )
-              ):
-        ?>
+        <?php if(Acompanhamento_Controller_Acompanhamentopnc::verificarPermissaoEditar($acpid)): ?>
             <tr>
                 <td colspan="4"></td>
                 <td style="text-align: right;">
@@ -83,17 +57,7 @@
             <tr>
                 <td colspan="5">Não existem atividades cadastradas pra essa Meta PNC.</td>
             </tr>
-            <?php if(
-                    $acompanhamentopnc->acpenviado != 't'
-                    &&
-                    (
-                        in_array(PFL_SUPERUSUARIO, $listaPerfis)
-                        || in_array(PFL_ADMINISTRADOR, $listaPerfis)
-                        || in_array(PFL_PNC, $listaPerfis)
-                        || (in_array(PFL_UNIDADE, $listaPerfis) && $ano == $exercicio)
-                    )
-                  ):
-            ?>
+            <?php if(Acompanhamento_Controller_Acompanhamentopnc::verificarPermissaoEditar($acpid)): ?>
                 <tr>
                     <td colspan="4"></td>
                     <td style="text-align: right;">

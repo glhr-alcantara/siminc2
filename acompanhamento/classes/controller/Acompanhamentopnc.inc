@@ -135,6 +135,14 @@ class Acompanhamento_Controller_Acompanhamentopnc
         }
     }
     
+    /**
+     * Busca o acompanhamento de acordo com a Janela, Subunidade e Meta PNC
+     * 
+     * @param integer $suoid
+     * @param integer $janid
+     * @param integer $mpnid
+     * @return object
+     */
     public static function buscarAcompanhamentoJanelaSubunidadeMeta($suoid = NULL, $janid = NULL, $mpnid = NULL){
         $modelAcompanhamento = new Acompanhamento_Model_Acompanhamentopnc();
         $modelAcompanhamento->suoid = $suoid;
@@ -142,5 +150,41 @@ class Acompanhamento_Controller_Acompanhamentopnc
         $modelAcompanhamento->mpnid = $mpnid;
         $acompanhamento = $modelAcompanhamento->buscarPorJanelaSubunidadeMeta();
         return $acompanhamento;
+    }
+
+    /**
+     * Verifica se o usuário logado tem permissão pra alterar os dados do acompanhamento da Meta PNC
+     * 
+     * @param integer $acpid
+     * @param integer $ano Opcional
+     * @param integer $exercicio Opcional
+     * @return boolean
+     */
+    public static function verificarPermissaoEditar($acpid, $ano = NULL, $exercicio = NULL) {
+        $resultado = FALSE;
+        $acompanhamentopnc = new Acompanhamento_Model_Acompanhamentopnc($acpid);
+        $listaPerfis = pegaPerfilGeral();
+
+        if(
+            # Verifica se o acompanhamento não está enviado/concluído
+            $acompanhamentopnc->acpenviado != 't'
+            &&
+            (
+                # Verifica se o perfil do usuário é Super Usuário, Administrador, PNC ou Unidade
+                in_array(PFL_SUPERUSUARIO, $listaPerfis)
+                || in_array(PFL_ADMINISTRADOR, $listaPerfis)
+                || in_array(PFL_PNC, $listaPerfis)
+            )
+        ){
+            $resultado = TRUE;
+        /*
+         * Caso o perfil seja Unidade e o Ano não esteja preenchido o sistema libera edição.
+         * Caso o perfil seja Unidade e o ano está preenchido o sistema só libera edição caso o ano seja igual ao ano do exercicio selecionado no módulo
+         */
+        } else if(in_array(PFL_UNIDADE, $listaPerfis) && (!$ano || ($ano == $exercicio))){
+            $resultado = TRUE;
+        }
+        
+        return $resultado;
     }
 }
