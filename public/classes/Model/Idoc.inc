@@ -60,5 +60,22 @@ class Public_Model_Idoc extends Modelo
         'idostatus' => null,
     );
 
-}//end Class
-?>
+    /**
+     * Consulta se o código inserido existe e retorna a primeira coluna do primeiro registro.
+     *
+     * @return array
+     */
+    public function carregarPorCodigo()
+    {
+        $sql = "SELECT
+                    idocod,
+                    idodsc
+                FROM public.idoc
+                WHERE
+                    idostatus = 'A'
+                    AND idocod = '" . $this->idocod . "'
+                    AND idoid <> '" . (int)$this->idoid . "'";
+
+        return $this->pegaLinha($sql);
+    }
+}
