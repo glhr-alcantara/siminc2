@@ -34,5 +34,11 @@
                 ));
             }
         die;
+        case 'historico-pi':
+            include_once APPRAIZ. "planacomorc/modulos/principal/unidade/historico_pi_modal.inc";
+        die;
+        case 'historico-pi-usuario':
+            include_once APPRAIZ. "planacomorc/modulos/principal/unidade/historico_pi_usuario_modal.inc";
+        die;
     }
 

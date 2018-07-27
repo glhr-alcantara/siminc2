@@ -39,7 +39,7 @@ class Public_Model_FonteRecurso extends Modelo
      * @access protected
      */
     protected $arChavePrimaria = array(
-        'foncod',
+        'fonid',
     );
     /**
      * Chaves estrangeiras.
@@ -54,6 +54,7 @@ class Public_Model_FonteRecurso extends Modelo
      * @access protected
      */
     protected $arAtributos = array(
+        'fonid' => null,
         'foncod' => null,
         'fondsc' => null,
         'fonstatus' => null,

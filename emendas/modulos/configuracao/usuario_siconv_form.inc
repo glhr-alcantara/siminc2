@@ -32,8 +32,8 @@ include APPRAIZ . "includes/cabecalho.inc";
                         <input name="ussid" id="ussid" type="hidden" value="<?php echo $aUsuarioSiconv['ussid']; ?>">
                         
                         <?php                         
-                            echo $simec->input('usucpf', 'CPF', $aUsuarioSiconv['usucpf'], ['maxlength' => 11, 'class'=>'inteiro']);                        
-                            echo $simec->input('ususenhasiconv', 'Senha SICONV', base64_decode($aUsuarioSiconv['ususenhasiconv']), ['type'=>'password']);
+                            echo $simec->input('usucpf', 'CPF', $aUsuarioSiconv['usucpf'], ['maxlength' => 11, 'class'=>'inteiro'], ['input-size' => 3]);
+                            echo $simec->input('ususenhasiconv', 'Senha SICONV', base64_decode($aUsuarioSiconv['ususenhasiconv']), ['type'=>'password'],['input-size' => 4]);
                         ?>
                         
                         <div class="form-group">
