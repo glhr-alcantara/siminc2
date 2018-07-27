@@ -69,7 +69,7 @@ include APPRAIZ . "includes/cabecalho.inc";
 
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5>Acompanhamento Geral FNC - Por Unidade</h5>
+                    <h5 class="col-lg-3">Acompanhamento Geral FNC - Por Unidade</h5> <a class="btn btn-success" href="planacomorc.php?modulo=inicio&acao=C&req=exportar_xls_unidade"><i class="fa fa-area-chart"></i> Exportar XLS</a>
                 </div>
                 <div class="ibox-content">
                     <div class="table-responsive">
@@ -184,7 +184,7 @@ include APPRAIZ . "includes/cabecalho.inc";
 
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5>Acompanhamento Geral FNC - Por Ação</h5>
+                    <h5 class="col-lg-3">Acompanhamento Geral FNC - Por Ação</h5> <a class="btn btn-success" href="planacomorc.php?modulo=inicio&acao=C&req=exportar_xls_acao"><i class="fa fa-area-chart"></i> Exportar XLS</a>
                 </div>
                 <div class="ibox-content">
                     <div class="table-responsive">
@@ -247,7 +247,7 @@ include APPRAIZ . "includes/cabecalho.inc";
                                         <?php echo $valor ? number_format($valor, 2, ',', '.') : '-'; ?>
                                     </td>
                                     <?php
-                                    // VALOR APRESENTADO
+                                    // VALOR APROVADO
                                     $valor = !empty($aValoresEstado[$dados['ptrid']][ESD_FNC_PI_APROVADO][$dados['tipo']]) ? $aValoresEstado[$dados['ptrid']][ESD_FNC_PI_APROVADO][$dados['tipo']] : '0';
                                     $total[ESD_FNC_PI_APROVADO][$dados['tipo']] += $valor;
                                     $disponivel = $dados['dotacao'] - $valor;
