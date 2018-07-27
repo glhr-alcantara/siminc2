@@ -51,6 +51,7 @@ switch ( $_SESSION['sisdiretorio'] ){
         include_once APPRAIZ. 'emendas/classes/model/Siconv.inc';
         include_once APPRAIZ. 'emendas/classes/model/EmendaDetalhe.inc';
         include_once APPRAIZ. 'monitora/classes/Pi_PlanoInterno.class.inc';
+        include_once APPRAIZ. 'planacomorc/classes/model/HistoricoPiUsuario.inc';
     break;
     case 'proporc':
         require_once APPRAIZ. 'includes/funcoesspo.php';

@@ -18,19 +18,24 @@ function populate(&$table , $dataForm)
 if($_POST['action'] == 'save'){
 
 	// Definindo os campos da tabela e populando os valores.
-	$table = array ('acaid' => ''
-	, 'acadsc' => ''
-	, 'acadetalhe' => ''
-	, 'tipid' => '4'
-	, 'temid' => ''
-	, 'mapid' => ''
-	, 'dirid' => ''
-	, 'acaorcamento' => ''
-	, 'acastatus' => "'A'"
-	, 'acaorcamentoatual' => ''
-	, 'acadescontigenciamento' => ''
-	, 'acarecomposicao' => ''
-	, 'acacredito' => '');
+	$table = array(
+            'acaid' => ''
+            , 'acadsc' => ''
+            , 'acadetalhe' => ''
+            , 'tipid' => '4'
+            , 'temid' => ''
+            , 'mapid' => ''
+            , 'dirid' => ''
+            , 'acaorcamento' => ''
+            , 'acastatus' => "'A'"
+            , 'acaorcamentoatual' => ''
+            , 'acadescontigenciamento' => ''
+            , 'acarecomposicao' => ''
+            , 'acacredito' => ''
+            , 'acames' => ''
+            , 'acaprodutonome' => ''
+        );
+
 	populate($table , $_POST , 'acaid');
 
 	if($_POST['acaid']){
@@ -112,21 +117,26 @@ if ($acaid) {
 								WHERE sec.secid = ac.secid AND ac.acaid=$acaid";
 	$desafiosAcao = $db->carregar($sql);
 
-	$sqlUpdate = "	SELECT
-                                                acadsc,
-                                                tipid,
-                                                temid,
-                                                acadetalhe,
-                                                indidprincipal,
-                                                cocid,
-                                                mapid,
-                                                dirid,
-                                                acaorcamento,
-                                                acaorcamentoatual,
-                                                acadescontigenciamento,
-                                                acarecomposicao,
-                                                acacredito
-                                        FROM painel.acao where acaid = $acaid ";
+	$sqlUpdate = "
+            SELECT
+                acadsc,
+                tipid,
+                temid,
+                acadetalhe,
+                indidprincipal,
+                cocid,
+                mapid,
+                dirid,
+                acaorcamento,
+                acaorcamentoatual,
+                acadescontigenciamento,
+                acarecomposicao,
+                acacredito,
+                acames,
+                acaprodutonome
+            FROM painel.acao
+            WHERE
+                acaid = $acaid ";
 	$arrDados = $db->pegaLinha($sqlUpdate);
 	$_SESSION['temid'] = $arrDados[temid];
 	$sbatitulo = $valor;
@@ -148,7 +158,7 @@ monta_titulo( $titulo_modulo , '<img src="../imagens/obrig.gif" border="0"> Indi
         <tr>
             <td align='right' class="SubTituloDireita">Nome:</td>
             <td>
-				<?php echo campo_texto('acadsc' , 'S' , 'S' , '' , 100 , 255 , '' , '' , '' , '' , '' , '' , '' , ($arrDados[acadsc]) ? ($arrDados[acadsc]) : ''); ?>
+                <?php echo campo_texto('acadsc' , 'S' , 'S' , '' , 100 , 255 , '' , '' , '' , '' , '' , '' , '' , ($arrDados[acadsc]) ? ($arrDados[acadsc]) : ''); ?>
             </td>
         </tr>
         <tr>
@@ -204,6 +214,24 @@ monta_titulo( $titulo_modulo , '<img src="../imagens/obrig.gif" border="0"> Indi
 			?>
             <td align='right' class="SubTituloDireita">Fonte do Recurso:</td>
             <td><?= $db->monta_combo('mapid' , $sql , 'S' , 'Selecione...' , '' , '' , '' , '' , 'S' , '' , '' , ($arrDados[mapid]) ? ($arrDados[mapid]) : ''); ?></td>
+        </tr>
+        <tr>
+            <td align='right' class="SubTituloDireita">Produto:</td>
+            <td>
+                <?php echo campo_texto('acaprodutonome' , 'S' , 'S' , '' , 50 , 255 , '' , '' , '' , '' , '' , '' , '' , ($arrDados[acaprodutonome]) ? ($arrDados[acaprodutonome]) : ''); ?>
+            </td>
+        </tr>
+        <tr>
+            <?php
+                $sql = "
+                    SELECT
+                        mescod AS codigo,
+                        mesdsc AS descricao
+                    FROM public.meses
+                ";
+            ?>
+            <td align='right' class="SubTituloDireita">Data de entrega da ação:</td>
+            <td><?= $db->monta_combo('acames' , $sql , 'S' , 'Selecione...' , '' , '' , '' , '' , 'S' , '' , '' , ($arrDados[acames]) ? ($arrDados[acames]) : ''); ?></td>
         </tr>
         <tr>
             <td align='right' class="SubTituloDireita">Orçamento da ação:</td>

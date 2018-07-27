@@ -41,7 +41,8 @@ if ( ($_REQUEST['action'] == 'delete') && !empty($_REQUEST['id'])){
 }
 
 include  APPRAIZ."includes/cabecalho.inc";
-
+include_once APPRAIZ. "includes/combo_popup_class.php";
+include_once APPRAIZ. "includes/campo_texto_class.php";
 echo "<br>";
 
 if(isset($_SESSION['acaid'])){
@@ -60,29 +61,104 @@ monta_titulo( $titulo_modulo , '');
 <table  class="tabela" bgcolor="#f5f5f5" cellSpacing="1" cellPadding="3" align="center">
 <tr>
 	<td align='right' class="SubTituloDireita">Ação estratégica:</td>
-    <td><? 
-    	echo campo_texto('sbacao','N','S','',100,255,'',''); 
+    <td><?php
+        $campo_texto = new campo_texto();
+        $campo_texto->var = 'sbacao';
+        $campo_texto->obrig='N';
+        $campo_texto->habil='S';
+        $campo_texto->size=100;
+        $campo_texto->max=255;
+        $campo_texto->value = $_REQUEST['sbacao']?$_REQUEST['sbacao']:'';
+//    	echo campo_texto('sbacao','N','S','',100,255,'',''); 
+    	echo $campo_texto->gerarComponente();
 //    	echo "<input type='text' name='sbatitulo'>";
     	?>
     </td>
 </tr>
-<tr bgcolor="#cccccc">
+<tr>
+    <td align='right' class="SubTituloDireita">Unidade:</td>
+    <td>
+        <?php
+            $sql = "select secid as codigo, secdsc as descricao from painel.secretaria where secstatus = 'A' ORDER BY 2";
+            $combo_popup = new combo_popup();
+            $combo_popup->nome = 'secid';
+            $combo_popup->sql = $sql;
+            $combo_popup->titulo = 'Selecione a(s) Unidade(s)';
+            $combo_popup->tamanho_janela = '360x460';
+            $combo_popup->size = 3;
+            if (!empty($_REQUEST['secid'][0])){
+                $sql_preenchidos = "select secid as codigo, secdsc as descricao from painel.secretaria where secstatus = 'A' and secid in (".implode(', ', $_REQUEST['secid']).") ORDER BY 2";
+                $aPreenchidos = $db->carregar($sql_preenchidos);
+                $combo_popup->value = $aPreenchidos;
+            }
+            $combo_popup->gerarComponente();
+        ?>
+    </td>
+</tr>
+<tr>
+    <td align='right' class="SubTituloDireita">Eixo:</td>
+    <td>
+        <?php
+            $sql = "select exoid as codigo, exodsc as descricao from painel.eixo ORDER BY 2";
+            $combo_popup = new combo_popup();
+            $combo_popup->nome = 'exoid';
+            $combo_popup->sql = $sql;
+            $combo_popup->titulo = 'Selecione o(s) Eixo(s)';
+            $combo_popup->tamanho_janela = '360x460';
+            $combo_popup->size = 3;
+            if (!empty($_REQUEST['exoid'][0])){
+                $sql_preenchidos = "select exoid as codigo, exodsc as descricao from painel.eixo where exoid in (".implode(', ', $_REQUEST['exoid']).") ORDER BY 2";
+                $aPreenchidos = $db->carregar($sql_preenchidos);
+                $combo_popup->value = $aPreenchidos;
+            }
+            $combo_popup->gerarComponente();
+        ?>
+    </td>
+</tr>
+<tr>
+    <td align='right' class="SubTituloDireita">Diretriz:</td>
+    <td>
+        <?php
+            $sql = "select dirid as codigo, dirdsc as descricao from painel.diretriz where dirstatus = 'A' ORDER BY 2";
+            $combo_popup = new combo_popup();
+            $combo_popup->nome = 'dirid';
+            $combo_popup->sql = $sql;
+            $combo_popup->titulo = 'Selecione o(s) Eixo(s)';
+            $combo_popup->tamanho_janela = '360x460';
+            $combo_popup->size = 3;
+            if (!empty($_REQUEST['dirid'][0])){
+                $sql_preenchidos = "select dirid as codigo, dirdsc as descricao from painel.diretriz where dirstatus = 'A' and dirid in (".implode(', ', $_REQUEST['dirid']).") ORDER BY 2";
+                $aPreenchidos = $db->carregar($sql_preenchidos);
+                $combo_popup->value = $aPreenchidos;
+            }
+            $combo_popup->gerarComponente();
+        ?>
+    </td>
+</tr>
+<tr bgcolor="#cccccc" class="notprint">
     <td></td>
         <td>
-            <input type="button" class="botao" name="bta" value="Pesquisar" onclick="submeter();">
+            <input type="button" class="botao" name="bta" value="Pesquisar" onclick="javascript:submeter();">
         </td>
     </tr>
 </table>
 </form>
-<?
-//if($_POST){ 
- if(!empty($_REQUEST['sbacao'])){
-	$where = " WHERE ac.acastatus = 'A' and upper(ac.acadsc) like upper('%$_REQUEST[sbacao]%') ";
- }	
- else {
-	$where = "where ac.acastatus = 'A'";
- }
-	$sql = "SELECT '<center>
+<?php
+//ver($_REQUEST,d);
+$where = " WHERE ac.acastatus = 'A'";
+if(!empty($_REQUEST['sbacao'])){
+    $where .=" and upper(ac.acadsc) like upper('%".$_REQUEST['sbacao']."%') ";
+}
+if (!empty($_REQUEST['secid'][0])){
+    $whereSec =" and asec.acaid in (select acaid from painel.acaosecretaria where secid in (".implode(', ', $_REQUEST['secid']).")) "; 
+}
+if (!empty($_REQUEST['exoid'][0])){
+    $where .=" and ind.exoid in (".implode(', ', $_REQUEST['exoid']).")";
+}
+if (!empty($_REQUEST['dirid'][0])){
+    $where .=" and ac.dirid in (".implode(', ', $_REQUEST['dirid']).")";
+}
+	$sql = "SELECT '<center class=\"notprint\">
 						<a style=\"cursor:pointer;\" onclick=\"alteraracao(\''||ac.acaid||'\');\">
 							<img src=\"/imagens/alterar.gif \" border=0 title=\"Alterar\">
 						</a>
@@ -90,19 +166,30 @@ monta_titulo( $titulo_modulo , '');
 							<img src=\"/imagens/excluir.gif \" border=0 title=\"Excluir\">
 						</a>
 					</center>' as acao, 
-				ac.acadsc
+				ac.acadsc,
+                                array_to_string(array_agg(s.secdsc), ' / ')
 				FROM painel.acao ac 
+                                left join painel.acaosecretaria asec
+                                  on ac.acaid = asec.acaid
+                                left join painel.secretaria s
+                                  on asec.secid = s.secid
+                                left join painel.indicador ind
+                                  on ac.acaid = ind.acaid
 				$where
+                                $whereSec
+                                group by ac.acaid, ac.acadsc
 				ORDER BY ac.acadsc
 				";
  
-	$cabecalho = array("","Título");
-	$db->monta_lista($sql,$cabecalho,100,5,'N','95%',$par2);
+	$cabecalho = array("","Título", "Gestores");
+//                         $sql,$cabecalho="",$perpage,$pages,$soma,$alinha,$valormonetario="S",$nomeformulario="",$celWidth=""
+	$db->monta_lista($sql,$cabecalho,100,5,'N','','S','',array('5%','55%','60%'),$par2);
 //}
 ?>
 <script type="text/javascript">
     function submeter(){
-            document.formulario.submit();	
+        prepara_formulario();
+        document.formulario.submit();	
     }
 
     function removeracao(acaid){
