@@ -89,6 +89,20 @@ class Modelo extends cls_banco {
     }
 
     /**
+     * Verifica se o registro existe na base de dados.
+     * 
+     * @param string $id
+     * @return boolean
+     */
+    public function verificarRegistroBd($id) {
+        $id = trim(str_replace("'", "", (string) $id));
+        $sql = " SELECT {$this->arChavePrimaria[0]} FROM $this->stNomeTabela WHERE {$this->arChavePrimaria[0]} = '$id'; ";
+
+        $idBase = $this->pegaUm($sql);
+        return $idBase? TRUE: FALSE;
+    }
+    
+    /**
      * Função salvar
      * Método usado para inserção ou alteração de um registro do banco
      * @return int|bool - Retorna um inteiro correspondente ao resultado ou false se hover erro
@@ -133,7 +147,7 @@ class Modelo extends cls_banco {
      * Função _inserir
      * Método usado para inserção de um registro do banco
      * @return int|bool - Retorna um inteiro correspondente ao resultado ou false se hover erro
-     * @access private
+     * @access public
      * @author Orion Teles de Mesquita
      * @since 12/02/2009
      */
