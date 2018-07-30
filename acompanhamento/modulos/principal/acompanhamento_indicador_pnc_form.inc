@@ -48,14 +48,17 @@
             $acompanhamentoIndicadorPnc->idpid && !$acompanhamentoIndicadorPnc->idpquantidade? 0: $acompanhamentoIndicadorPnc->idpquantidade,
             ['required']
         );
-        echo $simec->data('idpdata', 'Data', $acompanhamentoIndicadorPnc->idpdata, ['required']);
+        if($acompanhamentoIndicadorPnc->prsano != $_SESSION['exercicio']){
+            echo $simec->data('idpdata', 'Data', $acompanhamentoIndicadorPnc->idpdata);
+        } else {
+            echo $simec->data('idpdata', 'Data', $acompanhamentoIndicadorPnc->idpdata, ['required']);
+        }
         # Caso o exercicio seja diferente(Na prática anterior ao ano do exercicio selecionado) o sistema exibe o campo de justificativa
         if($acompanhamentoIndicadorPnc->prsano != $_SESSION['exercicio']){
             echo $simec->textarea(
                 'idpjustificativa',
                 'Justificativa',
-                $acompanhamentoIndicadorPnc->idpjustificativa,
-                ['required']
+                $acompanhamentoIndicadorPnc->idpjustificativa
             );
         }
 

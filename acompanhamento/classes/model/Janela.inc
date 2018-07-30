@@ -83,10 +83,13 @@ class Acompanhamento_Model_Janela extends Modelo
 
     public function isAtual()
     {
-        $sql = "select  to_char(now(), 'YYYYMMDD') between to_char(janinicio, 'YYYYMMDD') and coalesce(to_char(janfim, 'YYYYMMDD'), '2018-12-31') atual
-                from acompanhamento.janela 
-                where janela.janstatus = 'A'
-                and janid = " . (int) $this->janid;
+        $sql = "
+            SELECT
+                to_char(now(), 'YYYYMMDD') BETWEEN to_char(janinicio, 'YYYYMMDD') AND coalesce(to_char(janfim, 'YYYYMMDD'), '". (int)date('Y'). "-12-31') atual
+            FROM acompanhamento.janela
+            WHERE
+                janela.janstatus = 'A'
+                AND janid = ". (int)$this->janid;
 
         return $this->pegaUm($sql);
     }
