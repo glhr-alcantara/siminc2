@@ -11,8 +11,8 @@
     <thead>
         <tr>
             <th>Atividade realizadas em <?php echo (int)$_SESSION['exercicio']; ?></th>
-            <th>Produto ou serviço resultante</th>
             <th>Quantidade</th>
+            <th>Produto ou serviço resultante</th>
             <th>Localização que a atividade foi realizada</th>
             <th>Fonte de verificação da informação</th>
         </tr>
@@ -22,8 +22,8 @@
         <?php foreach($listaAtividades as $atividade): ?>
             <tr>
                 <td><?php echo $atividade['atvtitulo']; ?></td>
-                <td><?php echo $atividade['atvproduto']; ?></td>
                 <td><?= number_format($atividade['atvprodutoqtd'], 2, ',', '.'); ?></td>
+                <td><?php echo $atividade['atvproduto']; ?></td>
                 <td><?php echo $atividade['mundescricao']. '-'. $atividade['estuf']; ?></td>
                 <td>
                     <?php if(Acompanhamento_Controller_Acompanhamentopnc::verificarPermissaoEditar($acpid)): ?>
