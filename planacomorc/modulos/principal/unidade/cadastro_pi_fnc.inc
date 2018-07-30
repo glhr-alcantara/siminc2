@@ -267,7 +267,6 @@ include APPRAIZ . "includes/cabecalho.inc";
     <form id="formulario" name="formulario" method="post" action="" class="form-horizontal">
         <input type="hidden" name="evento" id="evento" value="S" />
         <input type="hidden" name="pliid" id="pliid" value="<?= $_REQUEST['pliid']; ?>" />
-        <input type="hidden" name="picid" id="picid" value="<?= $dadosPI['picid']; ?>" />
         <input type="hidden" name="tipotransacao" id="tipotransacao" value="E" />
         <input type="hidden" name="scpid" id="scpid" value="<?php echo $_REQUEST['scpid']; ?>" />
 

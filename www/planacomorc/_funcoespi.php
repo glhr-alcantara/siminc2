@@ -1363,7 +1363,7 @@ function salvarPiComplemento($pliid, $dados)
     $dados['picvalorcusteio'] = $dados['picvalorcusteio']? str_replace(array('.', ','), array('', '.'), $dados['picvalorcusteio']): NULL;
     $dados['picvalorcapital'] = $dados['picvalorcapital']? str_replace(array('.', ','), array('', '.'), $dados['picvalorcapital']): NULL;
     
-    $modelPiComplemento = new Pi_Complemento($dados['picid']);
+    $modelPiComplemento = new Pi_Complemento($pliid);
     $modelPiComplemento->popularDadosObjeto($dados);
     $modelPiComplemento->pliid = $pliid;
     $modelPiComplemento->mpnid = $dados['mpnid'] ? $dados['mpnid'] : null;

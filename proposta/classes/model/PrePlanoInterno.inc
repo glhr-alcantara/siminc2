@@ -336,7 +336,7 @@ class Proposta_Model_PrePlanoInterno extends Modelo
                 cap.capcod,
                 pli.sbaid, pli.plititulo, pli.plicodsubacao, pli.plicod, pli.plilivre, pli.plidsc, pli.unicod, pli.ungcod, pli.pliano, pli.plicadsiafi, pli.docid,
                 to_char(pli.plidata, 'dd/mm/YYYY') as plidata,
-                pc.picid, pc.pliid, pc.oppid, pc.mppid, pc.ippid, pc.mpnid, pc.ipnid, pc.pprid, pc.pumid, pc.picquantidade, pc.picted, pc.picedital, pc.esfid, pc.picvalorcusteio, pc.picvalorcapital, pc.mescod, pc.acuid, pc.secid, pc.maiid, pc.masid, pc.picexecucao, pc.picpublico, pc.picpriorizacao, pc.pijid, pc.ptaid,
+                pc.oppid, pc.mppid, pc.ippid, pc.mpnid, pc.ipnid, pc.pprid, pc.pumid, pc.picquantidade, pc.picted, pc.picedital, pc.esfid, pc.picvalorcusteio, pc.picvalorcapital, pc.mescod, pc.acuid, pc.secid, pc.maiid, pc.masid, pc.picexecucao, pc.picpublico, pc.picpriorizacao, pc.pijid, pc.ptaid,
                 CASE plisituacao WHEN 'A' THEN
                     'Aprovado'
                 WHEN 'E' THEN
