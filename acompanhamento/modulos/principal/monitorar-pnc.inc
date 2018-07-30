@@ -1,11 +1,15 @@
 <?php
 
-    include_once APPRAIZ . "monitora/classes/Pi_PlanoInterno.class.inc";
+    include_once APPRAIZ. 'monitora/classes/Pi_PlanoInterno.class.inc';
 
-    $listaPerfis = pegaPerfilGeral();
-    
-    $cAcompanhamentopnc = new Acompanhamento_Controller_Acompanhamentopnc();
-    
+    # Recuperando SubUnidade
+    $suoid = $_REQUEST['suoid'];
+    # Recuperando Janela Ativa
+    $janelaAtiva = (new Acompanhamento_Model_Janela())->recuperarJanelaAtiva(Acompanhamento_Model_Tipo::K_TIPO_INDICADOR_PNC);
+    # Recuperando a Janela de Alteração
+    $janid = $_REQUEST['janid']? $_REQUEST['janid']: $janelaAtiva['janid'];
+    $janela = new Acompanhamento_Model_Janela($janid);
+    # Recuperando Meta PNC
     $mpnid = $_REQUEST['mpnid'];
     
     switch ($_REQUEST['req']) {
@@ -59,7 +63,7 @@
         case 'anexar-arquivos-monitoramento-Pnc':
             $acpid = $_REQUEST['acpid'];
             $file = new FilesSimec();
-            if($file->setUpload($_REQUEST['arqdescricao'], '', false)){
+            if($file->setUpload($_REQUEST['arqdescricao'], '', FALSE)){
                 $arqid = $file->getIdArquivo();
                 $acompanhamentoPncArquivo = New Acompanhamento_Model_Acompanhamentopncarquivo();
                 $acompanhamentoPncArquivo->acpid = $acpid;
@@ -82,15 +86,6 @@
             }
         die;
     }
-
-    $acompanhamentopnc = new Acompanhamento_Model_Acompanhamentopnc($_REQUEST['acpid']);
-
-    # Recuperando Janela Ativa
-    $janela = (new Acompanhamento_Model_Janela())->recuperarJanelaAtiva(Acompanhamento_Model_Tipo::K_TIPO_INDICADOR_PNC);
-    $janid = $acompanhamentopnc->janid = $acompanhamentopnc->janid? $acompanhamentopnc->janid: $janela['janid'];
-
-    # Recuperando SubUnidade
-    $suoid = $acompanhamentopnc->suoid? $acompanhamentopnc->suoid: $_REQUEST['suoid'];
     
     if($mpnid){
         # Busca acompanhamento Ativo de acordo com a Unidade, Janela e Meta.
@@ -109,19 +104,19 @@
             $acompanhamentopnc->salvar();
             $acompanhamentopnc->commit();
         }
+        
+        # Usado no formulário modal de upload de arquivos do acompanhamento da Meta PNC
+        $acpid = $acompanhamentopnc->acpid;
+
+        # Verificando se os indicadores do ano atual foi preenchido.
+        $indicadoresPreenchidos = $acompanhamentopnc->verificarPreenchimentoIndicadoresAnoAtual();
+
+        # Verifica se existe pelo menos uma atividade inserida no acompanhamento da Meta PNC
+        $atividadePreenchida = $acompanhamentopnc->verificarPreenchimentoAtividade();
+
+        # Verifica se o usuário pode modificar o acompanhamento de acordo com o perfil e estado do acompanhamento
+        $podeEditar = Acompanhamento_Controller_Acompanhamentopnc::verificarPermissaoEditar($acompanhamentopnc->acpid);
     }
-    
-    # Usado no formulário modal de upload de arquivos do acompanhamento da Meta PNC
-    $acpid = $acompanhamentopnc->acpid;
-    
-    # Verificando se os indicadores do ano atual foi preenchido.
-    $indicadoresPreenchidos = $acompanhamentopnc->verificarPreenchimentoIndicadoresAnoAtual();
-
-    # Verifica se existe pelo menos uma atividade inserida no acompanhamento da Meta PNC
-    $atividadePreenchida = $acompanhamentopnc->verificarPreenchimentoAtividade();
-
-    # Verifica se o usuário pode modificar o acompanhamento de acordo com o perfil e estado do acompanhamento
-    $podeEditar = Acompanhamento_Controller_Acompanhamentopnc::verificarPermissaoEditar($acpid);
     
     include APPRAIZ . "includes/cabecalho.inc";
 
@@ -188,10 +183,10 @@
                         <div class="clearfix"></div>
 
                         <?php
-                            $listaMetas = $acompanhamentopnc->getMetasPnc((object) array(
+                            $listaMetas = Acompanhamento_Model_Acompanhamentopnc::getMetasPnc((object) array(
+                                'exercicio' => $_SESSION['exercicio'],
                                 'suoid' => $suoid,
-                                'janid' => $janid,
-                                'exercicio' => $_SESSION['exercicio']
+                                'janid' => $janid
                             ));
                         
                             foreach($listaMetas as $contador => $meta){
@@ -201,7 +196,7 @@
                                     $mpnid_proximo = $listaMetas[$contador++]['mpnid']? $listaMetas[$contador++]['mpnid']: '';
                                 }
                                 
-                                $urlAcompanhamento = $meta['acpid']? "?modulo=principal/monitorar-pnc&acao=A&acpid={$meta['acpid']}": "?modulo=principal/monitorar-pnc&acao=A&mpnid={$meta['mpnid']}&suoid={$suoid}";
+                                $urlAcompanhamento = '?modulo=principal/monitorar-pnc&acao=A&suoid='. (int)$suoid. '&janid='. (int)$janid. '&mpnid='. (int)$meta['mpnid'];
                             ?>
                                 <a class="selecionar-meta-pnc" href="<?php echo $urlAcompanhamento; ?>">
                                     <div class="col-xs-1" title="<?php echo $meta['mpncod'] . ' - ' . $meta['mpndsc']; ?>">
@@ -229,7 +224,7 @@
                             
                             <div class="col-sm-12">
                                 <div style="float: right;">
-                                    <?php echo $simec->input('Referência', 'Referência', "{$janela['jandsc']} ({$janela['janinicio']} - {$janela['janfim']})"); ?>
+                                    <?php echo $simec->input('Referência', 'Referência', $janela->jandsc. " (". formata_data($janela->janinicio). " - ". formata_data($janela->janfim). ")"); ?>
                                 </div>
                             </div>
                             <div class="col-sm-12">
@@ -326,56 +321,59 @@
 </div>
 
 <?php
-    bootstrapPopup(
-        "Grafico de execução dos Planos Internos(PIs) da Unidade vinculados a essa Meta",
-        'modal_grafico',
-        '',
-        array('fechar'),
-        array('tamanho' => 'xl')
-    );
 
-    bootstrapPopup(
-        "Planos Internos(PIs) da Unidade vinculados a essa Meta",
-        'detalhe-pi',
-        '',
-        array('fechar'),
-        array('tamanho' => 'lg')
-    );
-    
-    bootstrapPopup(
-        "Cadastro de acompanhamento do Indicador PNC ". '<a style="margin-left: 10px;" class="fa fa-history modal-historico-indicador-pnc" title="Histórico de alterações do indicador"></a>',
-        'div_modal_acompanhamento_indicador',
-        '',
-        array('salvar', 'fechar'),
-        array('tamanho' => 'lg')
-    );
-    
-    bootstrapPopup(
-        "Atividade",
-        'div_modal_acompanhamento_atividade',
-        '',
-        array('salvar', 'fechar'),
-        array('tamanho' => 'lg')
-    );
+    if($mpnid){
+        bootstrapPopup(
+            "Grafico de execução dos Planos Internos(PIs) da Unidade vinculados a essa Meta",
+            'modal_grafico',
+            '',
+            array('fechar'),
+            array('tamanho' => 'xl')
+        );
 
-    bootstrapPopup(
-        "Anexar arquivos(Documentos)",
-        'div_modal_acompanhamento_anexo',
-        APPRAIZ. 'acompanhamento/modulos/principal/acompanhamento_anexo_pnc_form.inc',
-        array('fechar'),
-        array(
-            'tamanho' => 'xl',
-            'acpid' => $acpid
-        )
-    );
-    
-    bootstrapPopup(
-        "Histórico de Alterações do Indicador PNC",
-        'div_modal_lista_historico_indicador_pnc',
-        '',
-        array('fechar'),
-        array('tamanho' => 'lg')
-    );
+        bootstrapPopup(
+            "Planos Internos(PIs) da Unidade vinculados a essa Meta",
+            'detalhe-pi',
+            '',
+            array('fechar'),
+            array('tamanho' => 'lg')
+        );
+        
+        bootstrapPopup(
+            "Cadastro de acompanhamento do Indicador PNC ". '<a style="margin-left: 10px;" class="fa fa-history modal-historico-indicador-pnc" title="Histórico de alterações do indicador"></a>',
+            'div_modal_acompanhamento_indicador',
+            '',
+            array('salvar', 'fechar'),
+            array('tamanho' => 'lg')
+        );
+
+        bootstrapPopup(
+            "Histórico de Alterações do Indicador PNC",
+            'div_modal_lista_historico_indicador_pnc',
+            '',
+            array('fechar'),
+            array('tamanho' => 'lg')
+        );
+        
+        bootstrapPopup(
+            "Atividade",
+            'div_modal_acompanhamento_atividade',
+            '',
+            array('salvar', 'fechar'),
+            array('tamanho' => 'lg')
+        );
+        
+        bootstrapPopup(
+            "Anexar arquivos(Documentos)",
+            'div_modal_acompanhamento_anexo',
+            APPRAIZ. 'acompanhamento/modulos/principal/acompanhamento_anexo_pnc_form.inc',
+            array('fechar'),
+            array(
+                'tamanho' => 'xl',
+                'acpid' => $acpid
+            )
+        );
+    }
 ?>
 
 <script>

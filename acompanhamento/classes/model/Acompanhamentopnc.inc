@@ -67,11 +67,8 @@ class Acompanhamento_Model_Acompanhamentopnc extends Modelo
      * @param stdClass $filtro
      * @return array
      */
-    public function getMetasPnc(stdClass $filtro){
-        include_once APPRAIZ. 'public/classes/Model/SubUnidadeOrcamentaria.inc';
-        $listaMetas = array();
-        $subunidade = new Public_Model_SubUnidadeOrcamentaria($filtro->suoid);
-        $uo = new Public_Model_UnidadeOrcamentaria($subunidade->unoid);
+    public static function getMetasPnc(stdClass $filtro){
+        global $db;
         $sql = "
             SELECT
                 mpncod,
@@ -163,8 +160,7 @@ class Acompanhamento_Model_Acompanhamentopnc extends Modelo
                 mpncod::int
         ";
 
-        $listaMetas = $this->carregar($sql);
-
+        $listaMetas = $db->carregar($sql);
         return $listaMetas? $listaMetas: array();
     }
     
