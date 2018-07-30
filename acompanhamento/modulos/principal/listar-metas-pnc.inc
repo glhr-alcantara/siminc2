@@ -1,7 +1,6 @@
 <?php
     $suoid = $suoid? $suoid: $_REQUEST['suoid'];
     $janid = $janid? $janid: $_REQUEST['janid'];
-    $mAcompanhamentopnc = new Acompanhamento_Model_Acompanhamentopnc();
 
     $mJanela = new Acompanhamento_Model_Janela();
     $janelaAtiva = $mJanela->recuperarJanelaAtiva(Acompanhamento_Model_Tipo::K_TIPO_INDICADOR_PNC);
@@ -15,7 +14,10 @@
     <div class="ibox-title">
         <?php
             $janid = $janid ? $janid : $janelaAtiva['janid'];
-            $aMetasPnc = $mAcompanhamentopnc->getMetasPnc((object)array('suoid' => $suoid, 'exercicio' => $_SESSION['exercicio'], 'janid' => $janid));
+            $aMetasPnc = Acompanhamento_Model_Acompanhamentopnc::getMetasPnc((object)array(
+                'exercicio' => $_SESSION['exercicio'],
+                'suoid' => $suoid,
+                'janid' => $janid));
         ?>
         <h5 style="margin-right: 30px;">Minhas Metas PNC <span style="color: red;">(<?php echo count($aMetasPnc); ?>)</span></h5>
         Janela:
