@@ -67,84 +67,6 @@ class montaRelatorio{
 		$this->orderType = $_POST['orderType'] ? $_POST['orderType'] : '';
 	}
 	
-	/**
-	 * Função  setAgrupador
-	 * Método  usado para setar alguns atributos da classe (agrupador|dados).
-	 * 
-	 * @access   public
-	 * @author   FELIPE TARCHIANI CERÁVOLO CHIAVICATTI
-	 * @since    13/02/2009
-	 * @param    array $dado - Deve conter os agrupadores do relatório.
-	 * @param    array $dado1 - Deve conter os dados do relatório (no formato de dados do banco). 
-	 * @tutorial $dado = array(2) {
-								  ["agrupador"]=>
-								  array(3) {
-								    [0]=>
-								    array(2) {
-								      ["campo"]=>
-								      string(6) "estado"
-								      ["label"]=>
-								      string(6) "Estado"
-								    }
-								    [1]=>
-								    array(2) {
-								      ["campo"]=>
-								      string(9) "municipio"
-								      ["label"]=>
-								      string(9) "Município"
-								    }
-								    [2]=>
-								    array(2) {
-								      ["campo"]=>
-								      string(4) "nome"
-								      ["label"]=>
-								      string(6) "Escola"
-								    }
-								  }
-								  ["agrupadoColuna"]=>
-								  array(3) {
-								    [0]=>
-								    string(5) "quant"
-								    [1]=>
-								    string(6) "classe"
-								    [2]=>
-								    string(5) "valor"
-								  }
-								};
-				$dado1 = array(2) {
-									  [0]=>
-									  array(6) {
-									    ["codigo"]=>
-									    string(10) "11025620  "
-									    ["nome"]=>
-									    string(172) "EEEF TANCREDO DE ALMEIDA NEVES"
-									    ["estado"]=>
-									    string(2) "RO"
-									    ["municipio"]=>
-									    string(21) "Alta Floresta D'Oeste"
-									    ["valor"]=>
-									    string(8) "20000.00"
-									    ["quant"]=>
-									    string(1) "1"
-									  }
-									  [1]=>
-									  array(6) {
-									    ["codigo"]=>
-									    string(10) "11025638  "
-									    ["nome"]=>
-									    string(165) "EEEFM PE EZEQUIEL RAMIN"
-									    ["estado"]=>
-									    string(2) "RO"
-									    ["municipio"]=>
-									    string(21) "Alta Floresta D'Oeste"
-									    ["valor"]=>
-									    string(8) "21500.00"
-									    ["quant"]=>
-									    string(1) "1"
-									  }
-								  } 
-	 * @return void
-	 */	
 	function setAgrupador($dado = null, $dado1 = null){
 		$this->agrupador = $dado;
 		$this->dados	 = $dado1;
@@ -185,65 +107,7 @@ class montaRelatorio{
 		endforeach;		
 	}
 	
-	/**
-	 * Função  setColuna
-	 * Método usado para setar atributo da classe (coluna).
-	 * 
-	 * @access   public
-	 * @author   FELIPE TARCHIANI CERÁVOLO CHIAVICATTI
-	 * @since    13/02/2009
-	 * @param    array $dado - Deve conter as colunas do relatório.
-	 * @tutorial $dado = array(2) {
-									  [0]=>
-									  array(5) {
-									    ["campo"]=>
-									    	string(5) "quant"	==> Campo com o mesmo nome que vem da query (sql)
-									    ["label"]=>
-									    	string(21) "Quantidade de Escolas"	==> Label indentificador do campo, será usado no título da coluna.
-									    ["title"]=>
-									    	string(21) "Quantidade informada por ..."	==> Title utilizado quando posicionado o mouse em cima da coluna.
-									    ["blockAgp"]=>
-									    	string(4) "nome"	==>> Pode ser passado um array.
-										["mostraNivel"] => 
-													   "nome"	==>> Pode ser passado um array. Com esse atributo setado com o nome do agrupador, o valor é apresentado
-																	 ao lado do agrupador escolhigo, e não necessariamente no ultimo nivel.
-									    ["type"]=>
-									    	string(7) "numeric"	==> Pode ser passado numeric|string se não for passado, assume o valor que for identificado.
-									    ["html"]=>
-									    	string(101)	==> A coluna que eu queira que apareça mesclado ao HTML, fica assim: {campo} Ex.: <a href=\"#\">{quant}</a>
-									    ["php"]=>	==> Contém um array com parametros.       
-										    array(6) {
-										      ["blockAgp"]=>    ==> impede que a expressão php seja usada no agrupador definido. 
-										      array(1) {
-										        [0]=>
-										      	  string(5) "estuf"	==> array|string
-										      }
-										      ["html"]=>
-										      	string(9) "<span>{quant} | {marcado}</span>" ==> "A coluna que se queira que apareça mesclado ao HTML (TODOS os campos que foram agrupados ao agrupador, serão disponibilizados), 
-																								  fica assim: {campo} 
-																								  Ex.: <a href=\"#\">{quant}</a>"
-										      ["expressao"]=>
-										      	string(12) "{ate500} > 0"  ==> Expressão de retorno booleano
-										      ["var"]=>
-										      	string(7) "marcado"	==> Variável onde será setado o valor, se true ou false.
-										      ["true"]=>
-										      	string(1) "X"	==> Valor de true.
-										      ["false"]=>
-										      	string(1) "-"	==> Valor de false.
-											}
-									  }
-									  [1]=>
-									  array(3) {
-									    ["campo"]=>
-									    string(5) "valor"
-									    ["label"]=>
-									    string(9) "Valor Paf"
-									    ["type"]=>
-									    string(6) "string"
-									  }
-									}
-	 * @return void								
-	 */		
+	
 	function setColuna($dado = null){
 		$this->coluna = $dado;
 	}
@@ -414,9 +278,9 @@ class montaRelatorio{
 				if ( !empty($this->ordenacao) && !empty($this->orderType) ){
 					$this->setOrder( $this->ordenacao, $this->orderType );
 				}
-				// dbg($this->db->recuperaSql(1));
 				$this->dados = $this->db->carregar();				
 			}	
+				 
 			
 			if ( !is_array($this->dados) || !$this->dados[0]){
 				$this->relatorio = '<table cellspacing="1" cellpadding="5" border="0" align="center" class="tabela">'.
@@ -431,7 +295,7 @@ class montaRelatorio{
 				<script type="text/javascript">
 				<?include($_SERVER['DOCUMENT_ROOT'] . "/includes/relatorio.class.js"); ?>
 				</script>
-				<?
+				<?php
 				$rel .= '<script type="text/javascript">';
 				$rel .= '	var d' . self::$indRel . ' = new Conteudo();';
 				$rel .= '	d' . self::$indRel . '.conteudoCarregando();';
@@ -554,18 +418,23 @@ class montaRelatorio{
 			}
 			$campo = array_shift( $agrupadores );
 			$novo  = array();
-			
+                        
 			foreach ( $lista as $item ):
 			
+                        
 				$chave = $item[$campo];
 				if ( array_key_exists( $chave, $novo ) == false ){			
 					foreach ($agrupaColuna as $agrupa):
 						$novo[$chave][$agrupa] = NULL;
 					endforeach;
+                                        foreach ($this->coluna as $key=>$value){
+                                            $novo[$chave][$value['campo']]=$item[$value['campo']];
+                                        }
 					$novo[$chave]['totalAgrupador'] = 0;
 					$novo[$chave]['agrupador']  	= $campo;
 					$novo[$chave]['sub_itens']  	= array();										
 				}
+//                                ver($novo,d);
 				$item[$agrupa] = trim($item[$agrupa]);
 				foreach ($agrupaColuna as $agrupa){
 					$arrColuna = (array) self::pegaColuna($agrupa);		
@@ -788,7 +657,7 @@ class montaRelatorio{
 	
 	private function montaCorpo($lista=null, $profundidade=0){	
 		static $associaAgp = array();
-		
+                
 		$lista 		  = $lista ? $lista : $this->agrupar();
 		$coluna 	  = (array) $this->coluna;
 		$agrupaColuna = $this->agrupador['agrupadoColuna'] ? $this->agrupador['agrupadoColuna'] : array();
@@ -801,21 +670,22 @@ class montaRelatorio{
 		if ( count( $lista ) == 0 ){		
 			return;
 		}	
-//		$contCor = 0;
-
+//                ver($this->dados, $lista,d);
 		foreach ( $lista as $chave => $dados ):
 			$contId++;
 			$a = 0;
-			
 			foreach ($agrupaColuna as $agrupa):	
 				foreach($coluna as $col){
-					if ($agrupa == $col['campo']){
-						$type = $col['type'];
-						continue;
-					}					
+                                    if ($agrupa == $col['campo']){
+                                        $type = $col['type'];
+                                        continue;
+                                    }else{
+//                                        ver($chave, $dados, $col['campo'], d);
+                                        $$col['campo']=$dados[$col['campo']];
+                                    }
 				}
-				${$agrupa} 			  = (string) $dados[$agrupa];
-				$indHTML[$a] 		  = '{' . $agrupa . '}';
+				${$agrupa} = (string) $dados[$agrupa];
+				$indHTML[$a] = '{' . $agrupa . '}';
 				switch( $type ){
 					case 'numeric':
 						$valHTML[$a] = simec_number_format((double)$dados[$agrupa],0,',','.');
@@ -915,7 +785,6 @@ class montaRelatorio{
 			
 			$i = 0;
 			
-			
 			foreach ($coluna as $col){
 				$cl    = (is_numeric($$col['campo']) && $col['type'] != 'string' && $col['type'] != 'cep') ? 'rgb(0, 102, 204);' : '#000000;';
 				$align = ( (is_numeric($$col['campo']) && $col['type'] != 'string' && $col['type'] != 'cep') ) ? 'right' : 'center';
@@ -954,8 +823,6 @@ class montaRelatorio{
 								$returnFalse = eval('return (' . $col['php']['false'] . ');');
 						}
 						
-//						$valHTML['php'] = isset($return) ? $return : $col['php']['true'];
-						
 						if ( $boolean ){
 							$valHTML['php'] = isset($returnTrue) ? $returnTrue : $col['php']['true'];
 						}else{							
@@ -963,14 +830,13 @@ class montaRelatorio{
 						}
 						unset($boolean, $returnFalse, $returnTrue);				
 					}
-					
 					if (!$col['html']){
 						switch( $col['type'] ){
 							case 'numeric':
 								$$col['campo'] = simec_number_format($$col['campo'],0,',','.');
 							break;
 							case 'string':
-								$$col['campo'] = $$col['campo'];
+								$$col['campo'] = $dados[$col['campo']];
 							break;
 							case 'cep':
 								$$col['campo'] = formata_cep($$col['campo']);
@@ -1011,7 +877,6 @@ class montaRelatorio{
 		$lista 		  = $lista ? $lista : $this->agrupar();
 		$coluna 	  = (array) $this->coluna;
 		$agrupaColuna = $this->agrupador['agrupadoColuna'] ? $this->agrupador['agrupadoColuna'] : array();
-		
 		if ($profundidade == 0){
 			$this->setAgpContador($this->agrupador['agrupador']);
 		}
@@ -1023,10 +888,32 @@ class montaRelatorio{
 		foreach ( $lista as $chave => $dados ):
 			$a=0;
 			foreach ($agrupaColuna as $agrupa):	
-				${$agrupa}   = (string) $dados[$agrupa];
-				$indHTML[$a] = '{'.$agrupa.'}';
-				$valHTML[$a] = (is_numeric($dados[$agrupa]) ? simec_number_format($dados[$agrupa],2,',','.') : $dados[$agrupa]);
-				$valHTML[$a] = (is_numeric($dados[$agrupa]) ? simec_number_format($dados[$agrupa],2,',','.') : $dados[$agrupa]);
+                                foreach($coluna as $col){
+                                    if ($agrupa == $col['campo']){
+                                        $type = $col['type'];
+                                        continue;
+                                    }else{
+//                                        ver($chave, $dados, $col['campo'], d);
+                                        $$col['campo']=$dados[$col['campo']];
+                                    }
+				}
+				${$agrupa} = (string) $dados[$agrupa];
+				$indHTML[$a] = '{' . $agrupa . '}';
+				switch( $type ){
+					case 'numeric':
+						$valHTML[$a] = simec_number_format((double)$dados[$agrupa],0,',','.');
+					break;
+					case 'string':
+						$valHTML[$a] = $dados[$agrupa];
+					break;
+					case 'cep':
+						$valHTML[$a] = formata_cep($dados[$agrupa]);
+					break;
+					default:
+						$valHTML[$a] = ( ((is_numeric($dados[$agrupa])  || $type == 'numeric') && $type != 'string') ? ($type == 'numeric' ? simec_number_format($dados[$agrupa],0,',','.') : simec_number_format($dados[$agrupa],2,',','.')) : $dados[$agrupa] );
+					break;
+				}
+				$valExpressaoHTML[$a] = $dados[$agrupa];
 				$a++;
 			endforeach;
 			$agrupador 		   = (string) $dados["agrupador"];
