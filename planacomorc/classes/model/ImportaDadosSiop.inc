@@ -469,13 +469,14 @@ class Planacomorc_Model_ImportaDadosSiop extends Modelo
                 JOIN seguranca.usuario_sistema us ON(
                     us.usucpf = usu.usucpf
                     AND us.suscod = 'A'
-                    AND us.sisid = 157
+                    AND us.sisid = ". (int)SISID_PLANEJAMENTO. "
                 )
             WHERE
-                pu.pflcod IN (" . PFL_ADMINISTRADOR . ", " . PFL_SUPERUSUARIO . ")
+                pu.pflcod IN (". (int)PFL_ADMINISTRADOR. ", ". (int)PFL_SUPERUSUARIO. ")
             ORDER BY
                 usuemail
         ";
+//echo $sql;
         return $this->carregar($sql);        
     }
 
