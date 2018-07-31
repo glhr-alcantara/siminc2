@@ -577,21 +577,21 @@
                                                     </td>
                                                 </tr>
                                                 <?php if($dadosPI['eqdid'] != $codigoEnquadramentoEmenda): ?>
-                                                <tr style="height: 30px;">
-                                                    <td style="text-align: left;">Limite Autorizado na Unidade: </td>
-                                                    <td colspan="3" id="td_autorizado_sub_unidade" style="text-align: center;" >
-                                                        <?php echo number_format($autorizadoSubUnidade, 2, ',', '.') ?>
-                                                    </td>
-                                                </tr>
-                                                <tr style="height: 30px;">
-                                                    <td style="text-align: left;">
-                                                        Limite Disponível na Unidade:
-                                                        <input id="VlrSUDisponivel" type="hidden" value="" />
-                                                    </td>
-                                                    <td colspan="3" id="td_disponivel_sub_unidade" style="text-align: center;" >
-                                                        <?php echo number_format($disponivelSubUnidade, 2, ',', '.') ?>
-                                                    </td>
-                                                </tr>
+                                                    <tr style="height: 30px;">
+                                                        <td style="text-align: left;">Limite Autorizado na Unidade: </td>
+                                                        <td colspan="3" id="td_autorizado_sub_unidade" style="text-align: center;" >
+                                                            <?php echo number_format($autorizadoSubUnidade, 2, ',', '.') ?>
+                                                        </td>
+                                                    </tr>
+                                                    <tr style="height: 30px;">
+                                                        <td style="text-align: left;">
+                                                            Limite Disponível na Unidade:
+                                                            <input id="VlrSUDisponivel" type="hidden" value="" />
+                                                        </td>
+                                                        <td colspan="3" id="td_disponivel_sub_unidade" style="text-align: center;" >
+                                                            <?php echo number_format($disponivelSubUnidade, 2, ',', '.') ?>
+                                                        </td>
+                                                    </tr>
                                                 <?php endif; ?>
                                                 <tr>
                                                     <td style="text-align: left;"></td>

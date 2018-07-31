@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * Funções de apoio ao cadastro de PIs.
+ * @see _funcoespi.php
+ */
+include_once '_funcoespi.php';
+
     if(isset($_REQUEST['ptrid'])) {
         $ptres = $db->pegaUm("SELECT ptres FROM monitora.ptres WHERE ptrid = {$_REQUEST['ptrid']}");
         $sql = "
@@ -10,24 +16,31 @@
                 uni.unidsc,
                 ptr.plocod,
                 plo.plotitulo,
-                COALESCE(SUM(DISTINCT ptr.ptrdotacao)+0.00, 0.00)                            AS dotacaoatual,
-                COALESCE(SUM(dt.valor), 0.00)                                       AS detalhadosubacao,
-                COALESCE((SUM(pemp.total)), 0.00)                                        AS empenhado,
-                COALESCE(SUM(DISTINCT ptr.ptrdotacao) - COALESCE(SUM(dt.valor), 0.00), 0.00) AS naodetalhadosubacao,
+                COALESCE(SUM(COALESCE(psu.ptrdotacaocusteio, 0.00) + COALESCE(psu.ptrdotacaocapital, 0.00))+0.00, 0.00)                            AS dotacaoatual,
+                COALESCE((SUM(pemp.total)), 0.00) AS empenhado,
                 COALESCE(SUM(DISTINCT ptr.ptrdotacao) - COALESCE(pemp.total, 0.00), 0.00) AS naoempenhado
             FROM monitora.acao aca
                 JOIN monitora.ptres ptr ON aca.acaid = ptr.acaid
                 JOIN public.unidade uni ON uni.unicod = ptr.unicod
-                LEFT JOIN(
+                JOIN spo.ptressubunidade psu ON(ptr.ptrid = psu.ptrid)
+                LEFT JOIN (
                     SELECT
-                        ptrid,
-                        SUM(sadvalor) AS valor
-                    FROM monitora.pi_subacaodotacao
-                    GROUP BY ptrid) dt ON ptr.ptrid = dt.ptrid
-                LEFT JOIN siafi.uo_ptrempenho pemp ON(
+                        ex.unicod,
+                        ex.ptres,
+                        ex.exercicio,
+                        sum(ex.vlrempenhado) AS total
+                    FROM spo.siopexecucao ex
+                    WHERE
+                        ex.exercicio = '{$filtros->exercicio}'
+                    GROUP BY
+                        ex.unicod,
+                        ex.ptres,
+                        ex.exercicio
+                ) pemp ON(
                     pemp.ptres = ptr.ptres
-                    AND pemp.exercicio = aca.prgano
-                    AND pemp.unicod = aca.unicod)
+                    AND pemp.exercicio = ptr.ptrano
+                    AND pemp.unicod = ptr.unicod
+                )
                 LEFT JOIN monitora.planoorcamentario plo ON(
                     plo.prgcod = aca.prgcod
                     AND plo.acacod = aca.acacod
@@ -35,11 +48,8 @@
                     AND ptr.plocod = plo.plocodigo
                 )
             WHERE
-                aca.prgano ='{$_SESSION['exercicio']}'
-                AND ptr.ptrano='{$_SESSION['exercicio']}'
+                ptr.ptrano='{$_SESSION['exercicio']}'
                 AND ptr.ptres = '{$ptres}'
-                AND plo.exercicio = '{$_SESSION['exercicio']}'
-                AND aca.acasnrap = FALSE
             GROUP BY
                 ptr.ptrid,
                 ptr.ptres,
@@ -50,7 +60,11 @@
                 ptr.plocod,
                 plo.plotitulo
         ";
-
+//        $sql = montarSqlBuscarFuncionalImportacao((object)array(
+//            'exercicio' => $_SESSION['exercicio'],
+//            'ptrid' => $dadosPI['ptrid'],
+//        ));
+//ver($sql,d);
         $dadosPtres = $db->carregar($sql);
         $dadosPtres = $dadosPtres[0];
         if(!isset($dadosPtres['dotacaoatual']) || $dadosPtres['dotacaoatual'] == '' ){
@@ -137,12 +151,6 @@
     </tr>
     ';
 
-    if ($dadosPtres['naodetalhadosubacao'] >= 0) {
-        $html .= 'black';
-    } else {
-        $html .= 'red';
-    }
-
     $html .='
     <tr>
         <td class="SubTituloDireita" width="200px">Empenhado do PTRES:</td>
@@ -178,58 +186,7 @@
         '.$grafico->setTipo(Grafico::K_TIPO_COLUNA)->setId('graficoPtres')->setTitulo('Execução Orçamentária')->gerarGrafico($sqlGrafico).'
     </div>
     <div style="clear: both;"/>
-    <table class="table table-striped table-bordered table-hover">';
-
-    $html.='
-        <tr>
-            <td>
-              <div style="background-color:#ff6347; color:#FFF; margin-top: 10px; padding: 5px;">
-                <b>
-                    PIs subtraindo recursos do PTRES - ' . $_SESSION['exercicio'] . ' que possuem valores empenhados:
-                </b>
-            </div>';
-    
-    # Consulta  de PI
-    $sqlPi = "
-        SELECT
-            ppe.plicod,
-            uni.unicod || ' - ' || uni.unidsc AS unidsc,
-            SUM(ppe.total) AS empenhado
-        FROM monitora.pi_planointerno pli
-            JOIN siafi.uo_pliptrempenho ppe ON(
-                pli.plicod = ppe.plicod
-                AND pli.unicod = ppe.unicod
-                AND pli.pliano = '{$_SESSION['exercicio']}')
-            JOIN public.unidade uni ON pli.unicod = uni.unicod
-        WHERE
-            exercicio = '{$_SESSION['exercicio']}'
-            AND ppe.plicod <> ''
-            AND pli.pliid IN(
-                SELECT
-                    pliid
-                FROM monitora.pi_planointernoptres
-                WHERE ptrid = {$_REQUEST['ptrid']}
-            )
-        GROUP BY
-            ppe.plicod,
-            uni.unicod || ' - ' || uni.unidsc
-    ";
-#ver($sqlPi,d);
-    $listagem = new Simec_Listagem(Simec_Listagem::RELATORIO_PAGINADO, Simec_Listagem::RETORNO_BUFFERIZADO);
-    $listagem->setCabecalho(array(
-        "PI's subtraindo recursos<br />do PTRES",
-        "Título do PI",
-        "Empenhado do PI no PTRES (R$)"
-        ));
-    $listagem->setQuery($sqlPi);
-    $listagem->addCallbackDeCampo(array('empenhado'), 'mascaraMoeda');
-    $listagem->setTotalizador(Simec_Listagem::TOTAL_QTD_REGISTROS);
-    $retornoPi = $listagem->render();
-    $html .= $listagem->render(Simec_Listagem::SEM_REGISTROS_MENSAGEM);
-    $html .='</td>
-    </tr>
-
-</table>';
+    ';
 
     # Chamada do componente de Grafico
     $html.='<script>jQuery("#graficoPtres").appendTo("#graficoDestino");</script>';
