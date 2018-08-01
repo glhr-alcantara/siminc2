@@ -31,7 +31,7 @@ include APPRAIZ . 'includes/AgrupadorBootstrap.php';
     </div>
     <div class="ibox-content">
         <?php
-            $stSql = "SELECT prsano AS codigo, prsano AS descricao FROM emendas.emenda WHERE emestatus = 'A' ORDER BY 1;";
+            $stSql = "SELECT prsano AS codigo, prsano AS descricao FROM emendas.emenda WHERE emestatus = 'A' union select '".$_SESSION['exercicio']."' as codigo, '".$_SESSION['exercicio']."' as descricao ORDER BY 1;";
             $preenchidos = null;
             if(!$_REQUEST['prsano'] ){
                 $preenchidos = array( array('codigo' => $_SESSION['exercicio'], 'descricao' => $_SESSION['exercicio'] ) );
@@ -44,7 +44,7 @@ include APPRAIZ . 'includes/AgrupadorBootstrap.php';
                     }
                 }
             }
-            echo $simec->select('filtro[e.prsano]', 'Exercício', $preenchidos, $stSql, null, ['input-size'=>9, 'label-size'=>2]);
+            echo $simec->select('filtro[eme.prsano]', 'Exercício', $preenchidos, $stSql, null, ['input-size'=>9, 'label-size'=>2]);
         ?>
 
         <label class="col-sm-2 col-md-2 col-lg-2 control-label">Agrupadores:</label>
