@@ -54,22 +54,22 @@ if ( $_REQUEST['req'] == 'xls' ){
 function monta_sql(){
     $where = array();
     global $db;
-
     $join = monta_join();
     $campos = monta_colunas();
     $sql = "SELECT ".implode(', ', $campos)."
               FROM emendas.emenda eme
               ".implode(' ', $join)."
              where eme.emestatus = 'A'". monta_where();
-//    ver($sql,d);
     return $sql;
 }
 
 function monta_where(){
     $where = '';
     foreach($_REQUEST['filtro'] as $key=>$value){
-        if (!empty($value))
-            $where .= " and ".$key." = '".$value."'";
+        if (is_array($value)){
+            if (!empty($value))
+                $where .= " and ".$key." in ('".implode('\', \'', $value)."')";
+        }
     }
     return $where;
 }
