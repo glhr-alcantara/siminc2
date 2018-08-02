@@ -1214,6 +1214,7 @@ inner join elabrev.ppaacao_proposta  ap on ap.acaid = ua.acaid and ua.acaid=".$_
 			$sql = "select menu.mnuid, menu.mnudsc, menu.mnulink, menu.mnutransacao
 	 				  from seguranca.menu, seguranca.aba_menu
 					 where menu.mnuid=aba_menu.mnuid
+                                           and menu.mnustatus = 'A'
 					   and aba_menu.abacod=".$abacod_tela." $where
 					   and menu.mnuid in (
 					   		select distinct m2.mnuid from seguranca.perfilmenu m2, seguranca.perfilusuario p
