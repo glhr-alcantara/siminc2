@@ -98,7 +98,7 @@ function cabecalhoIndicador($indid){
 			<?=$dados['umedesc'];?>
 		</td>
 	</tr>
-	<tr >
+	<tr style="display:none">
 		<td valign="top" class="SubTituloDireita">
 			Regionalização:
 		</td>
