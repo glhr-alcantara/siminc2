@@ -26,6 +26,26 @@ require_once APPRAIZ .'includes/classes/Modelo.class.inc';
  */
 class Monitora_Model_PiEnquadramentoDespesa extends Modelo
 {
+    const EQDCOD_PAC = 'A';
+    
+    const EQDCOD_BENEFICIO_SERVIDOR = 'B';
+ 
+    const EQDCOD_CONTRIBUICAO_PATRONAL = 'C';
+    
+    const EQDCOD_EMENDAS = 'E';
+    
+    const EQDCOD_FINALISTICO = 'F';
+    
+    const EQDCOD_FINANCEIRA = 'I';
+    
+    const EQDCOD_MANUTENCAO = 'M';
+    
+    const EQDCOD_NAO_ORCAMENTARIA = 'N';
+    
+    const EQDCOD_DESPESAS_OBRIGATORIAS = 'O';
+    
+    const EQDCOD_PESSOAL_ENCARGOS = 'P';
+    
     /**
      * Nome da tabela especificada
      * @var string
@@ -61,9 +81,49 @@ class Monitora_Model_PiEnquadramentoDespesa extends Modelo
         'eqdstatus' => null,
         'mpneid' => null,
         'eqdstreduzido' => null,
-        'eqdrp' => null,
+        'eqdrp' => null, /** @todo retirar campo de relacionamento que não está mais sendo usado */
     );
 
+    /**
+     * Busca o tipo de detalhamento/Grupo do Enquadramento da despesa.
+     * 
+     * @return integer
+     */
+    public function buscarTipoDetalhamento(){
+        $tpdid = NULL;
+        switch ($this->eqdcod){
+            case self::EQDCOD_BENEFICIO_SERVIDOR:
+                $tpdid = Proposta_Model_TipoDetalhamento::DESPESAS_PODER_EXECUTIVO;
+            break;
+            case self::EQDCOD_CONTRIBUICAO_PATRONAL:
+                $tpdid = Proposta_Model_TipoDetalhamento::DESPESAS_FINANCEIRAS;
+            break;
+            case self::EQDCOD_DESPESAS_OBRIGATORIAS:
+                $tpdid = Proposta_Model_TipoDetalhamento::DESPESAS_OBRIGATORIAS_SEM_CONTROLE;
+            break;
+            case self::EQDCOD_FINALISTICO:
+                $tpdid = Proposta_Model_TipoDetalhamento::DESPESAS_EXECUTIVO;
+            break;
+            case self::EQDCOD_FINANCEIRA:
+                $tpdid = Proposta_Model_TipoDetalhamento::DESPESAS_FINANCEIRAS;
+            break;
+            case self::EQDCOD_MANUTENCAO:
+                $tpdid = Proposta_Model_TipoDetalhamento::DESPESAS_EXECUTIVO;
+            break;
+            case self::EQDCOD_PESSOAL_ENCARGOS:
+                $tpdid = Proposta_Model_TipoDetalhamento::DESPESAS_ENCARGOS_SOCIAIS;
+            break;
+            case self::EQDCOD_PAC:
+                $tpdid = Proposta_Model_TipoDetalhamento::PAC;
+            break;
+            default:
+                $tpdid = 0;
+            break;
+        }
+
+        return $tpdid;
+    }
+    
     public function recuperarTodos($stCampos = '*', $arClausulas = null, $stOrdem = null, array $opcoes = array()) {
         // -- Retornar a query ao invés dos dados
         $opcoes['query'] = isset($opcoes['query']) ? $opcoes['query'] : false;
@@ -142,14 +202,38 @@ class Monitora_Model_PiEnquadramentoDespesa extends Modelo
 
     public function recuperarDescricaoRp($eqdid)
     {
-        $sql = "select irp.irpcod || ' - ' || irp.irpdsc rp
-                from monitora.enquadramentorp erp
-                        inner join public.identresultprimario irp on irp.irpcod = erp.irpcod        
-                where eqdid = " . (int) $eqdid;
+        $sql = "
+            SELECT
+                irp.irpcod || ' - ' || irp.irpdsc rp
+            FROM monitora.enquadramentorp erp
+                JOIN public.identresultprimario irp ON irp.irpcod = erp.irpcod
+            WHERE
+                irp.irpstatus = 'A'
+                AND erp.eqdid = " . (int)$eqdid;
 
         return $this->pegaUm($sql);
     }
-
+    
+    /**
+     * Retorna o código RP do enquadramento
+     * 
+     * @param integer $eqdid
+     * @return string
+     */
+    public function recuperarCodigoRp()
+    {
+        $sql = "
+            SELECT
+                irp.irpcod
+            FROM monitora.enquadramentorp erp
+                JOIN public.identresultprimario irp ON irp.irpcod = erp.irpcod
+            WHERE
+                irp.irpstatus = 'A'
+                AND erp.eqdid = ". (int)$this->eqdid;
+        $irpcod = $this->pegaUm($sql);
+//ver($sql, $irpcod, d);
+        return $irpcod;
+    }
 
 }//end Class
 ?>
