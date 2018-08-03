@@ -49,6 +49,7 @@ class Proposta_Model_Proposta extends Modelo
         'ptrid' => array('tabela' => 'ptres', 'pk' => 'ptrid'),
         'eqdid' => array('tabela' => 'pi_enquadramentodespesa', 'pk' => 'eqdid'),
         'suoid' => array('tabela' => 'subunidadeorcamentaria', 'pk' => 'suoid'),
+        'tpdid' => array('tabela' => 'tipodetalhamento', 'pk' => 'tpdid'),
     );
 
     /**
@@ -61,6 +62,7 @@ class Proposta_Model_Proposta extends Modelo
         'suoid' => null,
         'eqdid' => null,
         'ptrid' => null,
+        'tpdid' => null,
         'proquantidade' => null,
         'proquantidadeexpansao' => null,
         'projustificativa' => null,

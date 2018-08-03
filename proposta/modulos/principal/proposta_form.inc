@@ -99,6 +99,7 @@ include APPRAIZ . "includes/cabecalho.inc";
                             echo '<span id="span-rp"></span>';
                             echo '<span id="span-funcional">' . $simec->select('ptrid', 'Funcional', $mProposta->ptrid, (new Monitora_Model_Ptres())->recuperarSqlPorSubunidadeEEnquadramento($mProposta->suoid, $mProposta->eqdid), ['required']) . '</span>';
                             echo '<span id="span-subunidades-ptres"></span>';
+                            echo $simec->select('tpdid', 'Tipo de Detalhamento', $mProposta->tpdid, (new Proposta_Model_TipoDetalhamento())->recuperarSqlCombo(['tpdcod', 'tpdnome'], null, 'tpdcod' ));
                         ?>
                         <div class="form-group ">
                             <label for="" class="col-sm-3 col-md-3 col-lg-3 control-label">Limites Pré-PI</label>
