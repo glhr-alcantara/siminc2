@@ -66,12 +66,23 @@ switch ($_REQUEST['req']) {
                     </div>
                   </div>';
         die;
+    case 'carregar-tipo-detalhamento':
+        $eqdid = $_REQUEST['eqdid'];
+        $ptrid = $_REQUEST['ptrid'];
+        $tpdid = Proposta_Controller_Proposta::carregarTipoDetalhamento((int)$eqdid, (int)$ptrid);
+
+        echo simec_json_encode(array('tpdid' => $tpdid));
+    die;
+}
+
+if($mProposta->proid){
+    $mProposta->tpdid = Proposta_Controller_Proposta::carregarTipoDetalhamento((int)$mProposta->eqdid, (int)$mProposta->ptrid);
 }
 
 include APPRAIZ . "includes/cabecalho.inc";
 ?>
 
-<script src="js/principal/proposta_form.js"></script>
+<script src="js/principal/proposta_form.js?v=2"></script>
 
 <div class="row wrapper border-bottom white-bg page-heading">
     <div class="col-lg-10">

@@ -26,6 +26,20 @@ require_once APPRAIZ .'includes/classes/Modelo.class.inc';
  */
 class Monitora_Model_PiEnquadramentoDespesa extends Modelo
 {
+
+    const FINANCEIRA = 0;
+    
+    const PRIMARIA_OBRIGATORIA = 1;
+    
+    const PRIMARIA_DISCRICIONARIA = 2;
+    
+    const PAC = 3;
+    
+    const EMENDA = 6;
+    
+    const NAO_IMPACTA = 9;
+
+
     /**
      * Nome da tabela especificada
      * @var string
@@ -142,12 +156,37 @@ class Monitora_Model_PiEnquadramentoDespesa extends Modelo
 
     public function recuperarDescricaoRp($eqdid)
     {
-        $sql = "select irp.irpcod || ' - ' || irp.irpdsc rp
-                from monitora.enquadramentorp erp
-                        inner join public.identresultprimario irp on irp.irpcod = erp.irpcod        
-                where eqdid = " . (int) $eqdid;
+        $sql = "
+            SELECT
+                irp.irpcod || ' - ' || irp.irpdsc rp
+            FROM monitora.enquadramentorp erp
+                JOIN public.identresultprimario irp ON irp.irpcod = erp.irpcod
+            WHERE
+                irp.irpstatus = 'A'
+                AND erp.eqdid = " . (int)$eqdid;
 
         return $this->pegaUm($sql);
+    }
+    
+    /**
+     * Retorna o código RP do enquadramento
+     * 
+     * @param integer $eqdid
+     * @return string
+     */
+    public function recuperarCodigoRp()
+    {
+        $sql = "
+            SELECT
+                irp.irpcod
+            FROM monitora.enquadramentorp erp
+                JOIN public.identresultprimario irp ON irp.irpcod = erp.irpcod
+            WHERE
+                irp.irpstatus = 'A'
+                AND erp.eqdid = ". (int)$this->eqdid;
+        $irpcod = $this->pegaUm($sql);
+//ver($sql, $irpcod, d);
+        return $irpcod;
     }
 
 
