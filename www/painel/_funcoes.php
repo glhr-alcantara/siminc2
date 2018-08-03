@@ -5560,8 +5560,6 @@ function listaIndicadorFormulaSHPopup()
 			indstatus = 'A'
 		and
 			per.pernivel <= (select per2.pernivel from painel.periodicidade per2 where per2.perid = $perid)
-		and
-			ind.regid = $regid
 		".($arrWhere ? " and (".implode(" or ",$arrWhere).")" : "")."
 		order by
 			indnome";
@@ -5654,10 +5652,10 @@ function testarFormulaSHIndicador()
 		echo "<p style=\"color:#990000\" ><b>Favor selecionar o Período.</b></p>";
 		exit;
 	}
-	if(!$regid){
-		echo "<p style=\"color:#990000\" ><b>Favor selecionar a Regionalização.</b></p>";
-		exit;
-	}
+//	if(!$regid){
+//		echo "<p style=\"color:#990000\" ><b>Favor selecionar a Regionalização.</b></p>";
+//		exit;
+//	}
 	$arrResultadoFinal = trataFormulaSHIndicador($formulash,$perid,$regid);
 	
 	if($arrResultadoFinal){
@@ -5672,9 +5670,7 @@ function testarFormulaSHIndicador()
 				from 
 					painel.regagreg rega
 				inner join
-					painel.regionalizacao reg ON reg.regid = rega.regid 
-				where 
-					rega.regid = {$arrResultadoFinal['regid']}";
+					painel.regionalizacao reg ON reg.regid = rega.regid ";
 		$arrReg = $db->pegaLinha($sql);
 		$regtabela = $arrReg['regtabela'];
 		$regunidade = $arrReg['regunidade'];
