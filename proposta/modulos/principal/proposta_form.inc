@@ -137,7 +137,7 @@ include APPRAIZ . "includes/cabecalho.inc";
                                         <thead>
                                         <tr class="text-center">
                                             <th width="20%">Nível</th>
-                                            <th width="20%">Quantidade</th>
+                                            <th width="20%">Quantidade Física</th>
                                             <th>Produto</th>
                                             <th width="20%">Unidade</th>
 
@@ -145,7 +145,7 @@ include APPRAIZ . "includes/cabecalho.inc";
                                         </thead>
                                         <tbody>
                                         <tr>
-                                            <td>Localizador</td>
+                                            <td>Ação</td>
                                             <td>
                                                 <input name="locquantidadeproposta" id="locquantidadeproposta" type="text" value="" class="form-control inteiro " required="required">
                                             </td>
