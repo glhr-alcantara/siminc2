@@ -412,11 +412,11 @@ function testarFormulaSHIndicador()
 		erro = 1;
 		return false;
 	}
-	if(!regid){
-		alert('Favor selecionar a Regionalização do Indicador');
-		erro = 1;
-		return false;
-	}
+//	if(!regid){
+//		alert('Favor selecionar a Regionalização do Indicador');
+//		erro = 1;
+//		return false;
+//	}
 	
 	if(erro == 0){
 		var parametros = jQuery("#formulario").serialize();
@@ -875,7 +875,7 @@ if($permite>0 && (in_array(PAINEL_PERFIL_SUPER_USUARIO,$arrPflcod) || in_array(G
 		</td>
 	</tr>
 
-<tr>
+<tr style="display: none">
 <?php
 }else{
 	if($indpublicado=='')
