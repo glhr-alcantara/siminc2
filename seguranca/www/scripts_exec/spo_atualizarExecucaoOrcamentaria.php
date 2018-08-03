@@ -16,20 +16,21 @@
  * <li>Envia e-mail com resultado da execução.</li></ol>
  *
  * @version $Id: spo_BaixarDadosFinanceirosSIOP.php 101880 2015-08-31 19:50:33Z maykelbraz $
- * @link http://simec.mec.gov.br/seguranca/scripts_exec/spo_atualizarExecucaoOrcamentaria.php URL de execução.
+ * @link http://siminc2.cultura.gov.br/seguranca/scripts_exec/spo_atualizarExecucaoOrcamentaria.php URL de execução.
  */
 
 define('BASE_PATH_SIMEC', realpath(dirname(__FILE__) . '/../../../'));
 //define('BASE_PATH_SIMEC', '/var/www/html/siminc2');
-require_once BASE_PATH_SIMEC . "/global/config.inc";
-require_once APPRAIZ . "includes/classes_simec.inc";
-include_once APPRAIZ."planacomorc/classes/controller/ImportaDadosSiop.inc";
-include_once APPRAIZ."planacomorc/classes/model/ImportaDadosSiop.inc";
-require_once(APPRAIZ . 'spo/ws/sof/Quantitativo.php');
+require_once BASE_PATH_SIMEC. '/global/config.inc';
+require_once APPRAIZ. 'includes/classes_simec.inc';
+include_once APPRAIZ. 'www/planacomorc/_constantes.php';
+include_once APPRAIZ. 'planacomorc/classes/controller/ImportaDadosSiop.inc';
+include_once APPRAIZ. 'planacomorc/classes/model/ImportaDadosSiop.inc';
+require_once(APPRAIZ. 'spo/ws/sof/Quantitativo.php');
 $db = new cls_banco();
 $cImportaDadosSiop = new Planacomorc_Controller_ImportaDadosSiop();
-echo "Atualizando, dados!<br>";
-$cImportaDadosSiop->AtualizarDados();
-echo "Montando email para ser enviado!<br>";
+echo '1)Atualizando, dados! | ';
+//$cImportaDadosSiop->AtualizarDados();
+echo '2)Montando email para ser enviado! | ';
 $cImportaDadosSiop->AtualizarDotacao();
-echo "Rotina Finalizada!";
+echo '3)Rotina Finalizada! | ';

@@ -72,17 +72,31 @@ function posAcaoGerarPi($benid){
         if($tipoFluxoFNC){
             # Gera número de documento pra workflow
             $docid = pegarDocidPi($pliid, WF_TPDID_PLANEJAMENTO_PI_FNC);
-            # Altera a situação do PI pra Em Análise
-            $resultado = wf_alterarEstado($docid, AED_SELECIONAR_PROJETO_EMENDAS_FNC, 'PI Gerado pelo Emendas', array('pliid' => $pliid));
+            # Busca o estado do PI
+            $estadoAtual = wf_pegarEstadoAtual($docid);
+            # Se o estado do PI for em cadastramento o sistema realiza tramitação pra o estado de Selecionado.
+            if($estadoAtual['esdid'] == ESD_FNC_PI_CADASTRAMENTO){
+                # Altera a situação do PI pra Em Análise
+                $resultado = wf_alterarEstado($docid, AED_SELECIONAR_PROJETO_EMENDAS_FNC, 'PI Gerado pelo Emendas', array('pliid' => $pliid));
+            } else {
+                $resultado = TRUE;
+            }
         } else {
             # Gera número de documento pra workflow
             $docid = pegarDocidPi($pliid, WF_TPDID_PLANEJAMENTO_PI);
-            # Altera a situação do PI pra Aguardando Aprovação
-            $resultado = wf_alterarEstado($docid, AED_ENVIAR_APROVACAO, 'PI Gerado pelo Emendas', array('pliid' => $pliid));
+            # Busca o estado do PI
+            $estadoAtual = wf_pegarEstadoAtual($docid);
+            # Se o estado do PI for em cadastramento o sistema realiza tramitação pra o estado de Selecionado.
+            if($estadoAtual['esdid'] == ESD_PI_CADASTRAMENTO){
+                # Altera a situação do PI pra Aguardando Aprovação
+                $resultado = wf_alterarEstado($docid, AED_ENVIAR_APROVACAO, 'PI Gerado pelo Emendas', array('pliid' => $pliid));
 //ver(WF_TPDID_PLANEJAMENTO_PI, AED_ENVIAR_APROVACAO, $pliid, $resultado, d);
+            } else {
+                $resultado = TRUE;
+            }
         }
     }
-    
+//ver($estadoAtual, d);
     # Envia email pra o pessoal do planejamento
     enviarEmailGerarPi($benid);
     
@@ -98,10 +112,9 @@ function posAcaoGerarPi($benid){
 function associarFuncionalSubunidade(stdClass $beneficiario){
     $funcionalCusteio = buscarValorTotalEmenda($beneficiario->emeid, Emendas_Model_EmendaDetalhe::GND_COD_CUSTEIO_DESPESAS. ','. Emendas_Model_EmendaDetalhe::GND_COD_CUSTEIO_JUROS. ','. Emendas_Model_EmendaDetalhe::GND_COD_CUSTEIO_PESSOAL);
     $funcionalCapital = buscarValorTotalEmenda($beneficiario->emeid, Emendas_Model_EmendaDetalhe::GND_COD_CAPITAL_INVESTIMENTO. ','. Emendas_Model_EmendaDetalhe::GND_COD_CAPITAL_INVERSOES. ','. Emendas_Model_EmendaDetalhe::GND_COD_CAPITAL_AMORTIZACAO);
-    
+
     $listaPtresSubunidade = (new Spo_Model_PtresSubunidade())->recuperarTodos('psuid', ['ptrid = ' . (int)$beneficiario->ptrid, 'suoid = ' . (int)$beneficiario->suoid]);
     $ptresSubunidade = current($listaPtresSubunidade);
-//ver($listaPtresSubunidade, d);
     
     $modelPtresSubunidade = new Spo_Model_PtresSubunidade($ptresSubunidade['psuid']);
     $modelPtresSubunidade->ptrid = $beneficiario->ptrid;
@@ -237,7 +250,7 @@ function buscarValorTotalEmenda($emeid, $gnd){
             gndcod IN(". $gnd. ")
             AND emeid = ". (int)$emeid;
     $resultado = $db->pegaUm($sql);
-    $valor = $resultado? $resultado: NULL;
+    $valor = $resultado? $resultado: '0';
     
     return $valor;
 }

@@ -30,7 +30,7 @@ class Public_Controller_AreaCultural
             $mdareaCultural = new Monitora_Model_PiModalidadeEnsino($mdeid);
 
             if($mdareaCultural->existeVinculo()){
-                $mensagem = 'O registro nÃ£o pode ser excluÃ­do pois possui vÃ­nculo com algum PI.';
+                $mensagem = 'O registro não pode ser excluído pois possui vínculo com algum PI.';
                 $url = '?modulo=apoio/area_cultural_form&acao=A&capid=' . $mdareaCultural->mdeid;
                 simec_redirecionar($url, 'error', $mensagem);
             }

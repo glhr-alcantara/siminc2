@@ -21,7 +21,7 @@
     <?php
         echo $simec->select('ndpid', 'Natureza Despesa', $mPropostaDetalhe->ndpid, (new Public_Model_NaturezaDespesa())->recuperarSqlCombo(['ndpcod', 'ndpdsc']), ['required']);
         echo $simec->select('iduid', 'IDUSO', ($mPropostaDetalhe->iduid ? $mPropostaDetalhe->iduid : 0), (new Public_Model_IdentifUso())->recuperarSqlCombo(['iducod', 'idudsc']), ['required']);
-        echo $simec->select('fonid', 'Fonte', ($mPropostaDetalhe->fonid ? $mPropostaDetalhe->fonid : 105), (new Public_Model_FonteRecurso())->recuperarSqlCombo(['foncod', 'fondsc'], ['grfid = 1']), ['required']);
+        echo $simec->select('fonid', 'Fonte de Recurso', ($mPropostaDetalhe->fonid ? $mPropostaDetalhe->fonid : 105), (new Public_Model_FonteRecurso())->recuperarSqlCombo(['foncod', 'fondsc'], ['grfid = 1']), ['required']);
         echo $simec->select('idoid', 'IDOC', ($mPropostaDetalhe->idoid ? $mPropostaDetalhe->idoid : 1), (new Public_Model_Idoc())->recuperarSqlCombo(['idocod', 'idodsc']), ['required']);
         echo $simec->moedaInteiro('prdvalor', 'Valor', $mPropostaDetalhe->prdvalor, ['required']);
         echo $simec->moedaInteiro('prdvalorexpansao', 'Valor Expansão', $mPropostaDetalhe->prdvalorexpansao);
