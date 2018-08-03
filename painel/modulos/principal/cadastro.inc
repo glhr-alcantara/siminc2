@@ -390,11 +390,11 @@ function openIndPopUp()
 		erro = 1;
 		return false;
 	}
-	if(!regid){
-		alert('Favor selecionar a Regionalização do Indicador');
-		erro = 1;
-		return false;
-	}
+//	if(!regid){
+//		alert('Favor selecionar a Regionalização do Indicador');
+//		erro = 1;
+//		return false;
+//	}
 	
 	if(erro == 0){
 		janela("painel.php?modulo=principal/cadastro&acao=A&requisicao=listaIndicadorFormulaSHPopup&perid="+perid+"&regid="+regid,800,600,"Indicadores");
