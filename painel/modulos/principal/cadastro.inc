@@ -1,4 +1,4 @@
-<?
+<?php
 if ($_REQUEST['requisicao']) {
 	$_REQUEST['requisicao']();
 }
@@ -35,6 +35,7 @@ if($_REQUEST['indid'] == 'novoIndicador') {
 	if(!$db->testa_superuser()) {
 		$menu[2] = array("descricao" => "Meus indicadores", "link"=> "/painel/painel.php?modulo=principal/lista&acao=A&evento=M");
 	}
+        
 	echo montarAbasArray($menu, "/painel/painel.php?modulo=principal/cadastro&acao=A&indid=".$_REQUEST['indid']."&evento=".$_REQUEST['evento']."");
 	$acesso = true;
 	unset($_SESSION['indid']);
@@ -44,19 +45,19 @@ if($_REQUEST['indid'] == 'novoIndicador') {
 if($_SESSION['indid']):
 
 	$db->cria_aba($abacod_tela,$url,'');
+
 	!$_SESSION['indid']? $_SESSION['indid'] = $_REQUEST['indid']: $_SESSION['indid'] = $_SESSION['indid'];
 	
 	$permissoes = verificaPerfilPainel();
+//	ver($permissoes,d);
 	if($permissoes['verindicadores'] == 'vertodos') {
 		$acesso = true;
 	} else {
 		$acesso = validaAcessoIndicadores($permissoes['verindicadores'], $_SESSION['indid']);
 	}
-	
 endif;
 
 $arrPerfil = pegaPerfil();
-
 $titulo = "Cadastro de Indicador";
 monta_titulo( $titulo, '<img border="0" src="../imagens/obrig.gif"/>Indica Campo Obrigatório.' );
 
@@ -181,12 +182,12 @@ if( (isset($_REQUEST[evento]) && ($_REQUEST[evento] != '')) || $_SESSION['indid'
 				}
 				
 				//AGENDA DE GOVERNO
-				foreach($_REQUEST['aggid'] as $aggid) {
-					if($aggid){
-						$sql = "INSERT INTO painel.agendaindicador(aggid, indid) VALUES (". $aggid .", ". $indid .")";			
-						$db->executar($sql);
-					}
-				}
+//				foreach($_REQUEST['aggid'] as $aggid) {
+//					if($aggid){
+//						$sql = "INSERT INTO painel.agendaindicador(aggid, indid) VALUES (". $aggid .", ". $indid .")";			
+//						$db->executar($sql);
+//					}
+//				}
 				
 			//caso exista o indicador altera os dados do mesmo	
 			} else {
@@ -249,14 +250,14 @@ if( (isset($_REQUEST[evento]) && ($_REQUEST[evento] != '')) || $_SESSION['indid'
 				}
 				
 				//AGENDA DE GOVERNO
-				$sql = "DELETE FROM painel.agendaindicador WHERE indid =  ". $indid ."";			
-				$db->executar($sql);
-				foreach($_POST['aggid'] as $aggid) {
-					if($aggid){
-						$sql = "INSERT INTO painel.agendaindicador(aggid, indid) VALUES (". $aggid .", ". $indid .")";			
-						$db->executar($sql);
-					}
-				}
+//				$sql = "DELETE FROM painel.agendaindicador WHERE indid =  ". $indid ."";			
+//				$db->executar($sql);
+//				foreach($_POST['aggid'] as $aggid) {
+//					if($aggid){
+//						$sql = "INSERT INTO painel.agendaindicador(aggid, indid) VALUES (". $aggid .", ". $indid .")";			
+//						$db->executar($sql);
+//					}
+//				}
 			}
 			$db->commit();
 			echo "<script>
@@ -573,7 +574,7 @@ function validaUnidadeMedicao(valor) {
 			 descricao	 
 		";
 	?>
-    <td align='right' class="SubTituloDireita">Secretaria/Autarquia Executora:</td>
+    <td align='right' class="SubTituloDireita">Unidade Executora:</td>
     <td><?=$db->monta_combo('secid',$sql,(($acesso)?'S':'N'),'Selecione...',"filtraAcao",'','','','S','','',$secid);?></td>
 </tr> 
 
@@ -591,7 +592,7 @@ function validaUnidadeMedicao(valor) {
     <td align='right' class="SubTituloDireita">Responsável - Usuário:</td>
     <td><?=$db->monta_combo('usucpf',$sql,(($acesso)?'S':'N'),'Selecione...','','','','','S');?></td>
 </tr>
-<tr>
+<tr style="display: none">
 	<td align='right' class="SubTituloDireita">Agenda(s) de Governo(s):</td>
 	<td>
 	<?php 
@@ -603,7 +604,7 @@ function validaUnidadeMedicao(valor) {
 			WHERE aggstatus = 'A'
 			order by
 				 descricao";
-	combo_popup( 'aggid', $Sql, 'Selecione a(s) Agenda(s) de Governo(s)', '360x460', 0, array(), "", "S", false, false, 5, 400);
+	combo_popup( 'aggid', $Sql, 'Selecione a(s) Agenda(s) de Governo(s)', '360x460', 0, array(), "", "N", false, false, 5, 400);
 	?>
 	</td>
 </tr>
@@ -666,8 +667,8 @@ function validaUnidadeMedicao(valor) {
 		}
 
 	?>
-    <td align='right' class="SubTituloDireita">Ação:</td>
-    <td id="td_acao" ><?=$db->monta_combo('acaid',$sql,(($acesso)?'S':'N'),'Selecione...','','','','','S','','',$acaid);?></td>
+    <td align='right' class="SubTituloDireita">Ação SIMINC/Gestão Estratégica:</td>
+    <td id="td_acao" ><?=$db->monta_combo('acaid',$sql,(($acesso)?'S':'N'),'Selecione...','','','','550','S','','',$acaid);?></td>
 </tr>
 <tr>
 	<?php 
@@ -682,7 +683,7 @@ function validaUnidadeMedicao(valor) {
 			 descricao	 
 		";
 	?>
-    <td align='right' class="SubTituloDireita">Secretaria/Autarquia Gestora:</td>
+    <td align='right' class="SubTituloDireita">Unidade Gestora:</td>
     <td><?=$db->monta_combo('secidgestora',$sql,(($acesso)?'S':'N'),'Selecione...',"",'','','','S','','',$secidgestora);?></td>
 </tr> 
 <tr style='display:none'>
@@ -718,6 +719,7 @@ function validaUnidadeMedicao(valor) {
 			mtiid AS codigo
 		FROM 
 			pde.monitoratipoindicador 
+                where mtistatus = 'A'
 		order by
 			 descricao";
 	?>
@@ -1071,7 +1073,7 @@ else
     <td align='right' class="SubTituloDireita">Estilo:</td>
     <td><?=$db->monta_combo('estid',$sql,(($acesso)?'S':'N'),'Selecione...','','','','','S','esdid','',$estid);?></td>
 </tr> 
-<tr>
+<tr style="display: none;">
 	<?php 
 		$sql= "SELECT 
 			regdescricao AS descricao, 
@@ -1083,7 +1085,7 @@ else
 		";
 	?>
     <td align='right' class="SubTituloDireita">Regionalização:</td>
-    <td><?=$db->monta_combo('regid',$sql,(($acesso)?'S':'N'),'Selecione...','','','','','S');?> <input type="hidden" name="regid_conf" id="regid_conf" value="<? echo $regid; ?>"></td>
+    <td><?=$db->monta_combo('regid',$sql,(($acesso)?'S':'N'),'Selecione...','','','','','N');?> <input type="hidden" name="regid_conf" id="regid_conf" value="<? echo $regid; ?>"></td>
 </tr>
 <tr style="display: none" >
 	<td align='right' class="SubTituloDireita">Objetivo Estratégico:</td>
@@ -1173,14 +1175,14 @@ else
 	<table style="border-top:0px;" class="tabela" bgcolor="#f5f5f5" cellSpacing="1" cellPadding="3" align="center">
 	<tr bgcolor="#cccccc">
 		      <td style="text-align: center" >
-		      	<? if(!$acesso){ ?>
+		      	<?php if(!$acesso){ ?>
 		      		<input type="button" disabled="disabled" class="botao" name="btassociar" value="Gravar">
-				<? }else{ ?>
+				<?php }else{ ?>
 					<input type="button" class="botao" name="btassociar" value="Gravar" onclick="submeter('I', '<?=$indid?>');">
 		  	  		<input type="button" class="botao" name="btassociar" value="Novo Indicador" onclick="novo();">	  	  
 		  	  		<input type="button" class="botao" name="btassociar" value="Limpar" onclick="limpar();">	  	  	
 
-				<? } ?>		      
+				<?php } ?>		      
 		  	  </td>
 		  	  
 		      </tr>
@@ -1290,9 +1292,9 @@ function validar(){
 	if(document.formulario.umeid.value == ''){
 		msg+="O preenchimento do campo \"Unidade Meta\" é obrigatório.\n";
 	}
-	if(document.formulario.regid.value == ''){
-		msg+="O preenchimento do campo \"Regionalização\" é obrigatório.\n";
-	}
+//	if(document.formulario.regid.value == ''){
+//		msg+="O preenchimento do campo \"Regionalização\" é obrigatório.\n";
+//	}
 
 	if(msg != "") {
 		alert(msg);

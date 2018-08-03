@@ -1,4 +1,4 @@
-<?
+<?php
 if($_GET['acaid']){
 	$_POST['evento'] = "P";
 	$_POST['acaid'] = $_GET['acaid'];	
@@ -15,6 +15,7 @@ include APPRAIZ . 'includes/cabecalho.inc';
 print '<br/>';
 // atribuindo as permissões
 $permissoes = verificaPerfilPainel();
+
 echo montarAbasArray($permissoes['menu'], $_SERVER['REQUEST_URI']);
 
 // titulos da tela
@@ -346,7 +347,7 @@ array_unique($filtroprocesso);
 	<td><?=campo_texto('indid','N','S','',15,15,'############','','','','',"id='indid'",'',$_REQUEST['indid']); ?></td>
 </tr>
 <tr>
-	<? 
+	<?php 
 	$sql= "SELECT exodsc AS descricao, exoid AS codigo FROM painel.eixo ORDER BY descricao";
 	?>
 	<td align='right' class="SubTituloDireita">Eixo:</td>
@@ -400,7 +401,7 @@ array_unique($filtroprocesso);
     <td align='right' class="SubTituloDireita">Secretaria/Autarquia Executora:</td>
     <td><?=$db->monta_combo('secid',$sql,'S','Selecione...',"filtraAcao","",'','','N',"secid","",$_SESSION['painel']['secid']);?></td>
 </tr> 
-<tr>
+<tr style="display: none">
 	<?php 
 		$sql= "SELECT 
 			aggdsc AS descricao, 
@@ -461,7 +462,7 @@ array_unique($filtroprocesso);
 						 descricao";
 		}
 	?>
-    <td align='right' class="SubTituloDireita">Ação:</td>
+    <td align='right' class="SubTituloDireita">Ação SIMINC/Gestão Estratégica:</td>
     <td id="td_acao" ><?=$db->monta_combo('acaid',$sql,'S','Selecione...','','','','','N',"acaid","",$_SESSION['painel']['acaid']);?></td>
 </tr> 
 <tr style="display: none">
@@ -531,7 +532,7 @@ array_unique($filtroprocesso);
     <td align='right' class="SubTituloDireita">Objetivo Estratégico:</td>
     <td><?=$db->monta_combo('obeid',$sql,'S','Selecione...','','','','','S');?></td>
 </tr>
-<tr>
+<tr style="display:none">
 	<?php 
 		$sql= "SELECT 
 			regdescricao AS descricao, 
