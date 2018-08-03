@@ -53,6 +53,11 @@ class Proposta_Model_TipoDetalhamento extends Modelo
     const DESPESAS_OBRIGATORIAS = 10;
     
     /**
+     * @const DESPESAS_OBRIGATORIAS = "Despesas Obrigatórias sem Controle de Fluxo lançadas no SIOP pelos Setoriais"
+     */
+    const DESPESAS_OBRIGATORIAS_SEM_CONTROLE = 11;
+    
+    /**
      * @const DESPESAS_FINANCEIRAS = "Despesas Financeiras, exceto Dívida Contratual e Mobiliária"
      */
     const DESPESAS_FINANCEIRAS = 12;

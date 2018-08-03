@@ -17,7 +17,6 @@ function initPropostaForm(){
 
     $('#eqdid').change(function(){
         carregarRp();
-        carregarTipoDetalhamento();
     });
 
     // Carrega dados complementares da Funcional se existir funcional selecionada
@@ -31,7 +30,6 @@ function initPropostaForm(){
         carregaQuantidadesFuncional();
         carregarLimitesPrePi();
         carregarSubunidadesDaFuncional();
-        carregarTipoDetalhamento();
     });
 
 }
@@ -43,25 +41,6 @@ function initPropostaForm(){
  */
 function carregarRp(){
     $('#span-rp').load('?modulo=principal/proposta_form&acao=A&req=carregar-rp&eqdid=' + $('#eqdid').val());
-}
-
-/**
- * Carrega tipo de detalhamento
- * 
- * @returns VOID
- */
-function carregarTipoDetalhamento(){
-    $.ajax({
-        url: '?modulo=principal/proposta_form&acao=A&req=carregar-tipo-detalhamento&eqdid=' +$('#eqdid').val()+ '&ptrid='+ $('#ptrid').val(),
-        dataType: 'json',
-        success: function(response){
-            if(response.tpdid != ''){
-                console.log(response.tpdid);
-                $('#tpdid').val(response.tpdid);
-                $('#tpdid').trigger('chosen:updated');
-            }
-        }
-    });
 }
 
 /**

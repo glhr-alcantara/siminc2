@@ -58,37 +58,5 @@ class Proposta_Controller_Proposta
     {
         include_once APPRAIZ . 'proposta/modulos/principal/propostadetalhe.inc';
     }
-    
-    public static function carregarTipoDetalhamento($eqdid = NULL, $ptrid = NULL){
-        $tpdid = '';
-        $enquadramentoDespesa = new Monitora_Model_PiEnquadramentoDespesa((int)$eqdid);
-        $irpcod = $enquadramentoDespesa->recuperarCodigoRp();
-        $funcional = new Monitora_Model_Ptres((int)$ptrid);
-        $acao = new Monitora_Model_Acao((int)$funcional->acaid);
-        switch ($irpcod) {
-            case Monitora_Model_PiEnquadramentoDespesa::FINANCEIRA:
-                $tpdid = Proposta_Model_TipoDetalhamento::DESPESAS_FINANCEIRAS;
-            break;
-            case Monitora_Model_PiEnquadramentoDespesa::PRIMARIA_OBRIGATORIA:
-                if(in_array($acao->acacod, array('2004', '21HB'))){
-                    $tpdid = Proposta_Model_TipoDetalhamento::DESPESAS_PODER_EXECUTIVO;
-                }
-            break;
-            case Monitora_Model_PiEnquadramentoDespesa::PRIMARIA_DISCRICIONARIA:
-                $tpdid = Proposta_Model_TipoDetalhamento::DESPESAS_EXECUTIVO;
-            break;
-            case Monitora_Model_PiEnquadramentoDespesa::PAC:
-                $tpdid = Proposta_Model_TipoDetalhamento::PAC;
-            break;
-            default:
-                if(in_array($acao->acacod, array('0181', '20TP'))){
-                    $tpdid = Proposta_Model_TipoDetalhamento::DESPESAS_ENCARGOS_SOCIAIS;
-                } else if($acao->acacod == '0005'){
-                    $tpdid = Proposta_Model_TipoDetalhamento::DESPESAS_OBRIGATORIAS;
-                }
-            break;
-        }
-        
-        return $tpdid;
-    }
-}            
+
+}

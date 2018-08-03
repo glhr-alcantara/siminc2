@@ -66,23 +66,12 @@ switch ($_REQUEST['req']) {
                     </div>
                   </div>';
         die;
-    case 'carregar-tipo-detalhamento':
-        $eqdid = $_REQUEST['eqdid'];
-        $ptrid = $_REQUEST['ptrid'];
-        $tpdid = Proposta_Controller_Proposta::carregarTipoDetalhamento((int)$eqdid, (int)$ptrid);
-
-        echo simec_json_encode(array('tpdid' => $tpdid));
-    die;
-}
-
-if($mProposta->proid){
-    $mProposta->tpdid = Proposta_Controller_Proposta::carregarTipoDetalhamento((int)$mProposta->eqdid, (int)$mProposta->ptrid);
 }
 
 include APPRAIZ . "includes/cabecalho.inc";
 ?>
 
-<script src="js/principal/proposta_form.js?v=2"></script>
+<script src="js/principal/proposta_form.js?v=1"></script>
 
 <div class="row wrapper border-bottom white-bg page-heading">
     <div class="col-lg-10">
@@ -110,7 +99,6 @@ include APPRAIZ . "includes/cabecalho.inc";
                             echo '<span id="span-rp"></span>';
                             echo '<span id="span-funcional">' . $simec->select('ptrid', 'Funcional', $mProposta->ptrid, (new Monitora_Model_Ptres())->recuperarSqlPorSubunidadeEEnquadramento($mProposta->suoid, $mProposta->eqdid), ['required']) . '</span>';
                             echo '<span id="span-subunidades-ptres"></span>';
-                            echo $simec->select('tpdid', 'Tipo de Detalhamento', $mProposta->tpdid, (new Proposta_Model_TipoDetalhamento())->recuperarSqlCombo(['tpdcod', 'tpdnome'], null, 'tpdcod' ));
                         ?>
                         <div class="form-group ">
                             <label for="" class="col-sm-3 col-md-3 col-lg-3 control-label">Limites Pré-PI</label>

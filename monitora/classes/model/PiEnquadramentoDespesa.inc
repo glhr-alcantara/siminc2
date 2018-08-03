@@ -26,20 +26,26 @@ require_once APPRAIZ .'includes/classes/Modelo.class.inc';
  */
 class Monitora_Model_PiEnquadramentoDespesa extends Modelo
 {
-
-    const FINANCEIRA = 0;
+    const EQDCOD_PAC = 'A';
     
-    const PRIMARIA_OBRIGATORIA = 1;
+    const EQDCOD_BENEFICIO_SERVIDOR = 'B';
+ 
+    const EQDCOD_CONTRIBUICAO_PATRONAL = 'C';
     
-    const PRIMARIA_DISCRICIONARIA = 2;
+    const EQDCOD_EMENDAS = 'E';
     
-    const PAC = 3;
+    const EQDCOD_FINALISTICO = 'F';
     
-    const EMENDA = 6;
+    const EQDCOD_FINANCEIRA = 'I';
     
-    const NAO_IMPACTA = 9;
-
-
+    const EQDCOD_MANUTENCAO = 'M';
+    
+    const EQDCOD_NAO_ORCAMENTARIA = 'N';
+    
+    const EQDCOD_DESPESAS_OBRIGATORIAS = 'O';
+    
+    const EQDCOD_PESSOAL_ENCARGOS = 'P';
+    
     /**
      * Nome da tabela especificada
      * @var string
@@ -75,9 +81,49 @@ class Monitora_Model_PiEnquadramentoDespesa extends Modelo
         'eqdstatus' => null,
         'mpneid' => null,
         'eqdstreduzido' => null,
-        'eqdrp' => null,
+        'eqdrp' => null, /** @todo retirar campo de relacionamento que não está mais sendo usado */
     );
 
+    /**
+     * Busca o tipo de detalhamento/Grupo do Enquadramento da despesa.
+     * 
+     * @return integer
+     */
+    public function buscarTipoDetalhamento(){
+        $tpdid = NULL;
+        switch ($this->eqdcod){
+            case self::EQDCOD_BENEFICIO_SERVIDOR:
+                $tpdid = Proposta_Model_TipoDetalhamento::DESPESAS_PODER_EXECUTIVO;
+            break;
+            case self::EQDCOD_CONTRIBUICAO_PATRONAL:
+                $tpdid = Proposta_Model_TipoDetalhamento::DESPESAS_FINANCEIRAS;
+            break;
+            case self::EQDCOD_DESPESAS_OBRIGATORIAS:
+                $tpdid = Proposta_Model_TipoDetalhamento::DESPESAS_OBRIGATORIAS_SEM_CONTROLE;
+            break;
+            case self::EQDCOD_FINALISTICO:
+                $tpdid = Proposta_Model_TipoDetalhamento::DESPESAS_EXECUTIVO;
+            break;
+            case self::EQDCOD_FINANCEIRA:
+                $tpdid = Proposta_Model_TipoDetalhamento::DESPESAS_FINANCEIRAS;
+            break;
+            case self::EQDCOD_MANUTENCAO:
+                $tpdid = Proposta_Model_TipoDetalhamento::DESPESAS_EXECUTIVO;
+            break;
+            case self::EQDCOD_PESSOAL_ENCARGOS:
+                $tpdid = Proposta_Model_TipoDetalhamento::DESPESAS_ENCARGOS_SOCIAIS;
+            break;
+            case self::EQDCOD_PAC:
+                $tpdid = Proposta_Model_TipoDetalhamento::PAC;
+            break;
+            default:
+                $tpdid = 0;
+            break;
+        }
+
+        return $tpdid;
+    }
+    
     public function recuperarTodos($stCampos = '*', $arClausulas = null, $stOrdem = null, array $opcoes = array()) {
         // -- Retornar a query ao invés dos dados
         $opcoes['query'] = isset($opcoes['query']) ? $opcoes['query'] : false;
@@ -188,7 +234,6 @@ class Monitora_Model_PiEnquadramentoDespesa extends Modelo
 //ver($sql, $irpcod, d);
         return $irpcod;
     }
-
 
 }//end Class
 ?>
