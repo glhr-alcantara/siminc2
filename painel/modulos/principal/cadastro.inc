@@ -1051,7 +1051,7 @@ else
 		WHERE
 			perstatus = 'A'	
 		AND
-			perid <> 5
+			perid in (1,2,3)
 		order by
 			 descricao		 
 		";
@@ -1117,7 +1117,7 @@ else
 		FROM 
 			painel.periodicidade
 		WHERE
-			perstatus = 'A'	
+			perstatus = 'A'	and perid in (1,2,3)
 		order by
 			 descricao		 
 		";
