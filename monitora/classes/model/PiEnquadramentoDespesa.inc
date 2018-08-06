@@ -66,6 +66,7 @@ class Monitora_Model_PiEnquadramentoDespesa extends Modelo
      * @var array
      */
     protected $arChaveEstrangeira = array(
+        'tpdid' => array('tabela' => 'proposta.tipodetalhamento', 'pk' => 'tpdid')
     );
 
     /**
@@ -82,47 +83,8 @@ class Monitora_Model_PiEnquadramentoDespesa extends Modelo
         'mpneid' => null,
         'eqdstreduzido' => null,
         'eqdrp' => null, /** @todo retirar campo de relacionamento que não está mais sendo usado */
+        'tpdid' => null,
     );
-
-    /**
-     * Busca o tipo de detalhamento/Grupo do Enquadramento da despesa.
-     * 
-     * @return integer
-     */
-    public function buscarTipoDetalhamento(){
-        $tpdid = NULL;
-        switch ($this->eqdcod){
-            case self::EQDCOD_BENEFICIO_SERVIDOR:
-                $tpdid = Proposta_Model_TipoDetalhamento::DESPESAS_PODER_EXECUTIVO;
-            break;
-            case self::EQDCOD_CONTRIBUICAO_PATRONAL:
-                $tpdid = Proposta_Model_TipoDetalhamento::DESPESAS_FINANCEIRAS;
-            break;
-            case self::EQDCOD_DESPESAS_OBRIGATORIAS:
-                $tpdid = Proposta_Model_TipoDetalhamento::DESPESAS_OBRIGATORIAS_SEM_CONTROLE;
-            break;
-            case self::EQDCOD_FINALISTICO:
-                $tpdid = Proposta_Model_TipoDetalhamento::DESPESAS_EXECUTIVO;
-            break;
-            case self::EQDCOD_FINANCEIRA:
-                $tpdid = Proposta_Model_TipoDetalhamento::DESPESAS_FINANCEIRAS;
-            break;
-            case self::EQDCOD_MANUTENCAO:
-                $tpdid = Proposta_Model_TipoDetalhamento::DESPESAS_EXECUTIVO;
-            break;
-            case self::EQDCOD_PESSOAL_ENCARGOS:
-                $tpdid = Proposta_Model_TipoDetalhamento::DESPESAS_ENCARGOS_SOCIAIS;
-            break;
-            case self::EQDCOD_PAC:
-                $tpdid = Proposta_Model_TipoDetalhamento::PAC;
-            break;
-            default:
-                $tpdid = 0;
-            break;
-        }
-
-        return $tpdid;
-    }
     
     public function recuperarTodos($stCampos = '*', $arClausulas = null, $stOrdem = null, array $opcoes = array()) {
         // -- Retornar a query ao invés dos dados
