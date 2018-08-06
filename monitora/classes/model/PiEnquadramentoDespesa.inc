@@ -133,30 +133,32 @@ class Monitora_Model_PiEnquadramentoDespesa extends Modelo
       return $listaResultado;
     }
 
-    public function recuperarTodosDetail(stdClass $param){
-      $where = NULL;
-        if($param->exercicio){
-          $where = "\n AND eqdano = '". (int)$param->exercicio . "'";
+    public function recuperarTodosRp(stdClass $param)
+    {
+
+        $where = NULL;
+
+        if ($param->exercicio) {
+            $where = "\n AND eqdano = '" . (int)$param->exercicio . "'";
         }
 
         $sql = "
-          SELECT DISTINCT
-          *,
-          REPLACE(REPLACE(REPLACE(ARRAY(
-      			SELECT DISTINCT
-      				' ' || erp.irpcod || ' - ' ||rp.irpdsc || ' '
-      			FROM monitora.enquadramentorp erp
-              JOIN public.identresultprimario AS rp on erp.irpcod = rp.irpcod
-      			WHERE
-      				erp.eqdid = pi_enquadramentodespesa.eqdid
-            )::TEXT, '{', ''), '}', ''), '\"', '') AS lista_rp
-          FROM monitora.pi_enquadramentodespesa
-          WHERE
-            eqdstatus = 'A'
-            $where
-          ORDER BY
-            eqddsc
-        ";
+            SELECT DISTINCT
+                *,
+                REPLACE(REPLACE(REPLACE(ARRAY (
+                    SELECT DISTINCT
+                        ' ' || erp.irpcod || ' - ' || rp.irpdsc || ' '
+                    FROM monitora.enquadramentorp erp
+                        JOIN public.identresultprimario AS rp ON (erp.irpcod = rp.irpcod)
+                    WHERE
+                        erp.eqdid = pi_enquadramentodespesa.eqdid)::TEXT, '{', ''), '}', ''), '\"', '') AS lista_rp
+            FROM monitora.pi_enquadramentodespesa
+            WHERE
+                eqdstatus = 'A'
+                $where
+            ORDER BY
+                eqddsc
+       ";
         $lista = $this->carregar($sql);
         // implement here cast de array
         return $lista;
@@ -197,5 +199,5 @@ class Monitora_Model_PiEnquadramentoDespesa extends Modelo
         return $irpcod;
     }
 
-}//end Class
-?>
+}
+
