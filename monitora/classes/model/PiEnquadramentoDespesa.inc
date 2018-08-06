@@ -82,7 +82,6 @@ class Monitora_Model_PiEnquadramentoDespesa extends Modelo
         'eqdstatus' => null,
         'mpneid' => null,
         'eqdstreduzido' => null,
-        'eqdrp' => null, /** @todo retirar campo de relacionamento que não está mais sendo usado */
         'tpdid' => null,
     );
     
