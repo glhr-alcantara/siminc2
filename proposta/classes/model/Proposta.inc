@@ -137,6 +137,7 @@ class Proposta_Model_Proposta extends Modelo
                 pro.proquantidadeexpansao,
                 pro.projustificativaexpansao,
                 pro.eqdid,
+                tpd.tpdcod,
                 prd.prdvalorexpansao
             FROM proposta.proposta pro
                 JOIN proposta.propostadetalhe prd ON prd.proid = pro.proid
@@ -151,6 +152,8 @@ class Proposta_Model_Proposta extends Modelo
                     AND a.codigoacao = aca.acacod
                     AND a.codigoprograma = aca.prgcod
                 )
+                JOIN monitora.pi_enquadramentodespesa eqd ON(pro.eqdid = eqd.eqdid)
+                JOIN proposta.tipodetalhamento tpd ON(eqd.tpdid = tpd.tpdid)
                 LEFT JOIN wssof.ws_planosorcamentariosdto po ON(
                     po.identificadorunicoacao = a.identificadorunico
                     AND po.exercicio = pro.prsano::int
@@ -179,8 +182,7 @@ class Proposta_Model_Proposta extends Modelo
 
         $aEnvioWS = [];
         foreach ($dados as $dado) {
-            $codigoTipoDetalhamento = (new Monitora_Model_PiEnquadramentoDespesa((int)$dado['eqdid']))->buscarTipoDetalhamento();
-            $agrupador = $codigoTipoDetalhamento. '_'. $dado['unicod']. '_'. $dado['acacod']. '_'. $dado['loccod']. '_'. $dado['prgcod']. '_'. $dado['identificadorunicoacao'];
+            $agrupador = $dado['tpdcod']. '_'. $dado['unicod']. '_'. $dado['acacod']. '_'. $dado['loccod']. '_'. $dado['prgcod']. '_'. $dado['identificadorunicoacao'];
 //            $aEnvio[$agrupador][] = $dado;
 
             // Cálculos auxiliares
@@ -237,7 +239,7 @@ class Proposta_Model_Proposta extends Modelo
                 'codigoLocalizador'               => $dado['loccod'],
                 'codigoTipoInclusaoLocalizador'   => '1',                                                       // Valores válidos: 1 - PLOA, 2 - Emenda, 4 - PPA, 5 - Crédito Especial, 6 - Crédito Extraordinário
                 'codigoMomento'                   => $momento,                                                  // São os momentos (etapas) do processo no SIOP: 1000 (UO), 2000 (OS), 5000 (PLOA) e 8000 (LOA).
-                'codigoTipoDetalhamento'          => $codigoTipoDetalhamento,
+                'codigoTipoDetalhamento'          => $dado['tpdcod'],
                 'quantidadeFisico'                => array_sum($aEnvio[$agrupador]['quantidadeFisico']),        // aceita nulo
                 'valorFisico'                     => $aEnvio[$agrupador]['valorFisico'],                        // aceita nulo
                 'financeiros'                     => $aEnvio[$agrupador]['FinanceiroDTO'],                        // lista de FinanceiroDTO
